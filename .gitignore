@@ -1,0 +1,11 @@
+# Misc files
+*.swp
+.DS_Store
+Gemfile.local
+Gemfile.lock
+
+# Generated files
+/debug*/
+/release*/
+/.idea/
+/build/
