@@ -1,0 +1,32 @@
+///
+/// @file
+/// Declares macros for the facter library version.
+///
+#pragma once
+
+///
+/// The facter library major version.
+///
+#define CPP_PROJECT_TEMPLATE_VERSION_MAJOR @CPP_PROJECT_TEMPLATE_VERSION_MAJOR@
+///
+/// The facter library minor version.
+///
+#define CPP_PROJECT_TEMPLATE_VERSION_MINOR @CPP_PROJECT_TEMPLATE_VERSION_MINOR@
+///
+/// The facter library patch version.
+///
+#define CPP_PROJECT_TEMPLATE_VERSION_PATCH @CPP_PROJECT_TEMPLATE_VERSION_PATCH@
+///
+/// The facter library Git SHA1.
+///
+#define CPP_PROJECT_TEMPLATE_GIT_SHA1 "@CPP_PROJECT_TEMPLATE_GIT_SHA1@"
+
+///
+/// The facter library version as a string (without commit SHA1).
+///
+#define CPP_PROJECT_TEMPLATE_VERSION "@CPP_PROJECT_TEMPLATE_VERSION_MAJOR@.@CPP_PROJECT_TEMPLATE_VERSION_MINOR@.@CPP_PROJECT_TEMPLATE_VERSION_PATCH@"
+
+///
+/// The facter library version as a string (with commit SHA1).
+///
+#define CPP_PROJECT_TEMPLATE_VERSION_WITH_COMMIT "@CPP_PROJECT_TEMPLATE_VERSION_MAJOR@.@CPP_PROJECT_TEMPLATE_VERSION_MINOR@.@CPP_PROJECT_TEMPLATE_VERSION_PATCH@@CPP_PROJECT_TEMPLATE_COMMIT@"
