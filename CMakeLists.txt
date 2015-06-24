@@ -1,14 +1,10 @@
 # Project Setup - modify to match project naming
-cmake_minimum_required(VERSION 2.8.12)
-project(cpp-project-template)
+cmake_minimum_required(VERSION 3.2.2)
+project(cpp-project-template VERSION 0.0.0)
 
 string(MAKE_C_IDENTIFIER ${PROJECT_NAME} PROJECT_C_NAME)
 string(TOUPPER ${PROJECT_C_NAME} PROJECT_NAME_UPPER)
 string(TOLOWER ${PROJECT_C_NAME} PROJECT_NAME_LOWER)
-
-set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 0)
-set(PROJECT_VERSION_PATCH 0)
 
 # Common cmake setup
 if (NOT CMAKE_BUILD_TYPE)
