@@ -1,43 +1,53 @@
-set(CPP_PROJECT_TEMPLATE_VERSION_MAJOR 0)
-set(CPP_PROJECT_TEMPLATE_VERSION_MINOR 0)
-set(CPP_PROJECT_TEMPLATE_VERSION_PATCH 0)
+# TODO:
+#  include(leatherman)
+#  get_commit_string(PROJECT_COMMIT)
 
 # Generate a file containing the above version numbers
 configure_file (
     "version.h.in"
-    "${CMAKE_CURRENT_LIST_DIR}/inc/cpp_project_template/version.h"
+    "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/version.h"
 )
 
-set(CMAKE_CXX_FLAGS ${CPP_PROJECT_TEMPLATE_CXX_FLAGS})
-leatherman_logging_namespace("puppetlabs.cpp_project_template")
+configure_file (
+    "project.hpp.in"
+    "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/${PROJECT_NAME}.hpp"
+)
+
+configure_file (
+    "project.cc.in"
+    "${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}.cc"
+)
+
+set(CMAKE_CXX_FLAGS ${${PROJECT_NAME_UPPER}_CXX_FLAGS})
+leatherman_logging_namespace("puppetlabs.${PROJECT_NAME}")
 
 include_directories(inc ${Boost_INCLUDE_DIRS} ${LEATHERMAN_INCLUDE_DIRS})
 
-set(PROJECT_SOURCES "src/project.cc")
+set(PROJECT_SOURCES "src/${PROJECT_NAME}.cc")
 
 # An object target is used to declare
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
 
-add_library(libcpp_project_template SHARED $<TARGET_OBJECTS:libprojectsrc>)
-set_target_properties(libcpp_project_template PROPERTIES PREFIX "" SUFFIX ".so" IMPORT_PREFIX "" IMPORT_SUFFIX ".so.a" VERSION "${CPP_PROJECT_TEMPLATE_VERSION_MAJOR}.${CPP_PROJECT_TEMPLATE_VERSION_MINOR}.${CPP_PROJECT_TEMPLATE_VERSION_PATCH}")
-target_link_libraries(libcpp_project_template PRIVATE
+add_library(lib${PROJECT_NAME} SHARED $<TARGET_OBJECTS:libprojectsrc>)
+set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".so" IMPORT_PREFIX "" IMPORT_SUFFIX ".so.a" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+target_link_libraries(lib${PROJECT_NAME} PRIVATE
     ${LEATHERMAN_LIBRARIES}
     ${Boost_LIBRARIES}
 )
 
 # Generate the export header
 include(GenerateExportHeader)
-generate_export_header(libcpp_project_template EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/cpp_project_template/export.h")
+generate_export_header(lib${PROJECT_NAME} EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/export.h")
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     add_compiler_export_flags()
 elseif (WIN32)
     add_compiler_export_flags()
-    add_definitions("-Dlibcpp_project_template_EXPORTS")
+    add_definitions("-Dlib${PROJECT_NAME_LOWER}_EXPORTS")
 endif()
 
 get_filename_component(LIBPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} NAME)
-install(TARGETS libcpp_project_template DESTINATION ${LIBPATH})
-install(DIRECTORY inc/cpp_project_template DESTINATION include)
+install(TARGETS lib${PROJECT_NAME} DESTINATION ${LIBPATH})
+install(DIRECTORY inc/${PROJECT_NAME} DESTINATION include)
 
 add_subdirectory(tests)

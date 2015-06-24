@@ -1,32 +1,28 @@
 ///
 /// @file
-/// Declares macros for the facter library version.
+/// Declares macros for the @PROJECT_NAME@ library version.
 ///
 #pragma once
 
 ///
-/// The facter library major version.
+/// The @PROJECT_NAME@ library major version.
 ///
-#define CPP_PROJECT_TEMPLATE_VERSION_MAJOR @CPP_PROJECT_TEMPLATE_VERSION_MAJOR@
+#define @PROJECT_NAME_UPPER@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 ///
-/// The facter library minor version.
+/// The @PROJECT_NAME@ library minor version.
 ///
-#define CPP_PROJECT_TEMPLATE_VERSION_MINOR @CPP_PROJECT_TEMPLATE_VERSION_MINOR@
+#define @PROJECT_NAME_UPPER@_VERSION_MINOR @PROJECT_VERSION_MINOR@
 ///
-/// The facter library patch version.
+/// The @PROJECT_NAME@ library patch version.
 ///
-#define CPP_PROJECT_TEMPLATE_VERSION_PATCH @CPP_PROJECT_TEMPLATE_VERSION_PATCH@
-///
-/// The facter library Git SHA1.
-///
-#define CPP_PROJECT_TEMPLATE_GIT_SHA1 "@CPP_PROJECT_TEMPLATE_GIT_SHA1@"
+#define @PROJECT_NAME_UPPER@_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
 ///
-/// The facter library version as a string (without commit SHA1).
+/// The @PROJECT_NAME@ library version as a string (without commit SHA1).
 ///
-#define CPP_PROJECT_TEMPLATE_VERSION "@CPP_PROJECT_TEMPLATE_VERSION_MAJOR@.@CPP_PROJECT_TEMPLATE_VERSION_MINOR@.@CPP_PROJECT_TEMPLATE_VERSION_PATCH@"
+#define @PROJECT_NAME_UPPER@_VERSION "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
 
 ///
-/// The facter library version as a string (with commit SHA1).
+/// The @PROJECT_NAME@ library version as a string (with commit SHA1).
 ///
-#define CPP_PROJECT_TEMPLATE_VERSION_WITH_COMMIT "@CPP_PROJECT_TEMPLATE_VERSION_MAJOR@.@CPP_PROJECT_TEMPLATE_VERSION_MINOR@.@CPP_PROJECT_TEMPLATE_VERSION_PATCH@@CPP_PROJECT_TEMPLATE_COMMIT@"
+#define @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@@PROJECT_COMMIT@"

@@ -2,11 +2,11 @@
 set -ev
 
 if [ ${TRAVIS_TARGET} == RELEASE ]; then
-  cmake .
+  cmake -Wno-dev .
   make cpplint
   make cppcheck
 else
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON .
+  cmake -Wno-dev -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON .
 fi
 
 make

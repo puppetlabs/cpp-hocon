@@ -5,8 +5,12 @@ Gemfile.local
 Gemfile.lock
 
 # Generated files
-/lib/inc/cpp_project_template/export.h
-/lib/inc/cpp_project_template/version.h
+/exe/cpp-project-template.cc
+/lib/inc/cpp-project-template/cpp-project-template.hpp
+/lib/inc/*/export.h
+/lib/inc/*/version.h
+/lib/src/cpp-project-template.cc
+/lib/tests/cpp-project-template.cc
 /debug*/
 /release*/
 /.idea/

@@ -7,12 +7,12 @@
 #include <string>
 #include "export.h"
 
-namespace cpp_project_template {
+namespace @PROJECT_NAME_LOWER@ {
 
     /**
      * Query the library version.
      * @return A version string with <major>.<minor>.<patch>
      */
-    std::string LIBCPP_PROJECT_TEMPLATE_EXPORT version();
+    std::string LIB@PROJECT_NAME_UPPER@_EXPORT version();
 
-}  // namespace cpp_project_template
+}  // namespace @PROJECT_NAME_LOWER

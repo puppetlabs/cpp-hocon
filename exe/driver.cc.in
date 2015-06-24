@@ -1,4 +1,4 @@
-#include <cpp_project_template/project.hpp>
+#include <@PROJECT_NAME@/@PROJECT_NAME@.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/nowide/args.hpp>
 #include <leatherman/logging/logging.hpp>
@@ -25,7 +25,7 @@ void help(po::options_description& desc)
         "Usage\n"
         "=====\n"
         "\n"
-        "  driver [options]\n"
+        "  @PROJECT_NAME@ [options]\n"
         "\n"
         "Options\n"
         "=======\n\n" << desc <<
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
         set_level(lvl);
 
         if (vm.count("version")) {
-            boost::nowide::cout << cpp_project_template::version() << endl;
+            boost::nowide::cout << @PROJECT_NAME_LOWER@::version() << endl;
             return EXIT_SUCCESS;
         }
     } catch (exception& ex) {

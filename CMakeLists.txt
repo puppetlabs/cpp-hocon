@@ -1,8 +1,16 @@
 # Project Setup - modify to match project naming
 cmake_minimum_required(VERSION 2.8.12)
-project(CPP_PROJECT_TEMPLATE)
+project(cpp-project-template)
 
-# Comman cmake setup
+string(MAKE_C_IDENTIFIER ${PROJECT_NAME} PROJECT_C_NAME)
+string(TOUPPER ${PROJECT_C_NAME} PROJECT_NAME_UPPER)
+string(TOLOWER ${PROJECT_C_NAME} PROJECT_NAME_LOWER)
+
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 0)
+set(PROJECT_VERSION_PATCH 0)
+
+# Common cmake setup
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "Defaulting to a release build.")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
@@ -17,7 +25,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/vendor/leatherman/cmake")
 include(options)
 ## Pull in common cflags setting from leatherman
 include(cflags)
-set(CPP_PROJECT_TEMPLATE_CXX_FLAGS "${LEATHERMAN_CXX_FLAGS}")
+set(${PROJECT_NAME_UPPER}_CXX_FLAGS "${LEATHERMAN_CXX_FLAGS}")
 add_definitions(${LEATHERMAN_DEFINITIONS})
 ## Pull in helper macros for working with leatherman libraries
 include(leatherman)

@@ -1,0 +1,7 @@
+#include <catch.hpp>
+#include <@PROJECT_NAME@/version.h>
+#include <@PROJECT_NAME@/@PROJECT_NAME@.hpp>
+
+SCENARIO("version() returns the version") {
+    REQUIRE(@PROJECT_NAME_LOWER@::version() == @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT);
+}
