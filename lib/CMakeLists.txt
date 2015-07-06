@@ -1,31 +1,29 @@
+# Generate source files from a template based on the project name.
+# REMOVE after generating your project.
+configure_file("project.hpp.in" "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/${PROJECT_NAME}.hpp")
+configure_file("project.cc.in"  "${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}.cc")
+# REMOVE end
+
 # TODO:
 #  include(leatherman)
 #  get_commit_string(PROJECT_COMMIT)
 
-# Generate a file containing the above version numbers
-configure_file (
-    "version.h.in"
-    "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/version.h"
-)
+# Generate a file containing the above version numbers.
+configure_file("version.h.in"   "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/version.h")
 
-configure_file (
-    "project.hpp.in"
-    "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/${PROJECT_NAME}.hpp"
-)
-
-configure_file (
-    "project.cc.in"
-    "${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}.cc"
-)
-
+# Set C++ compile flags based on project settings.
 set(CMAKE_CXX_FLAGS ${${PROJECT_NAME_UPPER}_CXX_FLAGS})
+
+# Set prefix for logging messages.
 leatherman_logging_namespace("puppetlabs.${PROJECT_NAME}")
 
+# Setup compiling the library.
 include_directories(inc ${Boost_INCLUDE_DIRS} ${LEATHERMAN_INCLUDE_DIRS})
 
 set(PROJECT_SOURCES "src/${PROJECT_NAME}.cc")
 
-# An object target is used to declare
+## An object target is generated that can be used by both the library and test executable targets.
+## Without the intermediate target, unexported symbols can't be tested.
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
 
@@ -36,7 +34,8 @@ target_link_libraries(lib${PROJECT_NAME} PRIVATE
     ${Boost_LIBRARIES}
 )
 
-# Generate the export header
+# Generate the export header for restricting symbols exported from the library.
+# Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.
 include(GenerateExportHeader)
 generate_export_header(lib${PROJECT_NAME} EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/export.h")
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")

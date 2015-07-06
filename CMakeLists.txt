@@ -1,5 +1,9 @@
-# Project Setup - modify to match project naming
+# Defines how cmake should behave, and the minimum version necessary to build.
 cmake_minimum_required(VERSION 3.2.2)
+
+# Project Setup - modify to match project naming
+## Source code for a simple command-line executable for a dynamic library will be generated from the project name.
+## The command-line and library names will be based off the project name.
 project(cpp-project-template VERSION 0.0.0)
 
 string(MAKE_C_IDENTIFIER ${PROJECT_NAME} PROJECT_C_NAME)
@@ -19,7 +23,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/vendor/leatherman/cmake")
 
 ## Before we find any packages, we want to pull in the common leatherman options, as they can affect commonly-used packages.
 include(options)
-## Pull in common cflags setting from leatherman
+## Pull in common cflags setting from leatherman. Don't override CMAKE_CXX_FLAGS at the project root to avoid impacting 3rd party code.
 include(cflags)
 set(${PROJECT_NAME_UPPER}_CXX_FLAGS "${LEATHERMAN_CXX_FLAGS}")
 add_definitions(${LEATHERMAN_DEFINITIONS})
@@ -32,14 +36,6 @@ find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
 # Display a summary of the features
 include(FeatureSummary)
 feature_summary(WHAT ALL)
-
-# Set RPATH if not installing to a system library directory
-# This is not needed in later cmake versions, but moving to later cmake versions requires changing Leatherman.
-list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" INSTALL_IS_SYSTEM_DIR)
-if ("${INSTALL_IS_SYSTEM_DIR}" STREQUAL "-1")
-    set(CMAKE_MACOSX_RPATH 1)
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
 
 # Add build directories, both Leatherman and the project's source code
 set(LEATHERMAN_USE_LOCALE TRUE)

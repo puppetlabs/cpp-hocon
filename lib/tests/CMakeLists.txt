@@ -1,9 +1,10 @@
-include_directories(${LEATHERMAN_CATCH_INCLUDE})
+# Generate source files from a template based on the project name.
+# REMOVE after generating your project.
+configure_file("test.cc.in" "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}.cc")
+# REMOVE end
 
-configure_file (
-    "test.cc.in"
-    "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}.cc"
-)
+# Setup compiling the test executable. C++ compile flags are inherited from the parent directory.
+include_directories(${LEATHERMAN_CATCH_INCLUDE})
 
 set(TEST_CASES ${PROJECT_NAME}.cc)
 
