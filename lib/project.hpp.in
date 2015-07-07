@@ -1,0 +1,18 @@
+/**
+ * @file
+ * Declares a utility for retrieving the library version.
+ */
+#pragma once
+
+#include <string>
+#include "export.h"
+
+namespace @PROJECT_NAME_LOWER@ {
+
+    /**
+     * Query the library version.
+     * @return A version string with <major>.<minor>.<patch>
+     */
+    std::string LIB@PROJECT_NAME_UPPER@_EXPORT version();
+
+}  // namespace @PROJECT_NAME_LOWER

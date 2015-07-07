@@ -1,6 +1,6 @@
-# CppTemplate
+# CppProjectTemplate
 
-CppTemplate is a C++ project template for use in creating new command-line utility projects using PuppetLabs' shared libraries.
+CppProjectTemplate is a C++ project template for use in creating new command-line utility projects using PuppetLabs' shared libraries.
 
 ## Required packages
 
@@ -16,14 +16,19 @@ cd new-project
 hub create puppetlabs/new-project [-p]
 ```
 
+Finally update the project() name in CMakeLists.txt.
+
 ## Build the library
 
 This template is a fully functional example, and can be built with
 
 ```
 git submodule update --init
-cmake .
-make
+mkdir build && cd build
+cmake ..
+make -j
 ```
 
-Tests can be run with `make test`, and the example tool can be run with `bin/example`.
+CMake will generate source files from template files based on the project declared in CMakeLists.txt. For cpp-project-template, git ignores the generated files. For your own project, you can check those files in, and eventually remove the template files and generation logic from CMake as you develop your project (look for the REMOVE string in CMakeLists.txt files).
+
+Tests can be run with `make test`, and the example tool can be run with `bin/cpp_project_template`.

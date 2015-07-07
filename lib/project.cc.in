@@ -1,0 +1,16 @@
+#include <@PROJECT_NAME@/version.h>
+#include <@PROJECT_NAME@/@PROJECT_NAME@.hpp>
+
+#include <leatherman/logging/logging.hpp>
+
+namespace @PROJECT_NAME_LOWER@ {
+
+    using namespace std;
+
+    string version()
+    {
+        LOG_DEBUG("@PROJECT_NAME@ version is %1%", @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT);
+        return @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT;
+    }
+
+}  // @PROJECT_NAME_LOWER@

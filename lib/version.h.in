@@ -1,0 +1,28 @@
+///
+/// @file
+/// Declares macros for the @PROJECT_NAME@ library version.
+///
+#pragma once
+
+///
+/// The @PROJECT_NAME@ library major version.
+///
+#define @PROJECT_NAME_UPPER@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+///
+/// The @PROJECT_NAME@ library minor version.
+///
+#define @PROJECT_NAME_UPPER@_VERSION_MINOR @PROJECT_VERSION_MINOR@
+///
+/// The @PROJECT_NAME@ library patch version.
+///
+#define @PROJECT_NAME_UPPER@_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+///
+/// The @PROJECT_NAME@ library version as a string (without commit SHA1).
+///
+#define @PROJECT_NAME_UPPER@_VERSION "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+
+///
+/// The @PROJECT_NAME@ library version as a string (with commit SHA1).
+///
+#define @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@@PROJECT_COMMIT@"
