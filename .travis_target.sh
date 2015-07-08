@@ -16,5 +16,5 @@ make -j2
 make test ARGS=-V
 
 # Enable coveralls for public repos
-#if [ ${TRAVIS_TARGET} == DEBUG ]; then coveralls --gcov gcov-4.8 --gcov-options '\-lp' -r .. >/dev/null; fi
+if [ ${TRAVIS_TARGET} == DEBUG ]; then coveralls --gcov gcov-4.8 --gcov-options '\-lp' -r .. >/dev/null; fi
 
