@@ -15,4 +15,4 @@ namespace @PROJECT_NAME_LOWER@ {
      */
     std::string LIB@PROJECT_NAME_UPPER@_EXPORT version();
 
-}  // namespace @PROJECT_NAME_LOWER
+}  // namespace @PROJECT_NAME_LOWER@
