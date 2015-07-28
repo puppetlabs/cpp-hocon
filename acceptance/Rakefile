@@ -1,0 +1,6 @@
+require 'rake/clean'
+
+desc 'Run acceptance tests'
+task :acceptance do
+  puts 'success'
+end
