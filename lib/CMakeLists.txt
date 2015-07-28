@@ -18,10 +18,16 @@ set(PROJECT_SOURCES
     src/values/abstract_config_value.cc
     src/values/config_boolean.cc
     src/values/config_number.cc
-    src/values/config_int.cc
+    src/values/config_long.cc
     src/values/config_double.cc
     src/values/config_null.cc
+    src/values/config_string.cc
+    src/values/config_int.cc
+    src/token.cc
+    src/tokens.cc
+    src/tokenizer.cc
     src/simple_config_origin.cc
+    src/config_util.cc
 )
 
 ## An object target is generated that can be used by both the library and test executable targets.

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace hocon {
 
@@ -15,6 +16,14 @@ namespace hocon {
         /** This constructor replaces the new_simple method in the original library. */
         simple_config_origin(std::string description, int line_number = -1, int end_line_number = -1,
                              origin_type org_type = origin_type::GENERIC);
+
+        int line_number() const;
+
+        /**
+         * Returns a pointer to a copy of this origin with the specified line number
+         * as both starting and ending line.
+         */
+        std::shared_ptr<simple_config_origin> with_line_number(int line_number) const;
 
         bool operator==(const simple_config_origin &other) const;
         bool operator!=(const simple_config_origin &other) const;

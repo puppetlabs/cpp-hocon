@@ -25,6 +25,15 @@ namespace hocon {
         }
     }
 
+    int simple_config_origin::line_number() const {
+        return _line_number;
+    }
+
+    shared_ptr<simple_config_origin> simple_config_origin::with_line_number(int line_number) const {
+        return make_shared<simple_config_origin>(_description, line_number, line_number, _origin_type,
+                    _resource_or_null, _comments_or_null);
+    }
+
     bool simple_config_origin::operator==(const simple_config_origin &other) const {
         return (other._description == _description) &&
                 (other._line_number == _line_number) &&
