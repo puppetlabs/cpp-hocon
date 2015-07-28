@@ -14,6 +14,8 @@ This is most simply accomplished with [Hub](https://hub.github.com/). The follow
 hub clone --depth 1 --origin source puppetlabs/cpp-project-template new-project
 cd new-project
 hub create puppetlabs/new-project [-p]
+git commit --amend # Rewrite the commit message, and erase the fact that it's a shallow copy
+git push origin new-project
 ```
 
 Finally update the project() name in CMakeLists.txt.
