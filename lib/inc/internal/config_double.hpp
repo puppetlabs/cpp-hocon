@@ -1,5 +1,5 @@
-#include <internal/config_number.hpp>
-#include <internal/simple_config_origin.hpp>
+#include "config_number.hpp"
+#include "simple_config_origin.hpp"
 
 #include <string>
 
@@ -9,13 +9,10 @@ namespace hocon {
     public:
         config_double(simple_config_origin origin, double value, std::string original_text);
 
-        std::string transform_to_string() override;
+        std::string transform_to_string() const override;
 
         long long_value() const;
         double double_value() const;
-
-        config_double* new_copy(simple_config_origin origin);
-
 
     private:
         double _value;

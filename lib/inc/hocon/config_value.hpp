@@ -33,6 +33,6 @@ namespace hocon {
          *
          * @return value's type
          */
-        virtual config_value_type value_type() = 0;
+        virtual config_value_type value_type() const = 0;
     };
 }  // namespace hocon

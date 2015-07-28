@@ -11,8 +11,8 @@ namespace hocon {
     public:
         config_number(simple_config_origin origin, std::string original_text);
 
-        std::string transform_to_string();
-        config_value_type value_type();
+        std::string transform_to_string() const;
+        config_value_type value_type() const;
 
         virtual long long_value() const = 0;
         virtual double double_value() const = 0;

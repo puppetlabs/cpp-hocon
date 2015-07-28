@@ -1,4 +1,4 @@
-   cpp-project-template - Project template for new C++ projects.
+   cpp-hocon -- A port of the TypesafeConfig library to C++
 
    Copyright (C) 2014 Puppet Labs Inc
 

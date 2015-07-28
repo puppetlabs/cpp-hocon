@@ -9,13 +9,10 @@ namespace hocon {
     public:
         config_int(simple_config_origin origin, int value, std::string original_text);
 
-        std::string transform_to_string() override;
+        std::string transform_to_string() const override;
 
         long long_value() const;
         double double_value() const;
-
-        config_int* new_copy(simple_config_origin origin);
-
 
     private:
         int _value;
