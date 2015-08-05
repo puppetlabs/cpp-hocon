@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
     src/values/config_number.cc
     src/values/config_int.cc
     src/values/config_double.cc
+    src/values/config_null.cc
     src/simple_config_origin.cc
 )
 

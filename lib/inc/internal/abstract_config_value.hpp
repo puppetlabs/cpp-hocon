@@ -9,9 +9,7 @@ namespace hocon {
     public:
         abstract_config_value(simple_config_origin origin);
 
-        virtual std::string transform_to_string();
-        virtual config_value_type value_type() = 0;
-        virtual abstract_config_value* new_copy(simple_config_origin origin) = 0;
+        virtual std::string transform_to_string() const;
 
     private:
         simple_config_origin _origin;

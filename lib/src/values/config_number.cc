@@ -7,11 +7,11 @@ namespace hocon {
     config_number::config_number(simple_config_origin origin, string original_text) :
             abstract_config_value(origin), _original_text(original_text) { }
 
-    config_value_type config_number::value_type() {
+    config_value_type config_number::value_type() const {
         return config_value_type::NUMBER;
     }
 
-    string config_number::transform_to_string(){
+    string config_number::transform_to_string() const {
         return _original_text;
     }
 
@@ -21,10 +21,14 @@ namespace hocon {
     }
 
     bool config_number::operator==(const config_number &other) const {
-        if(is_whole()) {
+        if (is_whole()) {
             return other.is_whole() && long_value() == other.long_value();
         } else {
             return !other.is_whole() && double_value() == other.double_value();
         }
     }
-}  //namespace hocon
+
+    bool config_number::operator!=(const config_number &other) const {
+        return !(*this == other);
+    }
+}  // namespace hocon
