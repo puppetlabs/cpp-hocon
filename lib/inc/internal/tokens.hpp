@@ -13,6 +13,8 @@ namespace hocon {
         std::string to_string() const override;
         std::shared_ptr<simple_config_origin> const& origin() const override;
 
+        std::unique_ptr<abstract_config_value> const& get_value() const;
+
         bool operator==(const token& other) const override;
 
     private:

@@ -20,6 +20,10 @@ namespace hocon {
         return _value->origin();
     }
 
+    unique_ptr<abstract_config_value> const& value::get_value() const {
+        return _value;
+    }
+
     bool value::operator==(const token& other) const {
         return other.get_token_type() == token_type::VALUE &&
                other.to_string() == to_string();
