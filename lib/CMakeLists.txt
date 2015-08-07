@@ -15,6 +15,7 @@ leatherman_logging_namespace("puppetlabs.${PROJECT_NAME}")
 include_directories(inc ${Boost_INCLUDE_DIRS} ${LEATHERMAN_INCLUDE_DIRS})
 
 set(PROJECT_SOURCES
+    src/nodes/abstract_config_node.cc
     src/values/abstract_config_value.cc
     src/values/config_boolean.cc
     src/values/config_number.cc
