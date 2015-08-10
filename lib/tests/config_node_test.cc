@@ -93,3 +93,12 @@ TEST_CASE("simple values", "[config-node]") {
         simple_value_test(substitution_token(unquoted_text_token("a.b"), false));
     }
 }
+
+void top_level_value_replace_test(shared_ptr<abstract_config_node_value> value,
+                                  shared_ptr<abstract_config_node_value> new_value,
+                                  string key = "foo")
+{
+    vector<shared_ptr<abstract_config_node_value>> children { open_brace_node() };
+}
+
+// TODO: tests will require Path classes to be implemented

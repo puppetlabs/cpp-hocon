@@ -9,7 +9,6 @@ namespace hocon {
     }
 
     /** Tokens */
-
     shared_ptr<value> string_token(string text, config_string_type type) {
         return make_shared<value>(unique_ptr<config_string>(
                 new config_string(fake_origin(), text, type)));

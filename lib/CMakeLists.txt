@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
     src/nodes/config_node_single_token.cc
     src/nodes/config_node_comment.cc
     src/nodes/config_node_path.cc
+    src/nodes/config_node_complex_value.cc
+    src/nodes/config_node_field.cc
     src/values/abstract_config_value.cc
     src/values/config_boolean.cc
     src/values/config_number.cc
