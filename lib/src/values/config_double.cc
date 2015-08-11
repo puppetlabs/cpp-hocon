@@ -1,10 +1,11 @@
-#include <internal/config_double.hpp>
+#include <internal/values/config_double.hpp>
 
 using namespace std;
 
 namespace hocon {
 
-    config_double::config_double(simple_config_origin origin, double value, string original_text) :
+    config_double::config_double(shared_ptr<simple_config_origin> origin,
+                                 double value, string original_text) :
             config_number(move(origin), move(original_text)), _value(value) { }
 
     std::string config_double::transform_to_string() const {
@@ -16,8 +17,8 @@ namespace hocon {
         }
     }
 
-    long config_double::long_value() const {
-        return (long)_value;
+    int64_t config_double::long_value() const {
+        return static_cast<int64_t>(_value);
     }
 
     double config_double::double_value() const {
