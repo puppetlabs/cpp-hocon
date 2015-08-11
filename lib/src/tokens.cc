@@ -1,4 +1,7 @@
 #include <internal/tokens.hpp>
+#include <internal/config_exception.hpp>
+#include <internal/tokenizer.hpp>
+#include <iostream>
 
 using namespace std;
 
@@ -16,7 +19,7 @@ namespace hocon {
         return _value->transform_to_string();
     }
 
-    shared_ptr<simple_config_origin> const& value::origin() const {
+    shared_ptr<simple_config_origin> value::origin() const {
         return _value->origin();
     }
 
@@ -145,8 +148,7 @@ namespace hocon {
     }
 
     string substitution::token_text() const {
-        // TODO: this relies on tokenizer working to port properly
-        return to_string();
+        return "${" + string(optional() ? "?" : "") + token_iterator::render(_expression) + "}";
     }
 
     string substitution::to_string() const {
@@ -221,6 +223,23 @@ namespace hocon {
         static shared_token _plus_equals = make_shared<token>(
                 token_type::PLUS_EQUALS, nullptr, "'+='", "+=");
         return _plus_equals;
+    }
+
+    /** Static token handler methods */
+    shared_value tokens::get_value(shared_token t) {
+        if (auto value_token = dynamic_pointer_cast<const value>(t)) {
+            return value_token->get_value();
+        } else {
+            throw config_exception("Tried to get the value of a non-value token.");
+        }
+    }
+
+    bool tokens::is_value_with_type(shared_token token, config_value_type type) {
+        auto value_token = dynamic_pointer_cast<const value>(token);
+        if (value_token) {
+            return value_token->get_value()->value_type() == type;
+        }
+        return false;
     }
 
 }  // namespace hocon

@@ -12,9 +12,6 @@ namespace hocon {
     }
 
     string config_string::transform_to_string() const {
-        if (was_quoted()) {
-            return "\"" + _text + "\"";
-        }
         return _text;
     }
 

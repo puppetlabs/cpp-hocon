@@ -157,6 +157,14 @@ namespace hocon {
         return origin.with_line_number(line_number);
     }
 
+    string token_iterator::render(token_list tokens) {
+        string rendered_text = "";
+        for (auto&& t : tokens) {
+            rendered_text += t->token_text();
+        }
+        return rendered_text;
+    }
+
     shared_token token_iterator::pull_comment(char first_char) {
         bool double_slash = false;
         if (first_char == '/') {

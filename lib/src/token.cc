@@ -22,7 +22,7 @@ namespace hocon {
     }
 
     string token::to_string() const {
-        return _debug_string;
+        return _debug_string.empty() ? _token_text : _debug_string;
     }
 
     int token::line_number() const {
@@ -33,7 +33,7 @@ namespace hocon {
         }
     }
 
-    shared_ptr<simple_config_origin> const& token::origin() const {
+    shared_ptr<simple_config_origin> token::origin() const {
         if (_origin) {
             return _origin;
         } else {

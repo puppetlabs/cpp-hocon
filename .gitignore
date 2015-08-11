@@ -7,8 +7,8 @@ Gemfile.lock
 # Generated files
 /lib/inc/export.h
 /lib/inc/version.h
-/debug*/
-/release*/
+/*debug*/
+/*release*/
 /.idea/
 /build/
 acceptance/.bundle/

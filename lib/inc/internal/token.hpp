@@ -23,7 +23,7 @@ namespace hocon {
         virtual token_type get_token_type() const;
         virtual std::string token_text() const;
         virtual std::string to_string() const;
-        virtual std::shared_ptr<simple_config_origin> const& origin() const;
+        virtual std::shared_ptr<simple_config_origin> origin() const;
 
         int line_number() const;
 
