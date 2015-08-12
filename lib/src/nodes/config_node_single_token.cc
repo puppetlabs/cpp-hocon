@@ -4,14 +4,14 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_single_token::config_node_single_token(shared_ptr<token> t) :
+    config_node_single_token::config_node_single_token(shared_token t) :
             _token(move(t)) { }
 
-    vector<shared_ptr<token>> config_node_single_token::get_tokens() const {
-        return vector<shared_ptr<token>> { _token };
+    token_list config_node_single_token::get_tokens() const {
+        return { _token };
     }
 
-    shared_ptr<token> config_node_single_token::get_token() const {
+    shared_token config_node_single_token::get_token() const {
         return _token;
     }
 

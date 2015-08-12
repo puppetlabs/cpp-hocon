@@ -7,19 +7,19 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_simple_value::config_node_simple_value(shared_ptr<token> value) : _value(move(value)) { }
+    config_node_simple_value::config_node_simple_value(shared_token value) : _value(move(value)) { }
 
-    shared_ptr<token> config_node_simple_value::get_token() const {
+    shared_token config_node_simple_value::get_token() const {
         return _value;
     }
 
-    vector<shared_ptr<token>> config_node_simple_value::get_tokens() const {
-        return vector<shared_ptr<token>> { _value };
+    token_list config_node_simple_value::get_tokens() const {
+        return token_list { _value };
     }
 
     unique_ptr<abstract_config_value> const& config_node_simple_value::get_value() const {
         shared_ptr<value> value_token = dynamic_pointer_cast<value>(_value);
-        if(value_token) {
+        if (value_token) {
             return value_token->get_value();
         }
 
@@ -34,7 +34,8 @@ namespace hocon {
 //
 //        shared_ptr<substitution> sub_token = dynamic_pointer_cast<substitution>(_value);
 //        if(sub_token) {
-//            vector<shared_ptr<token>> expression = sub_token->expression();
+//            token_list expression = sub_token->expression();
+              // TODO: this will require Path and ConfigReference to be ported to handle properly
 //        }
 
         throw config_exception("Tried to get a config value from a non-value token.");

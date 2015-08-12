@@ -7,14 +7,14 @@ namespace hocon {
 
     class config_node_single_token : public abstract_config_node {
     public:
-        config_node_single_token(std::shared_ptr<token> t);
+        config_node_single_token(shared_token t);
 
-        std::vector<std::shared_ptr<token>> get_tokens() const override;
+        token_list get_tokens() const override;
 
-        std::shared_ptr<token> get_token() const;
+        shared_token get_token() const;
 
     private:
-        std::shared_ptr<token> _token;
+        shared_token _token;
     };
 
 }  // namespace hocon

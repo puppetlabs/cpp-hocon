@@ -14,14 +14,14 @@ using namespace hocon;
  */
 class concrete_config_node : public abstract_config_node {
 public:
-    vector<shared_ptr<token>> get_tokens() const { return _tokens; };
-    vector<shared_ptr<token>> _tokens;
+    token_list get_tokens() const { return _tokens; };
+    token_list _tokens;
 };
 
 TEST_CASE("abstract_config_node") {
     concrete_config_node node;
-    shared_ptr<token> token1 = hash_comment_token("token1");
-    shared_ptr<token> token2 = hash_comment_token("token2");
+    shared_token token1 = hash_comment_token("token1");
+    shared_token token2 = hash_comment_token("token2");
 
     SECTION("render should return all tokens concatenated together") {
         node._tokens.push_back(token1);
@@ -48,7 +48,7 @@ TEST_CASE("abstract_config_node") {
     }
 }
 
-void single_token_test(shared_ptr<token> t) {
+void single_token_test(shared_token t) {
     config_node_single_token node(t);
     REQUIRE(node.render() == t->token_text());
 }
@@ -74,7 +74,7 @@ TEST_CASE("single tokens", "[config-node]") {
     }
 }
 
-void simple_value_test(shared_ptr<token> t) {
+void simple_value_test(shared_token t) {
     config_node_simple_value node(t);
     REQUIRE(node.render() == t->token_text());
 }

@@ -26,7 +26,7 @@ namespace hocon {
         _whitespace += c;
     }
 
-    shared_ptr<token> token_iterator::whitespace_saver::check(token_type type,
+    shared_token token_iterator::whitespace_saver::check(token_type type,
                                                               simple_config_origin const& base_origin,
                                                               int line_number)
     {
@@ -42,7 +42,7 @@ namespace hocon {
      * discards any whitespace we were saving between
      * simple values.
      */
-    shared_ptr<token> token_iterator::whitespace_saver::next_is_not_simple_value(
+    shared_token token_iterator::whitespace_saver::next_is_not_simple_value(
             simple_config_origin const& base_origin, int line_number)
     {
         _last_token_was_simple_value = false;
@@ -54,19 +54,19 @@ namespace hocon {
      * so creates a whitespace token if the previous
      * token also was simple.
      */
-    shared_ptr<token> token_iterator::whitespace_saver::next_is_simple_value(
+    shared_token token_iterator::whitespace_saver::next_is_simple_value(
             simple_config_origin const& base_origin, int line_number) {
-        shared_ptr<token> t = create_whitespace_token(base_origin, line_number);
+        shared_token t = create_whitespace_token(base_origin, line_number);
         if (!_last_token_was_simple_value) {
             _last_token_was_simple_value = true;
         }
         return t;
     }
 
-    shared_ptr<token> token_iterator::whitespace_saver::create_whitespace_token(
+    shared_token token_iterator::whitespace_saver::create_whitespace_token(
             simple_config_origin const& base_origin, int line_number) {
         if (_whitespace.length() > 0) {
-            shared_ptr<token> t;
+            shared_token t;
             if (_last_token_was_simple_value) {
                 t = make_shared<unquoted_text>(line_origin(base_origin, line_number), _whitespace);
             } else {
@@ -157,7 +157,7 @@ namespace hocon {
         return origin.with_line_number(line_number);
     }
 
-    shared_ptr<token> token_iterator::pull_comment(char first_char) {
+    shared_token token_iterator::pull_comment(char first_char) {
         bool double_slash = false;
         if (first_char == '/') {
             int discard = next_char_raw();
@@ -195,7 +195,7 @@ namespace hocon {
      * that parses as JSON is treated the JSON way and otherwise
      * we assume it's a string and let the parser sort it out.
      */
-    shared_ptr<token> token_iterator::pull_unquoted_text() {
+    shared_token token_iterator::pull_unquoted_text() {
         shared_ptr<simple_config_origin> origin = _line_origin;
         string result;
         char c = next_char_raw();
@@ -232,7 +232,7 @@ namespace hocon {
         return make_shared<unquoted_text>(origin, result);
     }
 
-    shared_ptr<token> token_iterator::pull_number(char first_char) {
+    shared_token token_iterator::pull_number(char first_char) {
         string result;
         result += first_char;
         bool contained_decimal_or_E = false;
@@ -353,7 +353,7 @@ namespace hocon {
         }
     }
 
-    shared_ptr<token> token_iterator::pull_quoted_string() {
+    shared_token token_iterator::pull_quoted_string() {
         string result;
 
         // We need a second string builder to keep track of escape characters.
@@ -397,7 +397,7 @@ namespace hocon {
                                                original);
     }
 
-    shared_ptr<token> const& token_iterator::pull_plus_equals() {
+    shared_token const& token_iterator::pull_plus_equals() {
         int c = next_char_raw();
         if (c != '=') {
             throw config_exception("'+' not followed by '=', '" + string(1, c) +
@@ -406,7 +406,7 @@ namespace hocon {
         return tokens::plus_equals_token();
     }
 
-    shared_ptr<token> token_iterator::pull_substitution() {
+    shared_token token_iterator::pull_substitution() {
         // The initial '$' has already been consumed
         shared_ptr<simple_config_origin> origin = _line_origin;
         char c = next_char_raw();
@@ -423,9 +423,9 @@ namespace hocon {
         }
 
         whitespace_saver saver;
-        vector<shared_ptr<token>> expression;
+        token_list expression;
 
-        shared_ptr<token> t;
+        shared_token t;
         do {
             t = pull_next_token(saver);
 
@@ -438,7 +438,7 @@ namespace hocon {
             } else if (t == tokens::end_token()) {
                 throw config_exception("Substitution '${' was not closed with a '}'");
             } else {
-                shared_ptr<token> whitespace = saver.check(t->get_token_type(), *origin, _line_number);
+                shared_token whitespace = saver.check(t->get_token_type(), *origin, _line_number);
                 if (whitespace != nullptr) {
                     expression.push_back(whitespace);
                 }
@@ -449,17 +449,17 @@ namespace hocon {
         return make_shared<substitution>(_line_origin, optional, expression);
     }
 
-    shared_ptr<token> token_iterator::pull_next_token(whitespace_saver& saver) {
+    shared_token token_iterator::pull_next_token(whitespace_saver& saver) {
         char c = next_char_after_whitespace(saver);
         if (c == -1) {
             return tokens::end_token();
         } else if (c == '\n') {
-            shared_ptr<token> newline = make_shared<line>(_line_origin);
+            shared_token newline = make_shared<line>(_line_origin);
             _line_number++;
             _line_origin = _origin.with_line_number(_line_number);
             return newline;
         } else {
-            shared_ptr<token> t;
+            shared_token t;
             if (start_of_comment(c)) {
                 t = pull_comment(c);
             } else {
@@ -521,8 +521,8 @@ namespace hocon {
     }
 
     void token_iterator::queue_next_token() {
-        shared_ptr<token> t = pull_next_token(_whitespace_saver);
-        shared_ptr<token> whitespace = _whitespace_saver.check(t->get_token_type(), _origin, _line_number);
+        shared_token t = pull_next_token(_whitespace_saver);
+        shared_token whitespace = _whitespace_saver.check(t->get_token_type(), _origin, _line_number);
         if (whitespace != nullptr) {
            _tokens.push(whitespace);
         }
@@ -533,8 +533,8 @@ namespace hocon {
         return !_tokens.empty();
     }
 
-    shared_ptr<token> token_iterator::next() {
-        shared_ptr<token> t = _tokens.front();
+    shared_token token_iterator::next() {
+        shared_token t = _tokens.front();
         _tokens.pop();
         if (_tokens.empty() && t != tokens::end_token()) {
             try {

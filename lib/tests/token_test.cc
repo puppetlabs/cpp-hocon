@@ -87,15 +87,15 @@ TEST_CASE("token equality", "[tokens]") {
     }
 
     SECTION("substitution equality") {
-        vector<shared_ptr<token>> expression1;
+        token_list expression1;
         expression1.push_back(make_shared<line>(fake_origin()));
         expression1.push_back(make_shared<line>(fake_origin("other")));
 
-        vector<shared_ptr<token>> expression1_dup;
+        token_list expression1_dup;
         expression1_dup.push_back(make_shared<line>(fake_origin()));
         expression1_dup.push_back(make_shared<line>(fake_origin("other")));
 
-        vector<shared_ptr<token>> expression2;
+        token_list expression2;
         expression2.push_back(make_shared<line>(fake_origin()));
 
         substitution sub(fake_origin(), false, move(expression1));

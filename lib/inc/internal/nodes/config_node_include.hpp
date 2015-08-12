@@ -11,7 +11,7 @@ namespace hocon {
         config_node_include(std::vector<std::unique_ptr<abstract_config_node>> children,
                             config_include_kind kind);
 
-        std::vector<std::shared_ptr<token>> get_tokens() const override;
+        token_list get_tokens() const override;
 
         std::vector<std::unique_ptr<abstract_config_node>> const& children() const;
         config_include_kind kind() const;

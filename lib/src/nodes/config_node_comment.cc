@@ -5,7 +5,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_comment::config_node_comment(shared_ptr<token> comment) :
+    config_node_comment::config_node_comment(shared_token comment) :
             config_node_single_token(move(comment)) { }
 
     string config_node_comment::comment_text() const {

@@ -27,7 +27,7 @@ namespace hocon {
 
     std::shared_ptr<value> null_token();
 
-    std::shared_ptr<substitution> substitution_token(std::shared_ptr<token> inner, bool optional);
+    std::shared_ptr<substitution> substitution_token(shared_token inner, bool optional);
 
     std::shared_ptr<line> line_token(int line_number);
 

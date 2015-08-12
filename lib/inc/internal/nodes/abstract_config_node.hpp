@@ -10,7 +10,7 @@ namespace hocon {
     public:
         std::string render() const;
         bool operator==(const abstract_config_node &other) const;
-        virtual std::vector<std::shared_ptr<token>> get_tokens() const = 0;
+        virtual token_list get_tokens() const = 0;
     };
 
 }  // namespace hocon

@@ -29,8 +29,8 @@ namespace hocon {
         return make_shared<value>(unique_ptr<config_null>(new config_null(fake_origin())));
     }
 
-    shared_ptr<substitution> substitution_token(shared_ptr<token> inner, bool optional) {
-        return make_shared<substitution>(fake_origin(), optional, vector<shared_ptr<token>> { inner });
+    shared_ptr<substitution> substitution_token(shared_token inner, bool optional) {
+        return make_shared<substitution>(fake_origin(), optional, token_list { inner });
     }
 
     shared_ptr<line> line_token(int line_number) {

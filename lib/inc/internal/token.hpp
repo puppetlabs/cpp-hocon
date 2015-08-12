@@ -6,6 +6,7 @@
 
 namespace hocon {
 
+
     enum class token_type {
         START, END, COMMA, EQUALS, COLON, OPEN_CURLY, CLOSE_CURLY, OPEN_SQUARE, CLOSE_SQUARE,
         VALUE, NEWLINE, UNQUOTED_TEXT, IGNORED_WHITESPACE, SUBSTITUTION, PROBLEM, COMMENT, PLUS_EQUALS
@@ -38,5 +39,8 @@ namespace hocon {
         std::string _token_text;
         std::string _debug_string;
     };
+
+    using token_list = std::vector<std::shared_ptr<token>>;
+    using shared_token = std::shared_ptr<token>;
 
 }  // namespace hocon
