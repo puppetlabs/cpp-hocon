@@ -2,5 +2,6 @@ require 'rake/clean'
 
 desc 'Run acceptance tests'
 task :acceptance do
-  puts 'success'
+  # TODO: create your real acceptance tests and update this
+  system("beaker --tests tests/fake.rb")
 end

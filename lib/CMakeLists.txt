@@ -1,6 +1,5 @@
-# TODO:
-#  include(leatherman)
-#  get_commit_string(PROJECT_COMMIT)
+include(leatherman)
+get_commit_string(PROJECT_COMMIT)
 
 # Generate a file containing the above version numbers.
 configure_file("version.h.in"   "${CMAKE_CURRENT_LIST_DIR}/inc/version.h")
