@@ -15,7 +15,7 @@ namespace hocon {
         token_list get_tokens() const override;
 
     private:
-        shared_token _value;
+        shared_token _token;
     };
 
 }  // namespace hocon

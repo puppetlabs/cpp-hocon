@@ -9,7 +9,7 @@ namespace hocon {
             config_node_single_token(move(comment)) { }
 
     string config_node_comment::comment_text() const {
-        return dynamic_pointer_cast<comment>(get_token())->text();
+        return dynamic_pointer_cast<const comment>(get_token())->text();
     }
 
 }  // namespace hocon

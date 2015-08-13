@@ -12,9 +12,7 @@ namespace hocon {
     token_list config_node_include::get_tokens() const {
         token_list tokens;
         for (auto&& node : _children) {
-            for (auto&& token : node->get_tokens()) {
-                tokens.push_back(token);
-            }
+            tokens.insert(tokens.end(), node->get_tokens().begin(), node->get_tokens().end());
         }
         return tokens;
     }
@@ -29,8 +27,7 @@ namespace hocon {
 
     string config_node_include::name() const {
         for (auto&& node : _children) {
-            config_node_simple_value* simple = dynamic_cast<config_node_simple_value*>(node.get());
-            if (simple) {
+            if (config_node_simple_value* simple = dynamic_cast<config_node_simple_value*>(node.get())) {
                 return simple->get_value()->transform_to_string();
             }
         }

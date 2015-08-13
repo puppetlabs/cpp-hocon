@@ -20,6 +20,6 @@ namespace hocon {
         std::shared_ptr<simple_config_origin> _origin;
     };
 
-    using shared_value = std::shared_ptr<abstract_config_value>;
+    using shared_value = std::shared_ptr<const abstract_config_value>;
 
 }  // namespace hocon

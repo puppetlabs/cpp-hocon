@@ -7,30 +7,27 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_simple_value::config_node_simple_value(shared_token value) : _value(move(value)) { }
+    config_node_simple_value::config_node_simple_value(shared_token value) : _token(move(value)) { }
 
     shared_token config_node_simple_value::get_token() const {
-        return _value;
+        return _token;
     }
 
     token_list config_node_simple_value::get_tokens() const {
-        return token_list { _value };
+        return token_list { _token };
     }
 
     shared_value config_node_simple_value::get_value() const {
-        shared_ptr<value> value_token = dynamic_pointer_cast<value>(_value);
-        if (value_token) {
+        if (auto value_token = dynamic_pointer_cast<const value>(_token)) {
             return value_token->get_value();
         }
 
-        shared_ptr<unquoted_text> text_token = dynamic_pointer_cast<unquoted_text>(_value);
-        if (text_token) {
+        if (auto text_token = dynamic_pointer_cast<const unquoted_text>(_token)) {
             return make_shared<config_string>(
                     text_token->origin(), text_token->token_text(), config_string_type::UNQUOTED);
         }
 
-        shared_ptr<substitution> sub_token = dynamic_pointer_cast<substitution>(_value);
-        if(sub_token) {
+        if (auto sub_token = dynamic_pointer_cast<const substitution>(_token)) {
             token_list expression = sub_token->expression();
                // TODO: this will require Path and ConfigReference to be ported to handle properly
         }
