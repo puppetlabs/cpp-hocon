@@ -13,12 +13,12 @@ namespace hocon {
         std::string to_string() const override;
         std::shared_ptr<simple_config_origin> const& origin() const override;
 
-        std::unique_ptr<abstract_config_value> const& get_value() const;
+        shared_value get_value() const;
 
         bool operator==(const token& other) const override;
 
     private:
-        std::unique_ptr<abstract_config_value> _value;
+        shared_value _value;
     };
 
     class line : public token {
@@ -113,7 +113,7 @@ namespace hocon {
     };
 
     /** Free functions */
-    bool isValueWithType(token t, config_value_type type);
+    bool is_value_with_type(token t, config_value_type type);
 
     class tokens {
     public:

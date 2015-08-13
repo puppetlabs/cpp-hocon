@@ -10,7 +10,7 @@ namespace hocon {
         config_node_simple_value(shared_token value);
 
         shared_token get_token() const;
-        std::unique_ptr<abstract_config_value> const& get_value() const;
+        shared_value get_value() const;
 
         token_list get_tokens() const override;
 

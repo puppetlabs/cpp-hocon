@@ -20,7 +20,7 @@ namespace hocon {
         return _value->origin();
     }
 
-    unique_ptr<abstract_config_value> const& value::get_value() const {
+    shared_value value::get_value() const {
         return _value;
     }
 
