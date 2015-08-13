@@ -54,6 +54,6 @@ endif()
 
 get_filename_component(LIBPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} NAME)
 install(TARGETS lib${PROJECT_NAME} DESTINATION ${LIBPATH})
-install(DIRECTORY inc/${PROJECT_NAME} DESTINATION include)
+install(DIRECTORY inc/hocon DESTINATION include)
 
 add_subdirectory(tests)
