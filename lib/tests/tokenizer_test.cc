@@ -6,18 +6,18 @@
 using namespace std;
 using namespace hocon;
 
-vector<shared_ptr<token>> tokenize_as_list(string const& source) {
+token_list tokenize_as_list(string const& source) {
     token_iterator iter(*fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
     // get all the tokens from the string and put them in a vector
-    vector<shared_ptr<token>> tokens;
+    token_list tokens;
     while(iter.has_next()) {
         tokens.push_back(iter.next());
     }
     return tokens;
 }
 
-void tokenizer_test(string source, vector<shared_ptr<token>> expected) {
-    vector<shared_ptr<token>> result = tokenize_as_list(source);
+void tokenizer_test(string source, token_list expected) {
+    token_list result = tokenize_as_list(source);
     for(int i = 0; i < (int)expected.size(); i++) {
         if(!(*expected[i] == *result[i])) {
             // Debugging info
@@ -31,7 +31,7 @@ void tokenizer_test(string source, vector<shared_ptr<token>> expected) {
 TEST_CASE("tokenize basic strings", "[tokenizer]") {
     SECTION("tokenize empty string") {
         string source = "";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 tokens::end_token()
         };
@@ -40,7 +40,7 @@ TEST_CASE("tokenize basic strings", "[tokenizer]") {
 
     SECTION("tokenize newlines") {
         string source = "\n\n";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 make_shared<line>(fake_origin()->with_line_number(1)),
                 make_shared<line>(fake_origin()->with_line_number(2)),
@@ -53,7 +53,7 @@ TEST_CASE("tokenize basic strings", "[tokenizer]") {
 TEST_CASE("tokenize all types", "[tokenizer]") {
     SECTION("tokenize all types with no spaces") {
         string source = ",:=}{][+=\"foo\"\"\"\"bar\"\"\"true3.14false42null${a.b}${?x.y}${\"c.d\"}\n";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 tokens::comma_token(),
                 tokens::colon_token(),
@@ -81,7 +81,7 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
 
     SECTION("tokenize all types with spaces") {
         string source = " , : = } { ] [ += \"foo\" \"\"\"bar\"\"\" 42 true 3.14 false null ${a.b} ${?x.y} ${\"c.d\"} \n ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token(" "),
                 tokens::comma_token(),
@@ -129,7 +129,7 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
 
     SECTION("tokenize all types with multiple spaces") {
         string source = "   ,   :   =   }   {   ]   [   +=   \"foo\"   \"\"\"bar\"\"\"   42   true   3.14   false   null   ${a.b}   ${?x.y}   ${\"c.d\"}  \n   ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("   "),
                 tokens::comma_token(),
@@ -179,7 +179,7 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
 TEST_CASE("unquoted text and booleans", "[tokenizer]") {
     SECTION("true and unquoted text") {
         string source = "truefoo";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 bool_token(true),
                 unquoted_text_token("foo"),
@@ -190,7 +190,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 
     SECTION("false and unquoted text") {
         string source = "falsefoo";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 bool_token(false),
                 unquoted_text_token("foo"),
@@ -201,7 +201,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 
     SECTION("null and unquoted text") {
         string source = "nullfoo";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 null_token(),
                 unquoted_text_token("foo"),
@@ -212,7 +212,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 
     SECTION("unquoted text containing true") {
         string source = "footrue";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 unquoted_text_token("footrue"),
                 tokens::end_token()
@@ -222,7 +222,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 
     SECTION("unquoted text containing space true") {
         string source = "foo true";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 unquoted_text_token("foo"),
                 unquoted_text_token(" "),
@@ -234,7 +234,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 
     SECTION("true and space and unquoted text") {
         string source = "true foo";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 bool_token(true),
                 unquoted_text_token(" "),
@@ -248,7 +248,7 @@ TEST_CASE("unquoted text and booleans", "[tokenizer]") {
 TEST_CASE("unquoted strings with special cases", "[tokenizer]") {
     SECTION("unquoted text containing slash") {
         string source = "a/b/c";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 unquoted_text_token("a/b/c"),
                 tokens::end_token()
@@ -276,7 +276,7 @@ TEST_CASE("unquoted strings with special cases", "[tokenizer]") {
 
     SECTION("unquoted text discards external spaces") {
         string source = "   foo   \n";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("   "),
                 unquoted_text_token("foo"),
@@ -289,7 +289,7 @@ TEST_CASE("unquoted strings with special cases", "[tokenizer]") {
 
     SECTION("unquoted text keeps internal spaces") {
         string source = "    foo  bar baz   \n";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("    "),
                 unquoted_text_token("foo"),
@@ -306,7 +306,7 @@ TEST_CASE("unquoted strings with special cases", "[tokenizer]") {
 
     SECTION("mix quoted and unquoted") {
         string source = "   foo\"bar\"baz   \n";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("   "),
                 unquoted_text_token("foo"),
@@ -323,7 +323,7 @@ TEST_CASE("unquoted strings with special cases", "[tokenizer]") {
 TEST_CASE("escape sequence", "[tokenizer]") {
     SECTION("unicode infinity symbol") {
         string source = "\"\\u221E\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token(u8"\u221E"),
                 tokens::end_token()
@@ -333,7 +333,7 @@ TEST_CASE("escape sequence", "[tokenizer]") {
 
     SECTION("null byte") {
         string source = " \"\\u0000\" ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token(" "),
                 string_token(""),
@@ -345,7 +345,7 @@ TEST_CASE("escape sequence", "[tokenizer]") {
 
     SECTION("various escape codes") {
         string source = " \"\\\"\\\\/\\b\\f\\n\\r\\t\" ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token(" "),
                 string_token("\"\\/\b\f\n\r\t"),
@@ -357,7 +357,7 @@ TEST_CASE("escape sequence", "[tokenizer]") {
 
     SECTION("unicode F") {
         string source = " \"\\u0046\" ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token(" "),
                 string_token("F"),
@@ -369,7 +369,7 @@ TEST_CASE("escape sequence", "[tokenizer]") {
 
     SECTION("two unicode F's") {
         string source = " \"\\u0046\\u0046\" ";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token(" "),
                 string_token("FF"),
@@ -383,7 +383,7 @@ TEST_CASE("escape sequence", "[tokenizer]") {
 TEST_CASE("triple quoted strings") {
     SECTION("trivial triple quoted string") {
         string source = "\"\"\"bar\"\"\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("bar"),
                 tokens::end_token()
@@ -393,7 +393,7 @@ TEST_CASE("triple quoted strings") {
 
     SECTION("trailing quotes in triple quoted string") {
         string source = "\"\"\"\"\"\"\"\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("\"\""),
                 tokens::end_token()
@@ -403,7 +403,7 @@ TEST_CASE("triple quoted strings") {
 
     SECTION("no esacpe in triple quoted strings") {
         string source = "\"\"\"\\n\"\"\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("\\n"),
                 tokens::end_token()
@@ -413,7 +413,7 @@ TEST_CASE("triple quoted strings") {
 
     SECTION("new line in triple quoted string") {
         string source = "\"\"\"foo\nbar\"\"\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("foo\nbar"),
                 tokens::end_token()
@@ -425,7 +425,7 @@ TEST_CASE("triple quoted strings") {
 TEST_CASE("comments", "[tokenizer]") {
     SECTION("double slash comment") {
         string source = "//";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 double_slash_comment_token(""),
                 tokens::end_token()
@@ -435,7 +435,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash comment") {
         string source = "#";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 hash_comment_token(""),
                 tokens::end_token()
@@ -445,7 +445,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("two slashes in quoted string is string") {
         string source = "\"//bar\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("//bar"),
                 tokens::end_token()
@@ -455,7 +455,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash in quoted string is string") {
         string source = "\"#bar\"";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 string_token("#bar"),
                 tokens::end_token()
@@ -465,7 +465,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("slash comment after unquoted text") {
         string source = "bar//comment";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 unquoted_text_token("bar"),
                 double_slash_comment_token("comment"),
@@ -476,7 +476,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash comment after unquoted text") {
         string source = "bar#comment";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 unquoted_text_token("bar"),
                 hash_comment_token("comment"),
@@ -487,7 +487,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("slash comment after int") {
         string source = "10//comment";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 int_token(10, "10"),
                 double_slash_comment_token("comment"),
@@ -498,7 +498,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash comment after int") {
         string source = "10#comment";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 int_token(10, "10"),
                 hash_comment_token("comment"),
@@ -509,7 +509,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("slash comment with newline") {
         string source = "10//comment\n12";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 int_token(10, "10"),
                 double_slash_comment_token("comment"),
@@ -522,7 +522,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash comment with newline") {
         string source = "10#comment\n12";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 int_token(10, "10"),
                 hash_comment_token("comment"),
@@ -535,7 +535,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("slash comment on multiples lines with whitespace") {
         string source = "   //comment\r\n   //comment2   \n//comment3   \n\n//comment4";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("   "),
                 double_slash_comment_token("comment\r"),
@@ -554,7 +554,7 @@ TEST_CASE("comments", "[tokenizer]") {
 
     SECTION("hash comment on multiples lines with whitespace") {
         string source = "   #comment\r\n   #comment2   \n#comment3   \n\n#comment4";
-        vector<shared_ptr<token>> expected {
+        token_list expected {
                 tokens::start_token(),
                 whitespace_token("   "),
                 hash_comment_token("comment\r"),
@@ -575,7 +575,7 @@ TEST_CASE("comments", "[tokenizer]") {
 TEST_CASE("brackets and braces", "[tokenizer]") {
     SECTION("open curlies") {
         string source = "{{";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::open_curly_token(),
                 tokens::open_curly_token(),
@@ -586,7 +586,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 
     SECTION("close curlies") {
         string source = "}}";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::close_curly_token(),
                 tokens::close_curly_token(),
@@ -597,7 +597,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 
     SECTION("open and close curlies") {
         string source = "{}";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::open_curly_token(),
                 tokens::close_curly_token(),
@@ -608,7 +608,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 
     SECTION("open squares") {
         string source = "[[";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::open_square_token(),
                 tokens::open_square_token(),
@@ -619,7 +619,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 
     SECTION("close curlies") {
         string source = "]]";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::close_square_token(),
                 tokens::close_square_token(),
@@ -630,7 +630,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 
     SECTION("open and close curlies") {
         string source = "[]";
-        vector<shared_ptr<token>> expected{
+        token_list expected{
                 tokens::start_token(),
                 tokens::open_square_token(),
                 tokens::close_square_token(),

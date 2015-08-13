@@ -25,22 +25,22 @@ namespace hocon {
         token_iterator(simple_config_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);
 
         bool has_next();
-        std::shared_ptr<token> next();
+        shared_token next();
 
     private:
         class whitespace_saver {
         public:
             whitespace_saver();
             void add(char c);
-            std::shared_ptr<token> check(token_type type, simple_config_origin const& base_origin,
+            shared_token check(token_type type, simple_config_origin const& base_origin,
                                          int line_number);
 
         private:
-            std::shared_ptr<token> next_is_not_simple_value(simple_config_origin const& base_origin,
+            shared_token next_is_not_simple_value(simple_config_origin const& base_origin,
                                                             int line_number);
-            std::shared_ptr<token> next_is_simple_value(simple_config_origin const& origin,
+            shared_token next_is_simple_value(simple_config_origin const& origin,
                                                         int line_number);
-            std::shared_ptr<token> create_whitespace_token(simple_config_origin const& base_origin,
+            shared_token create_whitespace_token(simple_config_origin const& base_origin,
                                                            int line_number);
 
             std::string _whitespace;
@@ -50,7 +50,7 @@ namespace hocon {
         char next_char_raw();
         void put_back(char c);
         bool start_of_comment(char c);
-        std::shared_ptr<token> pull_comment(char first_char);
+        shared_token pull_comment(char first_char);
 
         /** Get next char, skipping newline whitespace */
         char next_char_after_whitespace(whitespace_saver& saver);
@@ -61,9 +61,9 @@ namespace hocon {
          * that parses as JSON is treated the JSON way and otherwise
          * we assume it's a string and let the parser sort it out.
          */
-        std::shared_ptr<token> pull_unquoted_text();
+        shared_token pull_unquoted_text();
 
-        std::shared_ptr<token> pull_number(char first_char);
+        shared_token pull_number(char first_char);
 
         /**
          * @param parsed The string with the escape sequence parsed.
@@ -73,11 +73,11 @@ namespace hocon {
 
         void append_triple_quoted_string(std::string& parsed, std::string& original);
 
-        std::shared_ptr<token> pull_quoted_string();
+        shared_token pull_quoted_string();
 
-        std::shared_ptr<token> const& pull_plus_equals();
-        std::shared_ptr<token> pull_substitution();
-        std::shared_ptr<token> pull_next_token(whitespace_saver& saver);
+        shared_token const& pull_plus_equals();
+        shared_token pull_substitution();
+        shared_token pull_next_token(whitespace_saver& saver);
         void queue_next_token();
 
         static bool is_simple_value(token_type type);
@@ -91,7 +91,7 @@ namespace hocon {
         bool _allow_comments;
         int _line_number;
         std::shared_ptr<simple_config_origin> _line_origin;
-        std::queue<std::shared_ptr<token>> _tokens;
+        std::queue<shared_token> _tokens;
         whitespace_saver _whitespace_saver;
     };
 

@@ -20,6 +20,10 @@ namespace hocon {
         return _value->origin();
     }
 
+    shared_value value::get_value() const {
+        return _value;
+    }
+
     bool value::operator==(const token& other) const {
         return other.get_token_type() == token_type::VALUE &&
                other.to_string() == to_string();
@@ -129,14 +133,14 @@ namespace hocon {
 
     /** Substitution token */
     substitution::substitution(shared_ptr<simple_config_origin> origin, bool optional,
-        vector<shared_ptr<token>> expression) : token(token_type::SUBSTITUTION, move(origin)), _optional(optional),
+        token_list expression) : token(token_type::SUBSTITUTION, move(origin)), _optional(optional),
         _expression(move(expression)) { }
 
     bool substitution::optional() const {
         return _optional;
     }
 
-    vector<shared_ptr<token>> const& substitution::expression() const {
+    token_list const& substitution::expression() const {
         return _expression;
     }
 
@@ -159,62 +163,62 @@ namespace hocon {
     }
 
     /** Singleton tokens */
-    shared_ptr<token> const& tokens::start_token() {
-        static shared_ptr<token> _start = make_shared<token>(
+    shared_token const& tokens::start_token() {
+        static shared_token _start = make_shared<token>(
                 token_type::START, nullptr, "start of file", "");
         return _start;
     }
 
-    shared_ptr<token> const& tokens::end_token() {
-        static shared_ptr<token> _end = make_shared<token>(
+    shared_token const& tokens::end_token() {
+        static shared_token _end = make_shared<token>(
                 token_type::END, nullptr, "start of file", "");
         return _end;
     }
 
-    shared_ptr<token> const& tokens::comma_token() {
-        static shared_ptr<token> _comma = make_shared<token>(
+    shared_token const& tokens::comma_token() {
+        static shared_token _comma = make_shared<token>(
                 token_type::COMMA, nullptr, "','", ",");
         return _comma;
     }
 
-    shared_ptr<token> const& tokens::equals_token() {
-        static shared_ptr<token> _equals = make_shared<token>(
+    shared_token const& tokens::equals_token() {
+        static shared_token _equals = make_shared<token>(
                 token_type::EQUALS, nullptr, "'='", "=");
         return _equals;
     }
 
-    shared_ptr<token> const& tokens::colon_token() {
-        static shared_ptr<token> _colon = make_shared<token>(
+    shared_token const& tokens::colon_token() {
+        static shared_token _colon = make_shared<token>(
                 token_type::COLON, nullptr, "':'", ":");
         return _colon;
     }
 
-    shared_ptr<token> const& tokens::open_curly_token() {
-        static shared_ptr<token> _open_curly = make_shared<token>(
+    shared_token const& tokens::open_curly_token() {
+        static shared_token _open_curly = make_shared<token>(
                 token_type::OPEN_CURLY, nullptr, "'{'", "{");
         return _open_curly;
     }
 
-    shared_ptr<token> const& tokens::close_curly_token() {
-        static shared_ptr<token> _close_curly = make_shared<token>(
+    shared_token const& tokens::close_curly_token() {
+        static shared_token _close_curly = make_shared<token>(
                 token_type::CLOSE_CURLY, nullptr, "'}'", "}");
         return _close_curly;
     }
 
-    shared_ptr<token> const& tokens::open_square_token() {
-        static shared_ptr<token> _open_square = make_shared<token>(
+    shared_token const& tokens::open_square_token() {
+        static shared_token _open_square = make_shared<token>(
                 token_type::OPEN_SQUARE, nullptr, "'['", "[");
         return _open_square;
     }
 
-    shared_ptr<token> const& tokens::close_square_token() {
-        static shared_ptr<token> _close_square = make_shared<token>(
+    shared_token const& tokens::close_square_token() {
+        static shared_token _close_square = make_shared<token>(
                 token_type::CLOSE_SQUARE, nullptr, "']'", "]");
         return _close_square;
     }
 
-    shared_ptr<token> const& tokens::plus_equals_token() {
-        static shared_ptr<token> _plus_equals = make_shared<token>(
+    shared_token const& tokens::plus_equals_token() {
+        static shared_token _plus_equals = make_shared<token>(
                 token_type::PLUS_EQUALS, nullptr, "'+='", "+=");
         return _plus_equals;
     }

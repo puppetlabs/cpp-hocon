@@ -13,10 +13,12 @@ namespace hocon {
         std::string to_string() const override;
         std::shared_ptr<simple_config_origin> const& origin() const override;
 
+        shared_value get_value() const;
+
         bool operator==(const token& other) const override;
 
     private:
-        std::unique_ptr<abstract_config_value> _value;
+        shared_value _value;
     };
 
     class line : public token {
@@ -95,10 +97,10 @@ namespace hocon {
     class substitution : public token {
     public:
         substitution(std::shared_ptr<simple_config_origin> origin,
-                     bool optional, std::vector<std::shared_ptr<token>> expression);
+                     bool optional, token_list expression);
 
         bool optional() const;
-        std::vector<std::shared_ptr<token>> const& expression() const;
+        token_list const& expression() const;
 
         std::string token_text() const override;
         std::string to_string() const override;
@@ -107,25 +109,25 @@ namespace hocon {
 
     private:
         bool _optional;
-        std::vector<std::shared_ptr<token>> _expression;
+        token_list _expression;
     };
 
     /** Free functions */
-    bool isValueWithType(token t, config_value_type type);
+    bool is_value_with_type(token t, config_value_type type);
 
     class tokens {
     public:
         /** Singleton tokens */
-        static std::shared_ptr<token> const& start_token();
-        static std::shared_ptr<token> const& end_token();
-        static std::shared_ptr<token> const& comma_token();
-        static std::shared_ptr<token> const& equals_token();
-        static std::shared_ptr<token> const& colon_token();
-        static std::shared_ptr<token> const& open_curly_token();
-        static std::shared_ptr<token> const& close_curly_token();
-        static std::shared_ptr<token> const& open_square_token();
-        static std::shared_ptr<token> const& close_square_token();
-        static std::shared_ptr<token> const& plus_equals_token();
+        static shared_token const& start_token();
+        static shared_token const& end_token();
+        static shared_token const& comma_token();
+        static shared_token const& equals_token();
+        static shared_token const& colon_token();
+        static shared_token const& open_curly_token();
+        static shared_token const& close_curly_token();
+        static shared_token const& open_square_token();
+        static shared_token const& close_square_token();
+        static shared_token const& plus_equals_token();
     };
 
 }  // namespace hocon

@@ -12,7 +12,6 @@ namespace hocon {
         abstract_config_value(std::shared_ptr<simple_config_origin> origin);
 
         virtual std::string transform_to_string() const;
-
         virtual resolved_status resolved() const;
 
         std::shared_ptr<simple_config_origin> const& origin() const;
@@ -20,5 +19,7 @@ namespace hocon {
     private:
         std::shared_ptr<simple_config_origin> _origin;
     };
+
+    using shared_value = std::shared_ptr<const abstract_config_value>;
 
 }  // namespace hocon

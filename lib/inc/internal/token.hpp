@@ -39,4 +39,7 @@ namespace hocon {
         std::string _debug_string;
     };
 
+    using shared_token = std::shared_ptr<const token>;
+    using token_list = std::vector<shared_token>;
+
 }  // namespace hocon
