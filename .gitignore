@@ -11,3 +11,7 @@ Gemfile.lock
 /release*/
 /.idea/
 /build/
+acceptance/.bundle/
+acceptance/vendor/
+acceptance/junit/
+acceptance/log/
