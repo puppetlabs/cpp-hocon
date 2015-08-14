@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 Fixed minor bugs and irritations.
 
 ### Features
-- Bumped Leatherman submodule from bc900e3d494a3932f97e90b8c6d5916690295a24 to b394f22786de51715f9e754f8dc8ba80705e712b.
+- Bumped Leatherman submodule from bc900e3d494a3932f97e90b8c6d5916690295a24 to a1627940f269b65537ee1b5f87c0624866218fd3.
 - Added specific git commit to @PROJECT_NAME_UPPER@_VERSION_WITH_COMMIT
 - Split `cpplint` and `cppcheck` into their own Jenkins CI jobs.
 
