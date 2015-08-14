@@ -22,6 +22,10 @@ set(PROJECT_SOURCES
     src/nodes/config_node_path.cc
     src/nodes/config_node_complex_value.cc
     src/nodes/config_node_field.cc
+    src/nodes/config_node_object.cc
+    src/nodes/config_node_array.cc
+    src/nodes/config_node_concatenation.cc
+    src/nodes/config_node_root.cc
     src/values/abstract_config_value.cc
     src/values/config_boolean.cc
     src/values/config_number.cc

@@ -138,27 +138,36 @@ namespace hocon {
     }
 
     token_list path_parser::split_token_on_period(shared_token t, config_syntax flavor) {
-        const string token_text = t->token_text();
+        string token_text = t->token_text();
         if (token_text == ".") {
             return token_list { t };
         }
 
-        auto token_it = boost::make_iterator_range(make_split_iterator(
-                token_text, token_finder(is_any_of("."))), split_iterator<string::const_iterator>());
+        bool ends_in_period = token_text.back() == '.';
+
+        // The split iterator tacks an empty string onto the end of the iterator if the string
+        // ends in the split character; so we need to remove trailing '.'
+        boost::trim_right_if(token_text, is_any_of("."));
+
+        vector<string> token_it;
+        boost::split(token_it, token_text, is_any_of("."));
 
         token_list split_tokens;
         for (auto& s : token_it) {
-            string token_string { s.begin(), s.end() };
+            // string token_string { s.begin(), s.end() };
             if (flavor == config_syntax::CONF) {
-                split_tokens.push_back(make_shared<unquoted_text>(t->origin(), token_text));
+                split_tokens.push_back(make_shared<unquoted_text>(t->origin(), move(s)));
             } else {
                 split_tokens.push_back(make_shared<value>(
                         unique_ptr<config_string>(new config_string(
-                                t->origin(), "\"" + token_string + "\"", config_string_type::UNQUOTED))));
+                                t->origin(), "\"" + s + "\"", config_string_type::UNQUOTED))));
             }
             split_tokens.push_back(make_shared<unquoted_text>(t->origin(), "."));
         }
-        if (token_text[token_text.length() - 1] != '.') {
+
+        // If the token text does not end in a period, we have reached the end of a path,
+        // and we want to treat the last element differently
+        if (!ends_in_period) {
             split_tokens.pop_back();
         }
         return split_tokens;

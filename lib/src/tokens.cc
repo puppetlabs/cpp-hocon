@@ -167,61 +167,61 @@ namespace hocon {
     /** Singleton tokens */
     shared_token const& tokens::start_token() {
         static shared_token _start = make_shared<token>(
-                token_type::START, nullptr, "start of file", "");
+                token_type::START, nullptr, "", "start of file");
         return _start;
     }
 
     shared_token const& tokens::end_token() {
         static shared_token _end = make_shared<token>(
-                token_type::END, nullptr, "start of file", "");
+                token_type::END, nullptr, "", "end of file");
         return _end;
     }
 
     shared_token const& tokens::comma_token() {
         static shared_token _comma = make_shared<token>(
-                token_type::COMMA, nullptr, "','", ",");
+                token_type::COMMA, nullptr, ",", "','");
         return _comma;
     }
 
     shared_token const& tokens::equals_token() {
         static shared_token _equals = make_shared<token>(
-                token_type::EQUALS, nullptr, "'='", "=");
+                token_type::EQUALS, nullptr, "=", "'='");
         return _equals;
     }
 
     shared_token const& tokens::colon_token() {
         static shared_token _colon = make_shared<token>(
-                token_type::COLON, nullptr, "':'", ":");
+                token_type::COLON, nullptr, ":", "':'");
         return _colon;
     }
 
     shared_token const& tokens::open_curly_token() {
         static shared_token _open_curly = make_shared<token>(
-                token_type::OPEN_CURLY, nullptr, "'{'", "{");
+                token_type::OPEN_CURLY, nullptr, "{", "'{'");
         return _open_curly;
     }
 
     shared_token const& tokens::close_curly_token() {
         static shared_token _close_curly = make_shared<token>(
-                token_type::CLOSE_CURLY, nullptr, "'}'", "}");
+                token_type::CLOSE_CURLY, nullptr, "}", "'}'");
         return _close_curly;
     }
 
     shared_token const& tokens::open_square_token() {
         static shared_token _open_square = make_shared<token>(
-                token_type::OPEN_SQUARE, nullptr, "'['", "[");
+                token_type::OPEN_SQUARE, nullptr, "[", "'['");
         return _open_square;
     }
 
     shared_token const& tokens::close_square_token() {
         static shared_token _close_square = make_shared<token>(
-                token_type::CLOSE_SQUARE, nullptr, "']'", "]");
+                token_type::CLOSE_SQUARE, nullptr, "]", "']'");
         return _close_square;
     }
 
     shared_token const& tokens::plus_equals_token() {
         static shared_token _plus_equals = make_shared<token>(
-                token_type::PLUS_EQUALS, nullptr, "'+='", "+=");
+                token_type::PLUS_EQUALS, nullptr, "+=", "'+='");
         return _plus_equals;
     }
 

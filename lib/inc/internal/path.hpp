@@ -26,6 +26,7 @@ namespace hocon {
         path parent() const;
 
         bool has_remainder() const;
+        bool empty() const;
         shared_string last() const;
         path prepend(path prefix);
         int length() const;

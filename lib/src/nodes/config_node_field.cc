@@ -3,61 +3,59 @@
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/tokens.hpp>
 #include <internal/nodes/config_node_comment.hpp>
+#include <internal/nodes/config_node_path.hpp>
 
 using namespace std;
 
 namespace hocon {
 
-    config_node_field::config_node_field(vector<shared_ptr<abstract_config_node>> children) :
+    config_node_field::config_node_field(shared_node_list children) :
             _children(move(children)) { }
 
-    vector<shared_ptr<token>> config_node_field::get_tokens() const {
-        vector<shared_ptr<token>> tokens;
+    token_list config_node_field::get_tokens() const {
+        token_list tokens;
+        int i = 0;
         for (auto&& node : _children) {
-            for (auto&& token : node->get_tokens()) {
-                tokens.push_back(token);
-            }
+            i++;
+            token_list node_tokens = node->get_tokens();
+            tokens.insert(tokens.end(), node_tokens.begin(), node_tokens.end());
         }
         return tokens;
     }
 
-    shared_ptr<config_node_field> config_node_field::replace_value(shared_ptr<abstract_config_node_value> new_value) {
-        vector<shared_ptr<abstract_config_node>> children_copy;
-        bool replaced = false;
-        for (auto&& child : _children) {
-            if(dynamic_pointer_cast<abstract_config_node_value>(child)) {
-                children_copy.push_back(new_value);
-                replaced = true;
-            } else {
-                children_copy.push_back(child);
+    shared_ptr<config_node_field> config_node_field::replace_value(shared_node_value new_value) {
+        shared_node_list children_copy = _children;
+        for (size_t i = 0; i < children_copy.size(); i++) {
+            if (dynamic_pointer_cast<abstract_config_node_value>(children_copy[i])) {
+                children_copy[i] = new_value;
+                return make_shared<config_node_field>(move(children_copy));
             }
         }
-        if (replaced) {
-            return make_shared<config_node_field>(children_copy);
-        } else {
-            throw config_exception("Field node doesn't have a value.");
-        }
+        throw config_exception("Field doesn't have a value.");
     }
 
-    shared_ptr<abstract_config_node_value> config_node_field::get_value() const {
+    shared_node_value config_node_field::get_value() const {
         for (auto&& child : _children) {
-            shared_ptr<abstract_config_node_value> value =
-                    dynamic_pointer_cast<abstract_config_node_value>(child);
-            if(value) {
+            if (auto value = dynamic_pointer_cast<abstract_config_node_value>(child)) {
                 return value;
             }
         }
         throw config_exception("Field node doesn't have a value.");
     }
 
-    // TODO: Implement path() once we have config_node_path
+    shared_ptr<config_node_path> config_node_field::path() const {
+        for (auto&& node : _children) {
+            if (auto path_node = dynamic_pointer_cast<config_node_path>(node)) {
+                return path_node;
+            }
+        }
+        throw config_exception("Field node does not have a path");
+    }
 
-    shared_ptr<token> config_node_field::separator() const {
+    shared_token config_node_field::separator() const {
         for (auto&& child : _children) {
-            shared_ptr<config_node_single_token> single_token =
-                    dynamic_pointer_cast<config_node_single_token>(child);
-            if (single_token) {
-                shared_ptr<token> t = single_token->get_token();
+            if (auto single_token = dynamic_pointer_cast<config_node_single_token>(child)) {
+                shared_token t = single_token->get_token();
                 if (t == tokens::plus_equals_token() || t == tokens::colon_token() || t == tokens::equals_token()) {
                     return t;
                 }
