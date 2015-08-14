@@ -17,7 +17,7 @@ namespace po = boost::program_options;
 void help(po::options_description& desc)
 {
     boost::nowide::cout <<
-        "Synopsys\n"
+        "Synopsis\n"
         "========\n"
         "\n"
         "Example command-line utility.\n"
