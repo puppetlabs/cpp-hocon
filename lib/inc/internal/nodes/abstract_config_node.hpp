@@ -1,6 +1,6 @@
 #pragma once
 
-#include <parser/config_node.hpp>
+#include <hocon/parser/config_node.hpp>
 #include <internal/token.hpp>
 #include <vector>
 
