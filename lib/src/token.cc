@@ -8,7 +8,7 @@ namespace hocon {
     unsupported_exception::unsupported_exception(string const& message) :
         runtime_error(message) { }
 
-    token::token(token_type type, shared_ptr<simple_config_origin> origin, string token_text, string debug_string) :
+    token::token(token_type type, shared_origin origin, string token_text, string debug_string) :
         _token_type(type), _origin(move(origin)), _token_text(move(token_text)),
         _debug_string(move(debug_string)) { }
 
@@ -33,7 +33,7 @@ namespace hocon {
         }
     }
 
-    shared_ptr<simple_config_origin> token::origin() const {
+    shared_origin const& token::origin() const {
         if (_origin) {
             return _origin;
         } else {

@@ -16,11 +16,10 @@
 
 namespace hocon {
 
-    std::shared_ptr<simple_config_origin> fake_origin(std::string description = "fake", int line_number = 0);
+    shared_origin fake_origin(std::string description = "fake", int line_number = 0);
 
     /** Tokens */
-    std::shared_ptr<value> string_token(std::string text,
-                                        config_string_type type = config_string_type::QUOTED);
+    std::shared_ptr<value> string_token(std::string text, config_string_type type = config_string_type::QUOTED);
 
     std::shared_ptr<value> bool_token(bool boolean);
 

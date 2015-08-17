@@ -4,8 +4,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_double::config_double(shared_ptr<simple_config_origin> origin,
-                                 double value, string original_text) :
+    config_double::config_double(shared_origin origin, double value, string original_text) :
             config_number(move(origin), move(original_text)), _value(value) { }
 
     std::string config_double::transform_to_string() const {

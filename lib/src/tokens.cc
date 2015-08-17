@@ -19,7 +19,7 @@ namespace hocon {
         return _value->transform_to_string();
     }
 
-    shared_ptr<simple_config_origin> value::origin() const {
+    shared_origin const& value::origin() const {
         return _value->origin();
     }
 
@@ -33,7 +33,7 @@ namespace hocon {
     }
 
     /** Line token */
-    line::line(shared_ptr<simple_config_origin> origin) :
+    line::line(shared_origin origin) :
             token(token_type::NEWLINE, move(origin), "\n") { }
 
     string line::to_string() const {
@@ -45,7 +45,7 @@ namespace hocon {
     }
 
     /** Unquoted text token */
-    unquoted_text::unquoted_text(shared_ptr<simple_config_origin> origin, string text) :
+    unquoted_text::unquoted_text(shared_origin origin, string text) :
             token(token_type::UNQUOTED_TEXT, move(origin), move(text)) { }
 
     string unquoted_text::to_string() const {
@@ -58,7 +58,7 @@ namespace hocon {
     }
 
     /** Ignored whitespace token */
-    ignored_whitespace::ignored_whitespace(shared_ptr<simple_config_origin> origin, string whitespace) :
+    ignored_whitespace::ignored_whitespace(shared_origin origin, string whitespace) :
         token(token_type::IGNORED_WHITESPACE, move(origin), move(whitespace)) { }
 
     string ignored_whitespace::to_string() const {
@@ -71,7 +71,7 @@ namespace hocon {
     }
 
     /** Problem token */
-    problem::problem(shared_ptr<simple_config_origin> origin, string what, string message,
+    problem::problem(shared_origin origin, string what, string message,
         bool suggest_quotes) : token(token_type::PROBLEM, move(origin)), _what(move(what)),
         _message(move(message)), _suggest_quotes(suggest_quotes) { }
 
@@ -103,7 +103,7 @@ namespace hocon {
     }
 
     /** Comment token */
-    comment::comment(shared_ptr<simple_config_origin> origin, string text) :
+    comment::comment(shared_origin origin, string text) :
         token(token_type::COMMENT, move(origin)), _text(move(text)) { }
 
     string comment::text() const {
@@ -119,7 +119,7 @@ namespace hocon {
     }
 
     /** Double-slash comment token */
-    double_slash_comment::double_slash_comment(shared_ptr<simple_config_origin> origin, string text) :
+    double_slash_comment::double_slash_comment(shared_origin origin, string text) :
         comment(move(origin), move(text)) { }
 
     string double_slash_comment::token_text() const {
@@ -127,7 +127,7 @@ namespace hocon {
     }
 
     /** Hash comment token */
-    hash_comment::hash_comment(shared_ptr<simple_config_origin> origin, string text) :
+    hash_comment::hash_comment(shared_origin origin, string text) :
         comment(move(origin), move(text)) { }
 
     string hash_comment::token_text() const {
@@ -135,7 +135,7 @@ namespace hocon {
     }
 
     /** Substitution token */
-    substitution::substitution(shared_ptr<simple_config_origin> origin, bool optional,
+    substitution::substitution(shared_origin origin, bool optional,
         token_list expression) : token(token_type::SUBSTITUTION, move(origin)), _optional(optional),
         _expression(move(expression)) { }
 

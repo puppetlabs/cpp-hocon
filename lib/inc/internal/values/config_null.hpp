@@ -16,7 +16,7 @@ namespace hocon {
      */
     class config_null : public abstract_config_value {
     public:
-        config_null(std::shared_ptr<simple_config_origin> origin);
+        config_null(shared_origin origin);
 
         config_value_type value_type() const override;
         std::string transform_to_string() const override;

@@ -4,7 +4,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_null::config_null(shared_ptr<simple_config_origin> origin) :
+    config_null::config_null(shared_origin origin) :
             abstract_config_value(move(origin)) { }
 
     config_value_type config_null::value_type() const {

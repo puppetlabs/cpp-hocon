@@ -9,7 +9,7 @@ namespace hocon {
 
     class config_number : public abstract_config_value {
     public:
-        config_number(std::shared_ptr<simple_config_origin> origin,
+        config_number(shared_origin origin,
                       std::string original_text);
 
         std::string transform_to_string() const;
@@ -25,10 +25,10 @@ namespace hocon {
         int int_value_range_checked(std::string const& path);
 
         static std::unique_ptr<config_number> new_number(
-                std::shared_ptr<simple_config_origin> origin, int64_t value, std::string original_text);
+                shared_origin origin, int64_t value, std::string original_text);
 
         static std::unique_ptr<config_number> new_number(
-                std::shared_ptr<simple_config_origin> origin, double value, std::string original_text);
+                shared_origin origin, double value, std::string original_text);
 
     private:
         std::string _original_text;

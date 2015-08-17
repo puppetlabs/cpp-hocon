@@ -7,7 +7,7 @@ using namespace std;
 using namespace hocon;
 
 token_list tokenize_as_list(string const& source) {
-    token_iterator iter(*fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
+    token_iterator iter(fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
     // get all the tokens from the string and put them in a vector
     token_list tokens;
     while (iter.has_next()) {
@@ -641,7 +641,7 @@ TEST_CASE("brackets and braces", "[tokenizer]") {
 }
 
 void test_for_config_error(string source) {
-    token_iterator iter(*fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
+    token_iterator iter(fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
     while (iter.has_next()) {
         iter.next();
     }

@@ -9,8 +9,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_number::config_number(shared_ptr<simple_config_origin> origin,
-                                 string original_text) :
+    config_number::config_number(shared_origin origin, string original_text) :
             abstract_config_value(move(origin)), _original_text(move(original_text)) { }
 
     config_value_type config_number::value_type() const {
@@ -47,7 +46,7 @@ namespace hocon {
     }
 
     unique_ptr<config_number> config_number::new_number(
-            shared_ptr<simple_config_origin> origin, int64_t value, std::string original_text) {
+            shared_origin origin, int64_t value, std::string original_text) {
         if (value >= numeric_limits<int>::min() && value <= numeric_limits<int>::max()) {
             return unique_ptr<config_int>(new config_int(move(origin), static_cast<int>(value),
                                                          move(original_text)));
@@ -57,7 +56,7 @@ namespace hocon {
     }
 
     unique_ptr<config_number> config_number::new_number(
-            shared_ptr<simple_config_origin> origin, double value, std::string original_text) {
+            shared_origin origin, double value, std::string original_text) {
         int64_t as_long = static_cast<int64_t>(value);
         if (as_long == value) {
             return new_number(move(origin), as_long, move(original_text));

@@ -8,7 +8,7 @@ namespace hocon {
 
     class config_string : public abstract_config_value {
     public:
-        config_string(std::shared_ptr<simple_config_origin> origin, std::string text, config_string_type quoted);
+        config_string(shared_origin origin, std::string text, config_string_type quoted);
 
         config_value_type value_type() const override;
         std::string transform_to_string() const override;
