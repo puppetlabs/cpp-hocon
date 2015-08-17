@@ -15,7 +15,7 @@ namespace hocon {
         throw config_exception("Tried to indent a root node");
     }
 
-    shared_ptr<config_node_complex_value> config_node_root::value() {
+    shared_ptr<config_node_complex_value> config_node_root::value() const {
         for (auto&& node : children()) {
             if (auto complex = dynamic_pointer_cast<config_node_complex_value>(node)) {
                 return complex;
@@ -25,7 +25,7 @@ namespace hocon {
     }
 
     shared_ptr<config_node_root> config_node_root::set_value(std::string desired_path, shared_node_value value,
-                                                             config_syntax flavor)
+                                                             config_syntax flavor) const
     {
         shared_node_list children_copy = children();
         for (size_t i = 0; i < children_copy.size(); i++) {
@@ -47,7 +47,7 @@ namespace hocon {
         throw config_exception("Root node did not contain a value");
     }
 
-    bool config_node_root::has_value(string desired_path) {
+    bool config_node_root::has_value(string desired_path) const {
         path raw_path = path_parser::parse_path(desired_path);
         shared_node_list children_copy = children();
         for (size_t i = 0; i < children_copy.size(); i++) {

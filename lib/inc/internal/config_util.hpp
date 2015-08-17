@@ -12,4 +12,6 @@ namespace hocon {
 
     std::string render_json_string(std::string const& s);
 
+    std::string render_string_unquoted_if_possible(std::string const& s);
+
 }  // namespace hocon

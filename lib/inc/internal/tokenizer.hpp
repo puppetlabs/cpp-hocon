@@ -2,6 +2,7 @@
 
 #include "tokens.hpp"
 #include "config_exception.hpp"
+#include <hocon/config_syntax.hpp>
 
 #include <boost/nowide/fstream.hpp>
 #include <vector>
@@ -29,6 +30,7 @@ namespace hocon {
     class token_iterator : public iterator {
     public:
         token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);
+        token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, config_syntax flavor);
 
         bool has_next() override;
         shared_token next() override;

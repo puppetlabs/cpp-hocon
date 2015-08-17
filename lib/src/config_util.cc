@@ -1,4 +1,5 @@
 #include <internal/config_util.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace std;
 
@@ -60,6 +61,35 @@ namespace hocon {
         }
         result += "\"";
         return result;
+    }
+
+    string render_string_unquoted_if_possible(string const& s) {
+        // this can quote unnecessarily as long as it never fails to quote when
+        // necessary
+        if (s.empty()) {
+            return render_json_string(s);
+        }
+
+        // if it starts with a hyphen or number, we have to quote
+        // to ensure we end up with a string and not a number
+        char first = s[0];
+        if (isdigit(first) || first == '-') {
+            return render_json_string(s);
+        }
+
+        if (boost::starts_with(s, "include") || boost::starts_with(s, "true") || boost::starts_with(s, "false") ||
+                boost::starts_with(s, "null") || boost::starts_with(s, "//")) {
+            return render_json_string(s);
+        }
+
+        // only unquote if it's pure alphanumeric
+        for (char c : s) {
+            if (!(isalpha(c) || isdigit(c) || c == '-')) {
+                return render_json_string(s);
+            }
+        }
+
+        return s;
     }
 
 }  // namespace hocon
