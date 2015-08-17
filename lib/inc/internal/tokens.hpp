@@ -11,7 +11,7 @@ namespace hocon {
         value(std::unique_ptr<abstract_config_value> value, std::string original_text);
 
         std::string to_string() const override;
-        std::shared_ptr<simple_config_origin> const& origin() const override;
+        std::shared_ptr<simple_config_origin> origin() const override;
 
         shared_value get_value() const;
 
@@ -112,9 +112,6 @@ namespace hocon {
         token_list _expression;
     };
 
-    /** Free functions */
-    bool is_value_with_type(token t, config_value_type type);
-
     class tokens {
     public:
         /** Singleton tokens */
@@ -128,6 +125,10 @@ namespace hocon {
         static shared_token const& open_square_token();
         static shared_token const& close_square_token();
         static shared_token const& plus_equals_token();
+
+        static bool is_value_with_type(shared_token t, config_value_type type);
+
+        static shared_value get_value(shared_token t);
     };
 
 }  // namespace hocon

@@ -8,6 +8,8 @@ namespace hocon {
         return make_shared<simple_config_origin>(move(description), line_number, line_number, origin_type::GENERIC);
     }
 
+    /** Tokens */
+
     shared_ptr<value> string_token(string text, config_string_type type) {
         return make_shared<value>(unique_ptr<config_string>(
                 new config_string(fake_origin(), text, type)));
@@ -51,6 +53,24 @@ namespace hocon {
 
     shared_ptr<hash_comment> hash_comment_token(string text) {
         return make_shared<hash_comment>(fake_origin(), text);
+    }
+
+    /** Nodes */
+    shared_ptr<config_node_simple_value> colon_node() {
+        return make_shared<config_node_simple_value>(tokens::colon_token());
+    }
+
+    shared_ptr<config_node_simple_value> open_brace_node() {
+        return make_shared<config_node_simple_value>(tokens::open_curly_token());
+    }
+
+    shared_ptr<config_node_simple_value> close_brace_node() {
+        return make_shared<config_node_simple_value>(tokens::close_curly_token());
+    }
+
+    /** Paths */
+    path test_path(initializer_list<string> path_strings) {
+        return path(vector<string> { path_strings });
     }
 
 }  // namespace hocon

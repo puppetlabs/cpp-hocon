@@ -10,7 +10,7 @@ token_list tokenize_as_list(string const& source) {
     token_iterator iter(*fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);
     // get all the tokens from the string and put them in a vector
     token_list tokens;
-    while(iter.has_next()) {
+    while (iter.has_next()) {
         tokens.push_back(iter.next());
     }
     return tokens;
@@ -18,8 +18,8 @@ token_list tokenize_as_list(string const& source) {
 
 void tokenizer_test(string source, token_list expected) {
     token_list result = tokenize_as_list(source);
-    for(int i = 0; i < (int)expected.size(); i++) {
-        if(!(*expected[i] == *result[i])) {
+    for (size_t i = 0; i < expected.size(); i++) {
+        if (!(*expected[i] == *result[i])) {
             // Debugging info
             cerr << result[i]->to_string() << " but expected " << expected[i]->to_string() << " -- ";
             cerr << "i = " + std::to_string(i);
@@ -70,9 +70,9 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
                 bool_token(false),
                 int_token(42, "42"),
                 null_token(),
-                substitution_token(string_token("a.b", config_string_type::UNQUOTED), false),
-                substitution_token(string_token("x.y", config_string_type::UNQUOTED), true),
-                substitution_token(string_token("c.d"), false),
+                substitution_token(unquoted_text_token("a.b"), false),
+                substitution_token(unquoted_text_token("x.y"), true),
+                substitution_token(string_token("\"c.d\""), false),
                 line_token(1),
                 tokens::end_token()
         };
@@ -114,11 +114,11 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
                 unquoted_text_token(" "),
                 null_token(),
                 unquoted_text_token(" "),
-                substitution_token(string_token("a.b", config_string_type::UNQUOTED), false),
+                substitution_token(unquoted_text_token("a.b"), false),
                 unquoted_text_token(" "),
-                substitution_token(string_token("x.y", config_string_type::UNQUOTED), true),
+                substitution_token(unquoted_text_token("x.y"), true),
                 unquoted_text_token(" "),
-                substitution_token(string_token("c.d"), false),
+                substitution_token(string_token("\"c.d\""), false),
                 whitespace_token(" "),
                 line_token(1),
                 whitespace_token(" "),
@@ -162,11 +162,11 @@ TEST_CASE("tokenize all types", "[tokenizer]") {
                 unquoted_text_token("   "),
                 null_token(),
                 unquoted_text_token("   "),
-                substitution_token(string_token("a.b", config_string_type::UNQUOTED), false),
+                substitution_token(unquoted_text_token("a.b"), false),
                 unquoted_text_token("   "),
-                substitution_token(string_token("x.y", config_string_type::UNQUOTED), true),
+                substitution_token(unquoted_text_token("x.y"), true),
                 unquoted_text_token("   "),
-                substitution_token(string_token("c.d"), false),
+                substitution_token(string_token("\"c.d\""), false),
                 whitespace_token("  "),
                 line_token(1),
                 whitespace_token("   "),

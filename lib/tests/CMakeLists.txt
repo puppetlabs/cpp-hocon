@@ -4,6 +4,7 @@ include_directories(${LEATHERMAN_CATCH_INCLUDE})
 set(TEST_CASES
     config_node_test.cc
     config_value_test.cc
+    path_test.cc
     token_test.cc
     tokenizer_test.cc
     test_utils.cc

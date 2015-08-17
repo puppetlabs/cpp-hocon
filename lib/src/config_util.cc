@@ -1,5 +1,6 @@
 #include <internal/config_util.hpp>
-#include <cctype>
+
+using namespace std;
 
 namespace hocon {
 
@@ -24,6 +25,41 @@ namespace hocon {
 
     bool is_C0_control(char c) {
         return c >= 0 && c <= 0x001F;
+    }
+
+    string render_json_string(string const& s) {
+        string result = "\"";
+        for (char c : s) {
+            switch (c) {
+                case '"':
+                    result += "\\\"";
+                    break;
+                case '\\':
+                    result += "\\\\";
+                    break;
+                case '\n':
+                    result += "\\n";
+                    break;
+                case '\b':
+                    result += "\\b";
+                    break;
+                case '\f':
+                    result += "\\f";
+                    break;
+                case '\r':
+                    result += "\\r";
+                    break;
+                case '\t':
+                    result += "\\t";
+                    break;
+                default:
+                    // TODO: The java has a case here for is_C0_control() that converts c to
+                    // a unicode literal (\uXXXX). Not sure how to handle at present.
+                    result += c;
+            }
+        }
+        result += "\"";
+        return result;
     }
 
 }  // namespace hocon

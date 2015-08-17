@@ -27,6 +27,8 @@ namespace hocon {
         bool has_next();
         shared_token next();
 
+        static std::string render(token_list tokens);
+
     private:
         class whitespace_saver {
         public:
