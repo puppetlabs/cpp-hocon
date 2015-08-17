@@ -29,7 +29,7 @@ namespace hocon {
         return _line_number;
     }
 
-    shared_ptr<simple_config_origin> simple_config_origin::with_line_number(int line_number) const {
+    shared_origin simple_config_origin::with_line_number(int line_number) const {
         return make_shared<simple_config_origin>(_description, line_number, line_number, _origin_type,
                     _resource_or_null, _comments_or_null);
     }

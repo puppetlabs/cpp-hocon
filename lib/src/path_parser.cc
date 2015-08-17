@@ -19,7 +19,7 @@ namespace hocon {
     }
 
     /** Path parser */
-    const simple_config_origin path_parser::api_origin = simple_config_origin("path parameter");
+    const shared_origin path_parser::api_origin = make_shared<simple_config_origin>("path parameter");
 
     config_node_path path_parser::parse_path_node(string const& path_string, config_syntax flavor) {
         token_iterator tokens = token_iterator(api_origin,
@@ -44,7 +44,7 @@ namespace hocon {
     }
 
     config_node_path path_parser::parse_path_node_expression(token_iterator& expression,
-                                                             simple_config_origin origin,
+                                                             shared_origin origin,
                                                              string const& original_text,
                                                              config_syntax flavor)
     {
@@ -53,7 +53,7 @@ namespace hocon {
         return config_node_path(path, tokens);
     }
 
-    path path_parser::parse_path_expression(token_iterator& expression, simple_config_origin origin,
+    path path_parser::parse_path_expression(token_iterator& expression, shared_origin origin,
                                             string const& original_text, token_list* path_tokens,
                                             config_syntax flavor)
     {

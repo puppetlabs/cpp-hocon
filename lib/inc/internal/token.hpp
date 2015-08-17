@@ -17,13 +17,13 @@ namespace hocon {
 
     class token {
     public:
-        token(token_type type, std::shared_ptr<simple_config_origin> origin = nullptr,
+        token(token_type type, shared_origin origin = nullptr,
               std::string token_text = "", std::string debug_string = "");
 
         virtual token_type get_token_type() const;
         virtual std::string token_text() const;
         virtual std::string to_string() const;
-        virtual std::shared_ptr<simple_config_origin> origin() const;
+        virtual shared_origin const& origin() const;
 
         int line_number() const;
 
@@ -33,7 +33,7 @@ namespace hocon {
         token_type _token_type;
 
         /** For singleton tokens this is null. */
-        std::shared_ptr<simple_config_origin> _origin;
+        shared_origin _origin;
 
         std::string _token_text;
         std::string _debug_string;

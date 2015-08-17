@@ -9,8 +9,7 @@ namespace hocon {
 
     class config_double : public config_number {
     public:
-        config_double(std::shared_ptr<simple_config_origin> origin,
-                      double value, std::string original_text);
+        config_double(shared_origin origin, double value, std::string original_text);
 
         std::string transform_to_string() const override;
 

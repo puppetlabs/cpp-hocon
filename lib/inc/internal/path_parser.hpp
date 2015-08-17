@@ -18,13 +18,13 @@ namespace hocon  {
 
         static path parse_path(std::string const& path_string);
 
-        static path parse_path_expression(token_iterator& expression, simple_config_origin origin,
+        static path parse_path_expression(token_iterator& expression, shared_origin origin,
                                           std::string const& original_text = "",
                                           token_list* path_tokens = nullptr,
                                           config_syntax flavor = config_syntax::CONF);
 
         static config_node_path parse_path_node_expression(token_iterator& expression,
-                                                           simple_config_origin origin,
+                                                           shared_origin origin,
                                                            std::string const& original_text = "",
                                                            config_syntax flavor = config_syntax::CONF);
 
@@ -49,7 +49,7 @@ namespace hocon  {
 
         static path speculative_fast_parse_path(std::string const& path);
 
-        static const simple_config_origin api_origin;
+        static const shared_origin api_origin;
     };
 
 }  // namespace hocon

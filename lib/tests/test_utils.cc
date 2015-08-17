@@ -4,7 +4,7 @@ using namespace std;
 
 namespace hocon {
 
-    shared_ptr<simple_config_origin> fake_origin(string description, int line_number) {
+    shared_origin fake_origin(string description, int line_number) {
         return make_shared<simple_config_origin>(move(description), line_number, line_number, origin_type::GENERIC);
     }
 
