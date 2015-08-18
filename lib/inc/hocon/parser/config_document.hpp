@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <hocon/config_value.hpp>
 
 namespace hocon {
@@ -41,7 +42,7 @@ namespace hocon {
          *                  into the config_document.
          * @return a copy of the config_document with the desired value at the desired path
          */
-        virtual config_document with_value_text(std::string path, std::string newValue) const = 0;
+        virtual std::unique_ptr<config_document> with_value_text(std::string path, std::string newValue) const = 0;
 
         /**
          * Returns a new config_document that is a copy of the current
@@ -55,7 +56,7 @@ namespace hocon {
          *                 config_document.
          * @return a copy of the config_document with the desired value at the desired path
          */
-        virtual config_document with_value(std::string path, config_value new_value) const = 0;
+        virtual std::unique_ptr<config_document> with_value(std::string path, config_value new_value) const = 0;
 
         /**
          * Returns a new config_document that is a copy of the current config_document, but with
@@ -66,7 +67,7 @@ namespace hocon {
          * @param path the path to remove from the document
          * @return a copy of the config_document with the desired value removed from the document.
          */
-        virtual config_document without_path(std::string path) const = 0;
+        virtual std::unique_ptr<config_document> without_path(std::string path) const = 0;
 
         /**
          * Returns a boolean indicating whether or not a config_document has a value at the desired path.
