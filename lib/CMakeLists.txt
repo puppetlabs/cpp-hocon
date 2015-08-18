@@ -36,6 +36,7 @@ set(PROJECT_SOURCES
     src/tokenizer.cc
     src/simple_config_origin.cc
     src/config_util.cc
+    src/config_parse_options.cc
 )
 
 ## An object target is generated that can be used by both the library and test executable targets.
