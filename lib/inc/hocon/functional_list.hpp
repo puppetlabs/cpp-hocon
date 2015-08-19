@@ -7,6 +7,8 @@
 #include <iterator>
 #include <iostream>  // print
 
+// Many helpers in this file are recursive, and blow the stack on several thousand elements.
+
 template<class T> class FwdListIter;
 
 template<class T>
@@ -34,6 +36,33 @@ public:
             : _head(std::make_shared<Item>(v, tail._head)) {}
     // Singleton
     explicit List(T v) : _head(std::make_shared<Item>(v)) {}
+    // The initializer_list constructor was removed, as rbegin/rend on initializer_list require C++14.
+
+    ~List()
+    {
+        // Verify that head has a valid pointer, and is unique so that destructing the shared_ptr will delete the item
+        // it points to (which would cause a recursive destruct on its shared_ptr). If it does, we're going to try to
+        // prevert recursive deletion by deleting everything in a // loop. As an optimization, only pre-emptively
+        // release shared_ptrs if they are unique.
+        //
+        // This is probably not threadsafe: _head could become unique after checking but before destruction at the end
+        // of this function; in the loop next could suffer the same fate. Either case would lead to the stack overflow
+        // we try to avoid, but without this checks this becomes O(n) time everytime we destroy a List object, even if
+        // we're just popping the first item.
+        if (_head && _head.unique()) {
+            // Increment the remainder of the list, so it won't be freed when _head is reset.
+            auto next = _head->_next;
+            _head.reset();
+            // For each item, if it has a valid pointer that would be freed by destructing the shared_ptr, cause its
+            // destruction by updating the shared_ptr to point to a new pointer - the next item in the list. This
+            // prevents that item from being destroyed. Loop - destroying each item (but not its remainder) - until
+            // no more remain, or we encounter a non-unique pointer; a non-unique pointer will obviously continue to
+            // retain pointers to the rest of its list.
+            while (next && next.unique()) {
+                next = next->_next;
+            }
+        }
+    }
 
     bool isEmpty() const { return !_head; }  // conversion to bool
     T front() const
