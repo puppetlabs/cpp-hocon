@@ -5,19 +5,20 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_include::config_node_include(vector<unique_ptr<abstract_config_node>> children,
+    config_node_include::config_node_include(shared_node_list children,
                                              config_include_kind kind) :
         _children(move(children)), _kind(kind) { }
 
     token_list config_node_include::get_tokens() const {
         token_list tokens;
         for (auto&& node : _children) {
-            tokens.insert(tokens.end(), node->get_tokens().begin(), node->get_tokens().end());
+            token_list node_tokens = node->get_tokens();
+            tokens.insert(tokens.end(), node_tokens.begin(), node_tokens.end());
         }
         return tokens;
     }
 
-    vector<unique_ptr<abstract_config_node>> const& config_node_include::children() const {
+    shared_node_list const& config_node_include::children() const {
         return _children;
     }
 

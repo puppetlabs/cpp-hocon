@@ -43,7 +43,7 @@ namespace hocon {
         return parse_path_expression(tokens, api_origin, path_string);
     }
 
-    config_node_path path_parser::parse_path_node_expression(token_iterator& expression,
+    config_node_path path_parser::parse_path_node_expression(iterator& expression,
                                                              shared_origin origin,
                                                              string const& original_text,
                                                              config_syntax flavor)
@@ -53,7 +53,7 @@ namespace hocon {
         return config_node_path(path, tokens);
     }
 
-    path path_parser::parse_path_expression(token_iterator& expression, shared_origin origin,
+    path path_parser::parse_path_expression(iterator& expression, shared_origin origin,
                                             string const& original_text, token_list* path_tokens,
                                             config_syntax flavor)
     {

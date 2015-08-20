@@ -20,12 +20,18 @@ namespace hocon {
         problem _problem;
     };
 
-    class token_iterator {
+    class iterator {
+    public:
+        virtual bool has_next() = 0;
+        virtual shared_token next() = 0;
+    };
+
+    class token_iterator : public iterator {
     public:
         token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);
 
-        bool has_next();
-        shared_token next();
+        bool has_next() override;
+        shared_token next() override;
 
         static std::string render(token_list tokens);
 
@@ -90,6 +96,30 @@ namespace hocon {
         shared_origin _line_origin;
         std::queue<shared_token> _tokens;
         whitespace_saver _whitespace_saver;
+    };
+
+    class single_token_iterator : public iterator {
+    public:
+        single_token_iterator(shared_token token);
+
+        bool has_next() override;
+        shared_token next() override;
+
+    private:
+        shared_token _token;
+        bool _has_next;
+    };
+
+    class token_list_iterator : public iterator {
+    public:
+        token_list_iterator(token_list tokens);
+
+        bool has_next() override;
+        shared_token next() override;
+
+    private:
+        token_list _tokens;
+        int _index;
     };
 
 }  // namespace hocon

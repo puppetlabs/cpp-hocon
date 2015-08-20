@@ -552,4 +552,31 @@ namespace hocon {
         return t;
     }
 
+    /** Single token iterator */
+    single_token_iterator::single_token_iterator(shared_token token) : _token(move(token)), _has_next(true) { }
+
+    bool single_token_iterator::has_next() {
+        return _has_next;
+    }
+
+    shared_token single_token_iterator::next() {
+        if (_has_next) {
+            _has_next = false;
+            return _token;
+        }
+        return nullptr;
+    }
+
+    /** Token list iterator */
+    token_list_iterator::token_list_iterator(token_list tokens) : _tokens(move(tokens)), _index(-1) { }
+
+    bool token_list_iterator::has_next() {
+        return _index + 1 < static_cast<int>(_tokens.size());
+    }
+
+    shared_token token_list_iterator::next() {
+        _index++;
+        return _tokens[_index];
+    }
+
 }  // namespace hocon

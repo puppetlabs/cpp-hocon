@@ -18,12 +18,12 @@ namespace hocon  {
 
         static path parse_path(std::string const& path_string);
 
-        static path parse_path_expression(token_iterator& expression, shared_origin origin,
+        static path parse_path_expression(iterator& expression, shared_origin origin,
                                           std::string const& original_text = "",
                                           token_list* path_tokens = nullptr,
                                           config_syntax flavor = config_syntax::CONF);
 
-        static config_node_path parse_path_node_expression(token_iterator& expression,
+        static config_node_path parse_path_node_expression(iterator& expression,
                                                            shared_origin origin,
                                                            std::string const& original_text = "",
                                                            config_syntax flavor = config_syntax::CONF);
