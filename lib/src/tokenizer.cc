@@ -83,6 +83,9 @@ namespace hocon {
         _tokens.push(tokens::start_token());
     }
 
+    token_iterator::token_iterator(shared_origin origin, unique_ptr<std::istream> input, config_syntax flavor) :
+        token_iterator(move(origin), move(input), flavor != config_syntax::JSON) {}
+
     /**
      * This should ONLY be called from next_char_skipping_comments,
      * or when inside a quoted string, or when parsing a sequence
