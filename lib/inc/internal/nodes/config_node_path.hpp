@@ -13,6 +13,9 @@ namespace hocon {
         token_list get_tokens() const override;
         path get_path() const;
 
+        config_node_path sub_path(int to_remove);
+        config_node_path first();
+
 
     private:
         path _path;

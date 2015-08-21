@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstract_config_node.hpp"
+#include "abstract_config_node_value.hpp"
 #include <internal/values/abstract_config_value.hpp>
 
 namespace hocon {
 
-    class config_node_simple_value : public abstract_config_node {
+    class config_node_simple_value : public abstract_config_node_value {
     public:
         config_node_simple_value(shared_token value);
 

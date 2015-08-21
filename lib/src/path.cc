@@ -112,11 +112,15 @@ namespace hocon {
             count--;
             builder.append_key(*from.first());
             from = from.remainder();
-            if (from.has_remainder()) {
+            if (from.empty()) {
                 throw config_exception("sub_path last_index out of range");
             }
         }
         return builder.result();
+    }
+
+    bool path::empty() const {
+        return _path.isEmpty();
     }
 
     bool path::starts_with(path other) const {
