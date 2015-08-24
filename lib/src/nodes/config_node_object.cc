@@ -114,7 +114,7 @@ namespace hocon {
 
     shared_ptr<config_node_object> config_node_object::set_value_on_path(string desired_path, shared_node_value value,
                                                                             config_syntax flavor) {
-        config_node_path path = path_parser::parse_path_node(desired_path);
+        config_node_path path = path_parser::parse_path_node(desired_path, flavor);
         return set_value_on_path(path, value, flavor);
     }
 
@@ -146,7 +146,7 @@ namespace hocon {
             } else {
                 if (auto single_token = dynamic_pointer_cast<config_node_single_token>(children()[i])) {
                     if (single_token->get_token()->get_token_type() == token_type::IGNORED_WHITESPACE &&
-                            i + 1 < children().size()) {
+                            (i + 1) < children().size()) {
                         if (dynamic_pointer_cast<config_node_field>(children()[i + 1]) ||
                                 dynamic_pointer_cast<config_node_include>(children()[i + 1])) {
                             indentation.push_back(children()[i]);
@@ -160,7 +160,7 @@ namespace hocon {
             indentation.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(nullptr, " ")));
         } else {
             // Calculate the indentation of the ending curly brace to get the indentation of the root
-            shared_node last = children()[children().size() - 1];
+            shared_node last = children().back();
             auto single_token = dynamic_pointer_cast<config_node_single_token>(last);
             if (single_token && single_token->get_token()->get_token_type() == token_type::CLOSE_CURLY) {
                 shared_node before_last = children()[children().size() - 2];
@@ -168,11 +168,11 @@ namespace hocon {
                 auto single = dynamic_pointer_cast<config_node_single_token>(before_last);
                 if (single && single->get_token()->get_token_type() == token_type::IGNORED_WHITESPACE) {
                     indent = single->get_token()->token_text();
-                    indent += "  ";
-                    indentation.push_back(make_shared<config_node_single_token>(
-                            make_shared<ignored_whitespace>(nullptr, indent)));
-                    return indentation;
                 }
+                indent += "  ";
+                indentation.push_back(make_shared<config_node_single_token>(
+                        make_shared<ignored_whitespace>(nullptr, indent)));
+                return indentation;
             }
         }
         // The object has no curly braces and is at the root level, so don't indent
@@ -189,16 +189,17 @@ namespace hocon {
 
         // If the value we're inserting is a complex value, we'll need to indent it for insertion
         shared_node_value indented_value;
-        if (auto complex = dynamic_pointer_cast<config_node_complex_value>(value)) {
-            if (!indent.empty()) {
-                indented_value = complex->indent_text(indent.back());
-            }
+        auto complex = dynamic_pointer_cast<config_node_complex_value>(value);
+        if (complex && !indent.empty()) {
+            indented_value = complex->indent_text(indent.back());
         } else {
             indented_value = value;
         }
-        bool same_line = indent.size() > 0;
-        if (auto single_token = dynamic_pointer_cast<config_node_single_token>(indent.front())) {
-            same_line = !(same_line && single_token->get_token()->get_token_type() == token_type::NEWLINE);
+        bool same_line = true;
+        if (indent.size() > 0) {
+            if (auto single_token = dynamic_pointer_cast<config_node_single_token>(indent.front())) {
+                same_line = (single_token->get_token()->get_token_type() != token_type::NEWLINE);
+            }
         }
 
         // If the path is of length greater than one, see if the value needs to be added further down

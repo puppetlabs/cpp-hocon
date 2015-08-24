@@ -122,7 +122,7 @@ namespace hocon {
     private:
         config_parse_options(std::shared_ptr<std::string> origin_desc,
                              bool allow_missing, std::shared_ptr<config_includer> includer,
-                             config_syntax syntax = config_syntax::CONF);
+                             config_syntax syntax = config_syntax::UNSPECIFIED);
         config_parse_options with_fallback_origin_description(std::shared_ptr<std::string> origin_description) const;
 
         config_syntax _syntax;
@@ -130,4 +130,6 @@ namespace hocon {
         bool _allow_missing;
         std::shared_ptr<config_includer> _includer;
     };
+
+    using shared_parse_options = std::shared_ptr<const config_parse_options>;
 }  // namespace hocon

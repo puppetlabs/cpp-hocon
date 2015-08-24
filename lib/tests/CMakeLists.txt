@@ -9,6 +9,7 @@ set(TEST_CASES
     token_test.cc
     tokenizer_test.cc
     test_utils.cc
+    config_document_tests.cc
 )
 
 add_executable(lib${PROJECT_NAME}_test $<TARGET_OBJECTS:libprojectsrc> ${TEST_CASES} main.cc)

@@ -10,7 +10,7 @@ namespace hocon {
     class simple_config_document : public config_document {
     public:
         simple_config_document(std::shared_ptr<const config_node_root> root,
-                               std::shared_ptr<const config_parse_options> opts);
+                               shared_parse_options opts);
 
         std::unique_ptr<config_document> with_value_text(std::string path, std::string new_value) const override;
         std::unique_ptr<config_document> with_value(std::string path,
@@ -23,6 +23,6 @@ namespace hocon {
 
     private:
         std::shared_ptr<const config_node_root> _config_node_tree;
-        std::shared_ptr<const config_parse_options> _parse_options;
+        shared_parse_options _parse_options;
     };
 }

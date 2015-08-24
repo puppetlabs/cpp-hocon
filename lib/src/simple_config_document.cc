@@ -10,7 +10,7 @@ using namespace std;
 
 namespace hocon {
     simple_config_document::simple_config_document(shared_ptr<const config_node_root> root,
-                                                   shared_ptr<const config_parse_options> opts)
+                                                   shared_parse_options opts)
         : _config_node_tree(move(root)), _parse_options(move(opts)) {}
 
     unique_ptr<config_document> simple_config_document::with_value_text(string path, string new_value) const
