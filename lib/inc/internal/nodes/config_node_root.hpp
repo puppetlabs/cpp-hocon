@@ -11,9 +11,10 @@ namespace hocon {
 
         std::shared_ptr<config_node_complex_value> new_node(shared_node_list nodes) override;
 
-        std::shared_ptr<config_node_complex_value> value();
-        std::shared_ptr<config_node_root> set_value(std::string desired_path, shared_node_value, config_syntax flavor);
-        bool has_value(std::string desired_path);
+        std::shared_ptr<config_node_complex_value> value() const;
+        std::shared_ptr<config_node_root> set_value(std::string desired_path,
+                                                    shared_node_value, config_syntax flavor) const;
+        bool has_value(std::string desired_path) const;
 
     private:
         shared_origin _origin;

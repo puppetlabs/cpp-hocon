@@ -11,13 +11,13 @@ namespace hocon {
      * A set of options related to parsing.
      *
      * <p>
-     * This object is immutable, so the "setters" returns a new object.
+     * This object is immutable, so the "setters" return a new object.
      *
      * <p>
      * Here is an example of creating a custom {@code config_parse_options}:
      *
      * <pre>
-     *     config_parse_options options = config_parse_options.defaults()
+     *     config_parse_options options = config_parse_options()
      *         .set_syntax(config_syntax.JSON)
      *         .set_allow_missing(false)
      * </pre>

@@ -14,6 +14,12 @@ namespace hocon {
         virtual std::string transform_to_string() const;
         virtual resolved_status resolved() const;
 
+        std::string render() const override;
+        std::string render(config_render_options options) const override;
+        void render(std::string& result, int indent, bool at_root, std::string at_key,
+                    config_render_options options) const;
+        virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
+
         shared_origin const& origin() const;
 
     private:
