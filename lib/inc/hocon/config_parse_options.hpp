@@ -45,8 +45,7 @@ namespace hocon {
         config_parse_options set_syntax(config_syntax syntax) const;
 
         /**
-         * Gets the current syntax option, which may be null for "any".
-         * @return the current syntax or nullptr
+         * Gets the current syntax option
          */
         config_syntax const& get_syntax() const;
 
@@ -121,8 +120,9 @@ namespace hocon {
         std::shared_ptr<config_includer> const& get_includer() const;
 
     private:
-        config_parse_options(config_syntax syntax, std::shared_ptr<std::string> origin_desc,
-                bool allow_missing, std::shared_ptr<config_includer> includer);
+        config_parse_options(std::shared_ptr<std::string> origin_desc,
+                             bool allow_missing, std::shared_ptr<config_includer> includer,
+                             config_syntax syntax = config_syntax::CONF);
         config_parse_options with_fallback_origin_description(std::shared_ptr<std::string> origin_description) const;
 
         config_syntax _syntax;

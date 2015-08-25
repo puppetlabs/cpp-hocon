@@ -5,16 +5,16 @@ using namespace std;
 
 namespace hocon {
 
-    config_parse_options::config_parse_options(config_syntax syntax, shared_ptr<string> origin_desc,
-            bool allow_missing, shared_ptr<config_includer> includer) :
+    config_parse_options::config_parse_options(shared_ptr<string> origin_desc,
+            bool allow_missing, shared_ptr<config_includer> includer, config_syntax syntax) :
         _syntax(syntax), _origin_description(move(origin_desc)),
         _allow_missing(allow_missing), _includer(move(includer)) {}
 
-    config_parse_options::config_parse_options(): config_parse_options(config_syntax::CONF, nullptr, true, nullptr) {}
+    config_parse_options::config_parse_options(): config_parse_options(nullptr, true, nullptr, config_syntax::CONF) {}
 
     config_parse_options config_parse_options::set_syntax(config_syntax syntax) const
     {
-        return config_parse_options{syntax, _origin_description, _allow_missing, _includer};
+        return config_parse_options{_origin_description, _allow_missing, _includer, syntax};
     }
 
     config_syntax const& config_parse_options::get_syntax() const
@@ -24,7 +24,7 @@ namespace hocon {
 
     config_parse_options config_parse_options::set_origin_description(shared_ptr<string> origin_description) const
     {
-        return config_parse_options{_syntax, move(origin_description), _allow_missing, _includer};
+        return config_parse_options{move(origin_description), _allow_missing, _includer, _syntax};
     }
 
 
@@ -44,7 +44,7 @@ namespace hocon {
 
     config_parse_options config_parse_options::set_allow_missing(bool allow_missing) const
     {
-        return config_parse_options{_syntax, _origin_description, allow_missing, _includer};
+        return config_parse_options{_origin_description, allow_missing, _includer, _syntax};
     }
 
     bool config_parse_options::get_allow_missing() const
@@ -54,7 +54,7 @@ namespace hocon {
 
     config_parse_options config_parse_options::set_includer(shared_ptr<config_includer> includer) const
     {
-        return config_parse_options{_syntax, _origin_description, _allow_missing, move(includer)};
+        return config_parse_options{ _origin_description, _allow_missing, move(includer), _syntax};
     }
 
     config_parse_options config_parse_options::prepend_includer(shared_ptr<config_includer> includer) const

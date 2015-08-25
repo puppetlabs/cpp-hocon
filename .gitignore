@@ -10,7 +10,7 @@ Gemfile.lock
 /*debug*/
 /*release*/
 /.idea/
-/build/
+/*build*/
 acceptance/.bundle/
 acceptance/vendor/
 acceptance/junit/

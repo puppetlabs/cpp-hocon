@@ -14,9 +14,7 @@ namespace hocon {
 
     token_list config_node_field::get_tokens() const {
         token_list tokens;
-        int i = 0;
         for (auto&& node : _children) {
-            i++;
             token_list node_tokens = node->get_tokens();
             tokens.insert(tokens.end(), node_tokens.begin(), node_tokens.end());
         }
