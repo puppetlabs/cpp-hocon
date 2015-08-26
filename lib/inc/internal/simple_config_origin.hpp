@@ -10,7 +10,7 @@ namespace hocon {
 
     enum class origin_type { GENERIC, FILE, RESOURCE };
 
-    class simple_config_origin : public config_origin {
+    class simple_config_origin : public config_origin, public std::enable_shared_from_this<simple_config_origin> {
     public:
         simple_config_origin(std::string description, int line_number, int end_line_number,
             origin_type org_type, std::string resource_or_null, std::vector<std::string> comments_or_null);
@@ -28,6 +28,8 @@ namespace hocon {
          * as both starting and ending line.
          */
         std::shared_ptr<const simple_config_origin> with_line_number(int line_number) const;
+
+        std::shared_ptr<const simple_config_origin> append_comments(std::vector<std::string> comments) const;
 
         bool operator==(const simple_config_origin &other) const;
         bool operator!=(const simple_config_origin &other) const;

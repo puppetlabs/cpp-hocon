@@ -47,6 +47,7 @@ set(PROJECT_SOURCES
     src/config_render_options.cc
     src/config_document_parser.cc
     src/config_document_factory.cc
+    src/config_parser.cc
     src/parseable.cc
     src/simple_include_context.cc
     src/simple_includer.cc

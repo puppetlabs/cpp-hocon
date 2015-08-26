@@ -34,8 +34,24 @@ namespace hocon {
     }
 
     shared_origin simple_config_origin::with_line_number(int line_number) const {
-        return make_shared<simple_config_origin>(_description, line_number, line_number, _origin_type,
+        if (line_number == _line_number && line_number == _end_line_number) {
+            return shared_from_this();
+        } else {
+            return make_shared<simple_config_origin>(_description, line_number, line_number, _origin_type,
                     _resource_or_null, _comments_or_null);
+        }
+    }
+
+    shared_origin simple_config_origin::append_comments(vector<string> comments) const {
+        if (comments == _comments_or_null || comments.empty()) {
+            return shared_from_this();
+        } else {
+            // Don't re-use with_comments, because we've already checked whether they're equal.
+            // If they're not equal now, the concatenated comments won't be equal either.
+            comments.insert(comments.begin(), _comments_or_null.begin(), _comments_or_null.end());
+            return make_shared<simple_config_origin>(_description, _line_number, _line_number, _origin_type,
+                    _resource_or_null, move(comments));
+        }
     }
 
     bool simple_config_origin::operator==(const simple_config_origin &other) const {
