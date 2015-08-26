@@ -13,7 +13,4 @@ namespace hocon {
         virtual token_list get_tokens() const = 0;
     };
 
-    using shared_node = std::shared_ptr<abstract_config_node>;
-    using shared_node_list = std::vector<shared_node>;
-
 }  // namespace hocon

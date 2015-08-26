@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <internal/path_parser.hpp>
 #include "test_utils.hpp"
 

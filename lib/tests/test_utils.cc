@@ -11,28 +11,27 @@ namespace hocon {
 
     /** Tokens */
     shared_ptr<value> string_token(string text, config_string_type type) {
-        return make_shared<value>(unique_ptr<config_string>(
-                new config_string(fake_origin(), text, type)));
+        return make_shared<value>(make_shared<config_string>(fake_origin(), text, type));
     }
 
     shared_ptr<value> bool_token(bool boolean) {
-        return make_shared<value>(unique_ptr<config_boolean>(new config_boolean(fake_origin(), boolean)));
+        return make_shared<value>(make_shared<config_boolean>(fake_origin(), boolean));
     }
 
     shared_ptr<value> long_token(int64_t number, string original_text) {
-        return make_shared<value>(unique_ptr<config_long>(new config_long(fake_origin(), number, original_text)));
+        return make_shared<value>(make_shared<config_long>(fake_origin(), number, original_text));
     }
 
     shared_ptr<value> double_token(double number, string original_text) {
-        return make_shared<value>(unique_ptr<config_double>(new config_double(fake_origin(), number, original_text)));
+        return make_shared<value>(make_shared<config_double>(fake_origin(), number, original_text));
     }
 
     shared_ptr<value> int_token(int number, string original_text) {
-        return make_shared<value>(unique_ptr<config_int>(new config_int(fake_origin(), number, original_text)));
+        return make_shared<value>(make_shared<config_int>(fake_origin(), number, original_text));
     }
 
     shared_ptr<value> null_token() {
-        return make_shared<value>(unique_ptr<config_null>(new config_null(fake_origin())));
+        return make_shared<value>(make_shared<config_null>(fake_origin()));
     }
 
     shared_ptr<substitution> substitution_token(shared_token inner, bool optional) {

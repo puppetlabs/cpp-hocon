@@ -1,6 +1,6 @@
 #pragma once
 
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <stack>
 
 namespace hocon {

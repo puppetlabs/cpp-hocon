@@ -1,7 +1,7 @@
 #pragma once
 
 #include <internal/nodes/abstract_config_node.hpp>
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <internal/token.hpp>
 
 namespace hocon {

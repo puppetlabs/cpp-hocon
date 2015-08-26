@@ -8,15 +8,15 @@ using namespace std;
 namespace hocon {
 
     /** Value token */
-    value::value(unique_ptr<abstract_config_value> value) :
+    value::value(shared_value value) :
             token(token_type::VALUE, nullptr, value->transform_to_string()), _value(move(value)) { }
 
-    value::value(unique_ptr<abstract_config_value> value, string original_text) :
+    value::value(shared_value value, string original_text) :
             token(token_type::VALUE, nullptr, original_text),
             _value(move(value)) { }
 
     std::string value::to_string() const {
-        return _value->transform_to_string();
+        return _value->render();
     }
 
     shared_origin const& value::origin() const {

@@ -29,7 +29,7 @@ namespace hocon {
     string config_node_include::name() const {
         for (auto&& node : _children) {
             if (config_node_simple_value* simple = dynamic_cast<config_node_simple_value*>(node.get())) {
-                return simple->get_value()->transform_to_string();
+                return simple->get_value()->render();
             }
         }
         return "";

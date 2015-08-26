@@ -215,13 +215,13 @@ namespace hocon {
             // start of the unquoted token.
             if (result.length() == 4) {
                 if (result == "true") {
-                    return make_shared<value>(unique_ptr<config_boolean>(new config_boolean(origin, true)));
+                    return make_shared<value>(make_shared<config_boolean>(origin, true));
                 } else if (result == "null") {
-                    return make_shared<value>(unique_ptr<config_null>(new config_null(origin)));
+                    return make_shared<value>(make_shared<config_null>(origin));
                 }
             } else if (result.length() == 5) {
                 if (result == "false") {
-                    return make_shared<value>(unique_ptr<config_boolean>(new config_boolean(origin, false)));
+                    return make_shared<value>(make_shared<config_boolean>(origin, false));
                 }
             }
 
@@ -395,7 +395,7 @@ namespace hocon {
             }
         }
 
-        return make_shared<value>(unique_ptr<config_string>(new config_string(_line_origin, result, config_string_type::QUOTED)),
+        return make_shared<value>(make_shared<config_string>(_line_origin, result, config_string_type::QUOTED),
                                                original);
     }
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "abstract_config_value.hpp"
+#include <hocon/config_value.hpp>
 #include <internal/simple_config_origin.hpp>
 
 #include <string>
 
 namespace hocon {
 
-    class config_number : public abstract_config_value {
+    class config_number : public config_value {
     public:
         config_number(shared_origin origin,
                       std::string original_text);
@@ -22,12 +22,12 @@ namespace hocon {
         bool operator==(const config_number &other) const;
         bool operator!=(const config_number &other) const;
 
-        int int_value_range_checked(std::string const& path);
+        int int_value_range_checked(std::string const& path) const;
 
-        static std::unique_ptr<config_number> new_number(
+        static std::shared_ptr<config_number> new_number(
                 shared_origin origin, int64_t value, std::string original_text);
 
-        static std::unique_ptr<config_number> new_number(
+        static std::shared_ptr<config_number> new_number(
                 shared_origin origin, double value, std::string original_text);
 
     private:
