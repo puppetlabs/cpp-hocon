@@ -15,7 +15,10 @@ enum class config_syntax {
      * >HOCON</a> format. Associated with the <code>.conf</code> file extension
      * and <code>application/hocon</code> Content-Type.
      */
-    CONF
+    CONF,
+
+    /** Used as a default */
+    UNSPECIFIED
 
     // Original project also supported Java's .properties formats, but we do not
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config_include_context.hpp"
+
 #include <string>
 #include <memory>
 
@@ -46,7 +48,7 @@ namespace hocon {
          *            the include statement's argument
          * @return a non-null config_object
          */
-        // TODO: Implement config_include_context, config_object
-        // virtual config_object include(shared_ptr<config_include_context> context, shared_ptr<std::string> what) const = 0;
+        virtual std::shared_ptr<config_object> include(std::shared_ptr<config_include_context> context,
+                                      std::shared_ptr<std::string> what) const = 0;
     };
 }  // namespace hocon

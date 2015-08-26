@@ -1,6 +1,5 @@
 #include <catch.hpp>
 #include <internal/config_document_parser.hpp>
-#include <internal/nodes/config_node_object.hpp>
 
 #include "test_utils.hpp"
 
