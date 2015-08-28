@@ -1,7 +1,7 @@
 #pragma once
 
 #include "abstract_config_node_value.hpp"
-#include <internal/values/abstract_config_value.hpp>
+#include <hocon/config_value.hpp>
 
 namespace hocon {
 

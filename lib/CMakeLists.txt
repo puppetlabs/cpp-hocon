@@ -14,6 +14,8 @@ leatherman_logging_namespace("puppetlabs.${PROJECT_NAME}")
 include_directories(inc ${Boost_INCLUDE_DIRS} ${LEATHERMAN_INCLUDE_DIRS})
 
 set(PROJECT_SOURCES
+    src/objects/config_object.cc
+    src/objects/simple_config_object.cc
     src/nodes/abstract_config_node.cc
     src/nodes/config_node_include.cc
     src/nodes/config_node_simple_value.cc
@@ -26,7 +28,7 @@ set(PROJECT_SOURCES
     src/nodes/config_node_array.cc
     src/nodes/config_node_concatenation.cc
     src/nodes/config_node_root.cc
-    src/values/abstract_config_value.cc
+    src/values/config_value.cc
     src/values/config_boolean.cc
     src/values/config_number.cc
     src/values/config_long.cc
@@ -50,6 +52,9 @@ set(PROJECT_SOURCES
     src/parseable.cc
     src/simple_include_context.cc
     src/simple_includer.cc
+    src/config_resolve_options.cc
+    src/config.cc
+    src/default_transformer.cc
 )
 
 ## An object target is generated that can be used by both the library and test executable targets.

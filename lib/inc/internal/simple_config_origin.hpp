@@ -21,13 +21,13 @@ namespace hocon {
 
         int line_number() const override;
 
-        std::string description() const;
+        std::string description() const override;
 
         /**
          * Returns a pointer to a copy of this origin with the specified line number
          * as both starting and ending line.
          */
-        std::shared_ptr<const simple_config_origin> with_line_number(int line_number) const;
+        shared_origin with_line_number(int line_number) const override;
 
         bool operator==(const simple_config_origin &other) const;
         bool operator!=(const simple_config_origin &other) const;
@@ -40,7 +40,5 @@ namespace hocon {
         std::string _resource_or_null;
         std::vector<std::string> _comments_or_null;
     };
-
-    using shared_origin = std::shared_ptr<const simple_config_origin>;
 
 }  // namespace hocon

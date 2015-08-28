@@ -10,7 +10,7 @@ using namespace std;
 namespace hocon {
 
     config_number::config_number(shared_origin origin, string original_text) :
-            abstract_config_value(move(origin)), _original_text(move(original_text)) { }
+            config_value(move(origin)), _original_text(move(original_text)) { }
 
     config_value_type config_number::value_type() const {
         return config_value_type::NUMBER;
@@ -37,7 +37,7 @@ namespace hocon {
         return !(*this == other);
     }
 
-    int config_number::int_value_range_checked(std::string const& path) {
+    int config_number::int_value_range_checked(std::string const& path) const {
         long l = long_value();
         if (l < numeric_limits<int>::min() || l > numeric_limits<int>::max()) {
             throw config_exception("Tried to get int from out of range value " + to_string(l));
@@ -45,17 +45,17 @@ namespace hocon {
         return static_cast<int>(l);
     }
 
-    unique_ptr<config_number> config_number::new_number(
+    shared_ptr<config_number> config_number::new_number(
             shared_origin origin, int64_t value, std::string original_text) {
         if (value >= numeric_limits<int>::min() && value <= numeric_limits<int>::max()) {
-            return unique_ptr<config_int>(new config_int(move(origin), static_cast<int>(value),
-                                                         move(original_text)));
+            return make_shared<config_int>(move(origin), static_cast<int>(value),
+                                                         move(original_text));
         } else {
-            return unique_ptr<config_long>(new config_long(move(origin), value, move(original_text)));
+            return make_shared<config_long>(move(origin), value, move(original_text));
         }
     }
 
-    unique_ptr<config_number> config_number::new_number(
+    shared_ptr<config_number> config_number::new_number(
             shared_origin origin, double value, std::string original_text) {
         int64_t as_long = static_cast<int64_t>(value);
         if (as_long == value) {

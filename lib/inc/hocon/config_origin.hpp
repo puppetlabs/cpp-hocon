@@ -1,5 +1,8 @@
 #pragma once
 
+#include "types.hpp"
+#include <memory>
+
 namespace hocon {
 
     /**
@@ -24,6 +27,33 @@ namespace hocon {
      */
     class config_origin {
     public:
+        /**
+         * Returns a string describing the origin of a value or exception. This will
+         * never return null.
+         *
+         * @return string describing the origin
+         */
+        virtual std::string description() const = 0;
+
+        /**
+         * Returns a {@code ConfigOrigin} based on this one, but with the given
+         * line number. This origin must be a FILE, URL or RESOURCE. Does not modify
+         * this instance or any {@code ConfigValue}s with this origin (since they are
+         * immutable).  To set the returned origin to a  {@code ConfigValue}, use
+         * {@link ConfigValue#withOrigin}.
+         *
+         * <p>
+         * Note that when the given lineNumber are equal to the lineNumber on this
+         * object, a new instance may not be created and {@code this} is returned
+         * directly.
+         *
+         * @since 1.3.0
+         *
+         * @param lineNumber the new line number
+         * @return the created ConfigOrigin
+         */
+        virtual shared_origin with_line_number(int line_number) const = 0;
+
         /**
          * Returns a line number where the value or exception originated. This will
          * return -1 if there's no meaningful line number.

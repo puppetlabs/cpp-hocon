@@ -2,7 +2,7 @@
 
 #include "config_node_complex_value.hpp"
 #include "config_node_path.hpp"
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <hocon/config_syntax.hpp>
 
 namespace hocon {

@@ -1,6 +1,7 @@
 #include <catch.hpp>
 #include <hocon/parser/config_document_factory.hpp>
 #include <internal/simple_config_document.hpp>
+#include "fixtures.hpp"
 
 using namespace hocon;
 using namespace std;
@@ -101,4 +102,11 @@ TEST_CASE("set new value", "[config-doc]") {
         final_text = "{\"a\":\"b\",\n\"c\":\"d\",\n  \"e\" : {\n    \"f\" : {\n      \"g\" : 12\n    }\n  }}";
         replace_test(original_text, final_text, "12", "e.f.g", config_syntax::JSON);
     }
+}
+
+TEST_CASE("parse from file", "[doc-parser]") {
+    string original_text = "{ a : b }";
+    string directory = TEST_FILE_DIR;
+    auto doc = config_document_factory::parse_file(directory + "/test.conf");
+    REQUIRE(doc->render() == original_text);
 }

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "abstract_config_value.hpp"
+#include <hocon/config_value.hpp>
 
 namespace hocon {
 
     enum class config_string_type { QUOTED, UNQUOTED };
 
-    class config_string : public abstract_config_value {
+    class config_string : public config_value {
     public:
         config_string(shared_origin origin, std::string text, config_string_type quoted);
 

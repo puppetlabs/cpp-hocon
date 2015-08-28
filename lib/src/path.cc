@@ -1,4 +1,4 @@
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/path_builder.hpp>
 #include <internal/config_util.hpp>

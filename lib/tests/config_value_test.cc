@@ -48,36 +48,36 @@ TEST_CASE("config_number equality", "[config_values]") {
 
 TEST_CASE("config numbers ints vs longs vs doubles", "[tokenizer]") {
     SECTION("creates a config_int from an int") {
-        unique_ptr<config_number> num = config_number::new_number(fake_origin(), int64_t(2), "2");
-        REQUIRE(dynamic_cast<config_int*>(num.get()));
-        REQUIRE_FALSE(dynamic_cast<config_long*>(num.get()));
+        shared_ptr<config_number> num = config_number::new_number(fake_origin(), int64_t(2), "2");
+        REQUIRE(dynamic_pointer_cast<config_int>(num));
+        REQUIRE_FALSE(dynamic_pointer_cast<config_long>(num));
     }
 
     SECTION("creates config_long from a large long") {
         int64_t definitely_a_long = numeric_limits<int64_t>::max();
-        unique_ptr<config_number> num = config_number::new_number(fake_origin(),
+        shared_ptr<config_number> num = config_number::new_number(fake_origin(),
             definitely_a_long, to_string(definitely_a_long));
-        REQUIRE(dynamic_cast<config_long*>(num.get()));
-        REQUIRE_FALSE(dynamic_cast<config_int*>(num.get()));
+        REQUIRE(dynamic_pointer_cast<config_long>(num));
+        REQUIRE_FALSE(dynamic_pointer_cast<config_int>(num));
     }
 
     SECTION("creates config_int from small whole-number double") {
-        unique_ptr<config_number> num = config_number::new_number(fake_origin(), 2.0, "2.0");
-        REQUIRE(dynamic_cast<config_int*>(num.get()));
-        REQUIRE_FALSE(dynamic_cast<config_double*>(num.get()));
+        shared_ptr<config_number> num = config_number::new_number(fake_origin(), 2.0, "2.0");
+        REQUIRE(dynamic_pointer_cast<config_int>(num));
+        REQUIRE_FALSE(dynamic_pointer_cast<config_double>(num));
     }
 
     SECTION("creates config_long from large whole-number double") {
         double big_double = numeric_limits<int>::max() + 1.0;
-        unique_ptr<config_number> num = config_number::new_number(
+        shared_ptr<config_number> num = config_number::new_number(
                 fake_origin(), big_double, to_string(big_double));
-        REQUIRE(dynamic_cast<config_long*>(num.get()));
-        REQUIRE_FALSE(dynamic_cast<config_double*>(num.get()));
+        REQUIRE(dynamic_pointer_cast<config_long>(num));
+        REQUIRE_FALSE(dynamic_pointer_cast<config_double>(num));
     }
 
     SECTION("creates config_double for non-whole number") {
-        unique_ptr<config_number> num = config_number::new_number(fake_origin(), 2.5, "2.5");
-        REQUIRE(dynamic_cast<config_double*>(num.get()));
-        REQUIRE_FALSE(dynamic_cast<config_int*>(num.get()));
+        shared_ptr<config_number> num = config_number::new_number(fake_origin(), 2.5, "2.5");
+        REQUIRE(dynamic_pointer_cast<config_double>(num));
+        REQUIRE_FALSE(dynamic_pointer_cast<config_int>(num));
     }
 }

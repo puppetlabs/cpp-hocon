@@ -1,14 +1,13 @@
 #pragma once
 
-#include <internal/functional_list.hpp>
+#include <hocon/functional_list.hpp>
+#include <hocon/types.hpp>
 
 #include <string>
 #include <vector>
 #include <memory>
 
 namespace hocon {
-
-    using shared_string = std::shared_ptr<const std::string>;
 
     class path {
     public:

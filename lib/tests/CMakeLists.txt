@@ -19,3 +19,8 @@ target_link_libraries(lib${PROJECT_NAME}_test
 )
 
 add_test(NAME "unit_tests" COMMAND lib${PROJECT_NAME}_test)
+
+configure_file (
+        "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp.in"
+        "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp"
+)

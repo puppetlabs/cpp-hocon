@@ -1,6 +1,6 @@
 #pragma once
 
-#include "abstract_config_value.hpp"
+#include <hocon/config_value.hpp>
 #include <internal/simple_config_origin.hpp>
 
 #include <string>
@@ -14,7 +14,7 @@ namespace hocon {
      * overrides values set "earlier" in the search path, while missing values do
      * not.
      */
-    class config_null : public abstract_config_value {
+    class config_null : public config_value {
     public:
         config_null(shared_origin origin);
 

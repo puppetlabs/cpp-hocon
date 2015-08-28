@@ -5,7 +5,7 @@ using namespace std;
 namespace hocon {
 
     config_string::config_string(shared_origin origin, string text, config_string_type quoted) :
-        abstract_config_value(move(origin)), _text(move(text)), _quoted(quoted) { }
+        config_value(move(origin)), _text(move(text)), _quoted(quoted) { }
 
     config_value_type config_string::value_type() const {
         return config_value_type::STRING;

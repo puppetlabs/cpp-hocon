@@ -18,12 +18,9 @@ TEST_CASE("token equality", "[tokens]") {
     }
 
     SECTION("value token equality") {
-        value true_value(unique_ptr<abstract_config_value>(
-                new config_boolean(fake_origin("fake"), true)));
-        value other_true(unique_ptr<abstract_config_value>(
-                new config_boolean(fake_origin("other fake"), true)));
-        value false_value(unique_ptr<abstract_config_value>(
-                new config_boolean(fake_origin("fake"), false)));
+        value true_value(make_shared<config_boolean>(fake_origin("fake"), true));
+        value other_true(make_shared<config_boolean>(fake_origin("other fake"), true));
+        value false_value(make_shared<config_boolean>(fake_origin("fake"), false));
 
         REQUIRE(true_value == other_true);
         REQUIRE_FALSE(true_value == false_value);

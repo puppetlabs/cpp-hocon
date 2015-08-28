@@ -12,7 +12,7 @@
 
 #include <string>
 #include <memory>
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <internal/nodes/config_node_field.hpp>
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_comment.hpp>

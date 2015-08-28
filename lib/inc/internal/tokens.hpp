@@ -1,14 +1,14 @@
 #pragma once
 
 #include "token.hpp"
-#include <internal/values/abstract_config_value.hpp>
+#include <hocon/config_value.hpp>
 
 namespace hocon {
 
     class value : public token {
     public:
-        value(std::unique_ptr<abstract_config_value> value);
-        value(std::unique_ptr<abstract_config_value> value, std::string original_text);
+        value(shared_value value);
+        value(shared_value value, std::string original_text);
 
         std::string to_string() const override;
         shared_origin const& origin() const override;

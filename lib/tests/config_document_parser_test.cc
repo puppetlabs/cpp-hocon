@@ -1,5 +1,6 @@
 #include <catch.hpp>
 #include <internal/config_document_parser.hpp>
+#include <hocon/parser/config_document_factory.hpp>
 
 #include "test_utils.hpp"
 

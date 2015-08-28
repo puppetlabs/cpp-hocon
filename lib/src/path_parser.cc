@@ -78,7 +78,7 @@ namespace hocon {
             if (tokens::is_value_with_type(t, config_value_type::STRING)) {
                 auto value = tokens::get_value(t);
                 // this is a quoted string, so any periods in here don't count as path separators
-                string s = value->transform_to_string();
+                string s = value->render();
                 add_path_text(elements, true, s);
             } else if (t == tokens::end_token()) {
                 // ignore this; when parsing a file, it should not happen
@@ -102,7 +102,7 @@ namespace hocon {
                         token_list split_tokens = split_token_on_period(t, flavor);
                         path_tokens->insert(path_tokens->end(), split_tokens.begin(), split_tokens.end());
                     }
-                    text = value->transform_to_string();
+                    text = value->render();
                 } else if (t->get_token_type() == token_type::UNQUOTED_TEXT) {
                     // We need to split the tokens on a . so that we can get sub-paths but still preserve
                     // the original path text when doing an insertion on ConfigNodeObjects
@@ -159,8 +159,8 @@ namespace hocon {
                 split_tokens.push_back(make_shared<unquoted_text>(t->origin(), move(s)));
             } else {
                 split_tokens.push_back(make_shared<value>(
-                        unique_ptr<config_string>(new config_string(
-                                t->origin(), "\"" + s + "\"", config_string_type::UNQUOTED))));
+                        make_shared<config_string>(
+                                t->origin(), "\"" + s + "\"", config_string_type::UNQUOTED)));
             }
             split_tokens.push_back(make_shared<unquoted_text>(t->origin(), "."));
         }
