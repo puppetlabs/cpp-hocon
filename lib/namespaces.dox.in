@@ -1,0 +1,6 @@
+/**
+ * The root namespace for @PROJECT_NAME@.
+ */
+namespace @PROJECT_NAME_LOWER@ {
+
+}

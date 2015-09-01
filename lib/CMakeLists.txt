@@ -8,7 +8,11 @@ include(leatherman)
 get_commit_string(PROJECT_COMMIT)
 
 # Generate a file containing the above version numbers.
-configure_file("version.h.in"   "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/version.h")
+configure_file("version.h.in" "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/version.h")
+
+# Generate files for Doxygen
+configure_file("Doxyfile.in"       "${CMAKE_CURRENT_LIST_DIR}/Doxyfile")
+configure_file("namespaces.dox.in" "${CMAKE_CURRENT_LIST_DIR}/docs/namespaces.dox")
 
 # Set C++ compile flags based on project settings.
 set(CMAKE_CXX_FLAGS ${${PROJECT_NAME_UPPER}_CXX_FLAGS})
