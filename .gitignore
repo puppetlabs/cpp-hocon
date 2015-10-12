@@ -11,6 +11,9 @@ Gemfile.lock
 /lib/inc/*/version.h
 /lib/src/cpp-project-template.cc
 /lib/tests/cpp-project-template.cc
+/lib/Doxyfile
+/lib/html/
+/lib/docs/
 /debug*/
 /release*/
 /.idea/
