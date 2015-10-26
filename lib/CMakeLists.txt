@@ -44,8 +44,11 @@ elseif (WIN32)
     add_definitions("-Dlib${PROJECT_NAME_LOWER}_EXPORTS")
 endif()
 
-get_filename_component(LIBPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} NAME)
-install(TARGETS lib${PROJECT_NAME} DESTINATION ${LIBPATH})
+# This correctly handles DLL installation on Windows.
+install(TARGETS lib${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
 install(DIRECTORY inc/${PROJECT_NAME} DESTINATION include)
 
 add_subdirectory(tests)
