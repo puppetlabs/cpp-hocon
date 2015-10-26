@@ -17,10 +17,9 @@ fi
 
 # Generate build files
 if [ ${TRAVIS_TARGET} == DEBUG ]; then
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON .
-else
-  cmake .
+  TARGET_OPTS="-DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON"
 fi
+cmake $TARGET_OPTS -DCMAKE_INSTALL_PREFIX=$USERDIR .
 
 if [ ${TRAVIS_TARGET} == CPPLINT ]; then
   make cpplint
@@ -31,7 +30,7 @@ else
   make test ARGS=-V
 
   # Make sure installation succeeds
-  make DESTDIR=$USERDIR install
+  make install
 
   # Disable coveralls for private repos
   if [ ${TRAVIS_TARGET} == DEBUG ]; then
