@@ -26,9 +26,9 @@ set(PROJECT_SOURCES "src/${PROJECT_NAME}.cc")
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
 
-add_library(lib${PROJECT_NAME} SHARED $<TARGET_OBJECTS:libprojectsrc>)
-set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".so" IMPORT_PREFIX "" IMPORT_SUFFIX ".so.a" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-target_link_libraries(lib${PROJECT_NAME} PRIVATE
+add_library(lib${PROJECT_NAME} $<TARGET_OBJECTS:libprojectsrc>)
+set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" IMPORT_PREFIX "" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+target_link_libraries(lib${PROJECT_NAME}
     ${LEATHERMAN_LIBRARIES}
     ${Boost_LIBRARIES}
 )
