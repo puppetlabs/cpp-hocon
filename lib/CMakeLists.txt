@@ -37,10 +37,10 @@ target_link_libraries(lib${PROJECT_NAME}
 # Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.
 include(GenerateExportHeader)
 generate_export_header(lib${PROJECT_NAME} EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/export.h")
-if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+if (NOT APPLE)
     add_compiler_export_flags()
-elseif (WIN32)
-    add_compiler_export_flags()
+endif()
+if (WIN32)
     add_definitions("-Dlib${PROJECT_NAME_LOWER}_EXPORTS")
 endif()
 
