@@ -30,9 +30,9 @@ set(PROJECT_SOURCES "src/${PROJECT_NAME}.cc")
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
 
-add_library(lib${PROJECT_NAME} SHARED $<TARGET_OBJECTS:libprojectsrc>)
-set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".so" IMPORT_PREFIX "" IMPORT_SUFFIX ".so.a" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-target_link_libraries(lib${PROJECT_NAME} PRIVATE
+add_library(lib${PROJECT_NAME} $<TARGET_OBJECTS:libprojectsrc>)
+set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" IMPORT_PREFIX "" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+target_link_libraries(lib${PROJECT_NAME}
     ${LEATHERMAN_LIBRARIES}
     ${Boost_LIBRARIES}
 )
@@ -41,15 +41,18 @@ target_link_libraries(lib${PROJECT_NAME} PRIVATE
 # Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.
 include(GenerateExportHeader)
 generate_export_header(lib${PROJECT_NAME} EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/${PROJECT_NAME}/export.h")
-if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+if (NOT APPLE)
     add_compiler_export_flags()
-elseif (WIN32)
-    add_compiler_export_flags()
+endif()
+if (WIN32)
     add_definitions("-Dlib${PROJECT_NAME_LOWER}_EXPORTS")
 endif()
 
-get_filename_component(LIBPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} NAME)
-install(TARGETS lib${PROJECT_NAME} DESTINATION ${LIBPATH})
+# This correctly handles DLL installation on Windows.
+install(TARGETS lib${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
 install(DIRECTORY inc/${PROJECT_NAME} DESTINATION include)
 
 add_subdirectory(tests)
