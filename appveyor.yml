@@ -5,6 +5,7 @@ install:
   - choco install -y cmake -Version 3.2.2 -source https://www.myget.org/F/puppetlabs
   - SET PATH=C:\tools\mingw64\bin;%PATH%
   - ps: $env:PATH = $env:PATH.Replace("Git\bin", "Git\cmd")
+  - ps: $env:PATH = $env:PATH.Replace("Git\usr\bin", "Git\cmd")
 
   - ps: wget 'https://s3.amazonaws.com/kylo-pl-bucket/boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh.7z' -OutFile "$pwd\boost.7z"
   - ps: 7z.exe x boost.7z -oC:\tools | FIND /V "ing  "
