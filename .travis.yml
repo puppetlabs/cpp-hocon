@@ -46,3 +46,14 @@ env:
 
 notifications:
   email: false
+
+deploy:
+  provider: releases
+  api_key:
+    secure: CpEaVGNtPPKb55xvohWoyAQ0IBFzatEcjnFq9zT3HTWAi8Or4wH9RTBdO6HJ64NOzUiLlR7HV7CEu0FnRqHGK3r61sc3rp9aVrmw/psHHhY5AhmrmWT304K1b6bepOOR/8y2JtDlsvY0ya1H954yFMyQ8iG11hemPwzJsJbMjxYtYXXFCsAVILPUIb9xC6vcMYgyYssfUXta73KyLdbIFS25nUq/fGX3MBXzf3PHpDcnbBrMm7aMy9tSAFrl7YDCFKWbkNczlf5v6zJIXgmjuix6Clac4DabJHufe/UHrqXtORbmuvYSOpxY4uGHi7sINfj53JsTx2pM3GCITMUVafMOyEKHYiHyIODxMs8Ey3KQLgzw8MxSZ5HaeWE7UPuIDMKBo4+qeKQw9vrsZglSNbqjJet2oOVzm7TMn9wPQm71ClefxT1lxHx/V/01jhfy3jlEPjHi756cycOQposvFzBqU8u1UyoxurifUtmpDm2f45uX6/vrUhqLCcDbJzU447GWAiKrmFRyWH7K6/AS3YNIMwdHiojF+TvmXgRO+49mDMRi8nLlCJwZHePDecU09Ir6f5ym/YsUeJHhLPwwiqHuf8lZZdtSVNOo+8FHwdRZzFwxcApR782XZSIlBbGJgDHaIF6TKrOU+C7UyxhWcmyRP6Xm06OGbcl/9nJj1Yg=
+  file: cpp-hocon.tar.gz
+  skip_cleanup: true
+  on:
+    repo: puppetlabs/cpp-hocon
+    tags: true
+    condition: '"$TRAVIS_TARGET" == "RELEASE"'

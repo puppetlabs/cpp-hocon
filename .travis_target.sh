@@ -22,6 +22,8 @@ fi
 # Generate build files
 if [ ${TRAVIS_TARGET} == DEBUG ]; then
   TARGET_OPTS="-DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON"
+elif [ ${TRAVIS_TARGET} == RELEASE ]; then
+  TARGET_OPTS="-DCMAKE_INSTALL_PREFIX=$USERDIR"
 fi
 cmake $TARGET_OPTS -DCMAKE_INSTALL_PREFIX=$USERDIR .
 
@@ -39,7 +41,13 @@ else
   make test ARGS=-V
 
   # Make sure installation succeeds
-  make install
+  mkdir dest
+  make install DESTDIR=`pwd`/dest
+
+  if [ ${TRAVIS_TARGET} == RELEASE ]; then
+      cd dest/$USERDIR
+      tar czvf $TRAVIS_BUILD_DIR/cpp-hocon.tar.gz `find . -type f -print`
+  fi
 
   # Disable coveralls for private repos
   if [ ${TRAVIS_TARGET} == DEBUG ]; then
