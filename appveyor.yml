@@ -19,8 +19,22 @@ install:
   - ps: 7z.exe x leatherman.7z -oC:\tools | FIND /V "ing "
 
 build_script:
-  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DCMAKE_PREFIX_PATH="C:\tools\leatherman;C:\tools\curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh" -DCURL_STATIC=ON -DBOOST_STATIC=ON -Wno-dev .
+  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DCMAKE_PREFIX_PATH="C:\tools\leatherman;C:\tools\curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh" -DCURL_STATIC=ON -DBOOST_STATIC=ON -Wno-dev -DCMAKE_INSTALL_PREFIX=C:\tools\cpp-hocon .
   - ps: mingw32-make install
+  - ps: 7z.exe a -t7z cpp-hocon.7z C:\tools\cpp-hocon\
 
 test_script:
   - ps: ctest -V 2>&1 | %{ if ($_ -is [System.Management.Automation.ErrorRecord]) { $_ | c++filt } else { $_ } }
+
+artifacts:
+  - path: cpp-hocon.7z
+    name: cpp-hocon.7z
+
+deploy:
+  description: Cpp-hocon build from AppVeyor
+  provider: GitHub
+  auth_token:
+    secure: DMyUJSyyWU/cMaE3kZyoGuJNtt8VjHbw6g3n9HPzYk99aU8HlJay5meBgsTjVXfR
+  artifact: cpp-hocon.7z
+  on:
+    appveyor_repo_tag: true
