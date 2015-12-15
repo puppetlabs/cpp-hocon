@@ -10,6 +10,10 @@ if [ ${TRAVIS_TARGET} == CPPCHECK ]; then
   tar xjvf pcre-8.36_install.tar.bz2 --strip 1 -C $USERDIR
   wget https://s3.amazonaws.com/kylo-pl-bucket/cppcheck-1.69_install.tar.bz2
   tar xjvf cppcheck-1.69_install.tar.bz2 --strip 1 -C $USERDIR
+elif [ ${TRAVIS_TARGET} == DOXYGEN ]; then
+  # grab a pre-built doxygen 1.8.7 from s3
+  wget https://s3.amazonaws.com/kylo-pl-bucket/doxygen_install.tar.bz2
+  tar xjvf doxygen_install.tar.bz2 --strip 1 -C $USERDIR
 elif [ ${TRAVIS_TARGET} == DEBUG ]; then
   # Install coveralls.io update utility
   pip install --user cpp-coveralls
@@ -17,13 +21,17 @@ fi
 
 # Generate build files
 if [ ${TRAVIS_TARGET} == DEBUG ]; then
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON .
-else
-  cmake .
+  TARGET_OPTS="-DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON"
 fi
+cmake $TARGET_OPTS -DCMAKE_INSTALL_PREFIX=$USERDIR .
 
 if [ ${TRAVIS_TARGET} == CPPLINT ]; then
   make cpplint
+elif [ ${TRAVIS_TARGET} == DOXYGEN ]; then
+  # Build docs
+  pushd lib
+  doxygen 2>&1 | ( ! grep . )
+  popd
 elif [ ${TRAVIS_TARGET} == CPPCHECK ]; then
   make cppcheck
 else
@@ -31,7 +39,7 @@ else
   make test ARGS=-V
 
   # Make sure installation succeeds
-  make DESTDIR=$USERDIR install
+  make install
 
   # Disable coveralls for private repos
   if [ ${TRAVIS_TARGET} == DEBUG ]; then

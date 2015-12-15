@@ -5,8 +5,12 @@ Gemfile.local
 Gemfile.lock
 
 # Generated files
-/lib/inc/export.h
-/lib/inc/version.h
+/lib/inc/*/export.h
+/lib/inc/*/version.h
+/lib/tests/fixtures.hpp
+/lib/Doxyfile
+/lib/html/
+/lib/docs/
 /*debug*/
 /*release*/
 /.idea/
