@@ -10,11 +10,14 @@ namespace hocon {
 
     class parseable_file;
     class parseable_string;
+    class parseable_not_found;
 
     class parseable : public config_parseable, public std::enable_shared_from_this<parseable> {
     public:
         static parseable_file new_file(std::string input_file_path, shared_parse_options options);
         static parseable_string new_string(std::string s, shared_parse_options options);
+        static parseable_not_found new_not_found(std::string what_not_found, std::string message,
+                                                 shared_parse_options options);
 
         static config_syntax syntax_from_extension(std::string name);
 
@@ -87,6 +90,20 @@ namespace hocon {
 
     private:
         std::string _resource;
+    };
+
+    // this is a parseable that doesn't exist and just throws when you try to
+    // parse it
+    class parseable_not_found : public parseable {
+    public:
+        parseable_not_found(std::string what, std::string message, shared_parse_options options);
+
+        std::unique_ptr<std::istream> reader() override;
+        shared_origin create_origin() override;
+
+    private:
+        std::string _what;
+        std::string _message;
     };
 
 }  // namespace hocon

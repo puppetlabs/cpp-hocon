@@ -19,4 +19,20 @@ namespace hocon {
         std::shared_ptr<config_includer> _fallback;
     };
 
+    class name_source {
+    public:
+        virtual std::shared_ptr<config_parseable> name_to_parseable(std::string name,
+                                                                    shared_parse_options parse_options) const = 0;
+    };
+
+    class relative_name_source : public name_source {
+    public:
+        relative_name_source(std::shared_ptr<config_include_context> context);
+
+        std::shared_ptr<config_parseable> name_to_parseable(std::string name,
+                                                            shared_parse_options parse_options) const override;
+    private:
+        const std::shared_ptr<config_include_context> _context;
+    };
+
 }  // namespace hocon
