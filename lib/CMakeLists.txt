@@ -62,6 +62,7 @@ set(PROJECT_SOURCES
     src/default_transformer.cc
     src/substitution_expression.cc
     src/simple_config_list.cc
+    src/config_delayed_merge.cc
 )
 
 ## An object target is generated that can be used by both the library and test executable targets.
