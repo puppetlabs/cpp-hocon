@@ -5,6 +5,8 @@
 #include <internal/objects/simple_config_object.hpp>
 #include <internal/simple_config_origin.hpp>
 #include <internal/container.hpp>
+#include <internal/config_delayed_merge.hpp>
+#include <internal/mergeable_value.hpp>
 #include <algorithm>
 
 using namespace std;
@@ -152,4 +154,107 @@ namespace hocon {
         return v->relativized(_prefix);
     }
 
+    shared_value config_value::with_fallback(std::shared_ptr<const config_mergeable> mergeable) {
+        if (ignores_fallbacks()) {
+            return shared_from_this();
+        } else {
+            auto other = dynamic_pointer_cast<const mergeable_value>(mergeable)->to_fallback_value();
+
+            if (auto unmergeable_other = dynamic_pointer_cast<const unmergeable>(other)) {
+                return merged_with_the_unmergeable(unmergeable_other);
+            } else if (auto object_other = dynamic_pointer_cast<const config_object>(other)) {
+                return merged_with_object(object_other);
+            } else {
+                return merged_with_non_object(dynamic_pointer_cast<const config_value>(other));
+            }
+        }
+    }
+
+    void config_value::require_not_ignoring_fallbacks() const {
+        if (ignores_fallbacks()) {
+            throw config_exception("method should not have been called with ignores_fallbacks=true");
+        }
+    }
+
+    bool config_value::ignores_fallbacks() const {
+        return get_resolve_status() == resolve_status::RESOLVED;
+    }
+
+    shared_value config_value::with_fallbacks_ignored() const {
+        if (ignores_fallbacks()) {
+            return shared_from_this();
+        } else {
+            throw config_exception("value class doesn't implement forced fallback-ignoring");
+        }
+    }
+
+    shared_value config_value::construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const {
+        return make_shared<config_delayed_merge>(move(origin), move(stack));
+    }
+
+    shared_value config_value::merged_with_the_unmergeable(std::vector<shared_value> stack,
+                                                           std::shared_ptr<const unmergeable> fallback) const {
+        require_not_ignoring_fallbacks();
+
+        // if we turn out to be an object, and the fallback also does,
+        // then a merge may be required; delay until we resolve.
+        std::vector<shared_value> new_stack { stack };
+
+        auto unmerged_values = fallback->unmerged_values();
+        new_stack.insert(new_stack.end(), unmerged_values.begin(), unmerged_values.end());
+        return construct_delayed_merge(config_object::merge_origins(new_stack), new_stack);
+    }
+
+    shared_value config_value::merged_with_the_unmergeable(std::shared_ptr<const unmergeable> fallback) const {
+        require_not_ignoring_fallbacks();
+
+        return merged_with_the_unmergeable({ shared_from_this() }, move(fallback));
+    }
+
+    shared_value config_value::delay_merge(std::vector<shared_value> stack, shared_value fallback) const {
+        // if we turn out to be an object, and the fallback also does,
+        // then a merge may be required.
+        // if we contain a substitution, resolving it may need to look
+        // back to the fallback.
+        std::vector<shared_value> new_stack { stack };
+        new_stack.push_back(fallback);
+        return construct_delayed_merge(config_object::merge_origins(new_stack), new_stack);
+    }
+
+    shared_value config_value::merged_with_object(vector<shared_value> stack, shared_object fallback) const {
+        require_not_ignoring_fallbacks();
+
+        if (dynamic_pointer_cast<const config_object>(shared_from_this())) {
+            throw config_exception("Objects must reimplement merged_with_object");
+        }
+
+        return merged_with_non_object(move(stack), move(fallback));
+    }
+
+    shared_value config_value::merged_with_non_object(vector<shared_value> stack, shared_value fallback) const {
+        require_not_ignoring_fallbacks();
+
+        if (get_resolve_status() == resolve_status::RESOLVED) {
+            // falling back to a non-object doesn't merge anything, and also
+            // prohibits merging any objects that we fall back to later.
+            // so we have to switch to ignoresFallbacks mode.
+            return with_fallbacks_ignored();
+        } else {
+            // if unresolved, we may have to look back to fallbacks as part of
+            // the resolution process, so always delay
+            return delay_merge(move(stack), move(fallback));
+        }
+    }
+
+    shared_value config_value::merged_with_non_object(shared_value fallback) const {
+        require_not_ignoring_fallbacks();
+
+        return merged_with_non_object({shared_from_this()}, move(fallback));
+    }
+
+    shared_value config_value::merged_with_object(shared_object fallback) const {
+        require_not_ignoring_fallbacks();
+
+        return merged_with_object({ shared_from_this() }, move(fallback));
+    }
 }  // namespace hocon

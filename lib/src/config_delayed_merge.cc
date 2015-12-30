@@ -10,7 +10,7 @@ namespace hocon {
             throw config_exception("creating empty delayed merge value");
         }
 
-        for (auto&& v : stack) {
+        for (auto& v : stack) {
             if (dynamic_pointer_cast<const config_delayed_merge>(v) || dynamic_pointer_cast<const config_delayed_merge_object>(v)) {
                 throw config_exception("placed nested delayed_merge in a config_delayed_merge, should have consolidated stack");
             }
@@ -18,7 +18,7 @@ namespace hocon {
     }
 
     config_value_type config_delayed_merge::value_type() const {
-        throw config_exception("called valueType() on value with unresolved substitutions, need to Config#resolve() first, see API docs");
+        throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
     }
 
     vector<shared_value> config_delayed_merge::unmerged_values() const {
