@@ -1,12 +1,12 @@
 #pragma once
 
+#include <hocon/config_value.hpp>
 #include <hocon/config_syntax.hpp>
 #include <hocon/config_include_context.hpp>
 #include <hocon/config_parse_options.hpp>
-#include <internal/path.hpp>
+#include <hocon/path.hpp>
 #include <internal/nodes/config_node_root.hpp>
 #include <internal/nodes/abstract_config_node_value.hpp>
-#include <internal/values/abstract_config_value.hpp>
 #include <memory>
 #include <stack>
 #include <vector>

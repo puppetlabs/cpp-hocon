@@ -42,7 +42,7 @@ namespace hocon {
         }
     }
 
-    shared_origin simple_config_origin::append_comments(vector<string> comments) const {
+    shared_ptr<const simple_config_origin> simple_config_origin::append_comments(vector<string> comments) const {
         if (comments == _comments_or_null || comments.empty()) {
             return shared_from_this();
         } else {
