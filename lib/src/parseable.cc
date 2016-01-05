@@ -21,6 +21,11 @@ namespace hocon {
         return parseable_string(move(s), move(options));
     }
 
+    parseable_not_found parseable::new_not_found(std::string what_not_found, std::string message,
+                                                 shared_parse_options options) {
+        return parseable_not_found(move(what_not_found), move(message), move(options));
+    }
+
     void parseable::post_construct(shared_parse_options base_options) {
         _initial_options = fixup_options(base_options);
 
@@ -228,5 +233,19 @@ namespace hocon {
 
     shared_origin parseable_resources::create_origin() {
         return make_shared<simple_config_origin>(_resource);
+    }
+
+    /** Parseable Not Found */
+    parseable_not_found::parseable_not_found(std::string what, std::string message, shared_parse_options options) :
+            _what(move(what)), _message(move(message)) {
+        post_construct(options);
+    }
+
+    std::unique_ptr<std::istream> parseable_not_found::reader() {
+        throw config_exception(_message);
+    }
+
+    shared_origin parseable_not_found::create_origin() {
+        return make_shared<simple_config_origin>(_what);
     }
 }  // namespace hocon
