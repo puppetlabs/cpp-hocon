@@ -75,4 +75,4 @@ Optionally, also prepare the debug environment:
 
 ## Testing
 
-Run tests with `make tests`.
+Run tests with `make test`.
