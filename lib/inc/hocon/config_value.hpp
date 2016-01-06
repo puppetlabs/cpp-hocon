@@ -116,11 +116,28 @@ namespace hocon {
          */
         shared_config at_path(std::string const& path_expression) const;
 
+        /**
+         * This is used when including one file in another; the included file is
+         * relativized to the path it's included into in the parent file. The point
+         * is that if you include a file at foo.bar in the parent, and the included
+         * file as a substitution ${a.b.c}, the included substitution now needs to
+         * be ${foo.bar.a.b.c} because we resolve substitutions globally only after
+         * parsing everything.
+         *
+         * @param prefix
+         * @return value relativized to the given path or the same value if nothing
+         *         to do
+         */
+        shared_value relativized(std::string prefix) const { return shared_from_this(); }
+
+        virtual resolve_status get_resolve_status() const;
+
+        friend resolve_status resolve_status_from_values(std::vector<shared_value> const& v);
+
     protected:
         config_value(shared_origin origin);
 
         virtual std::string transform_to_string() const;
-        virtual resolve_status get_resolve_status() const;
         void render(std::string& result, int indent, bool at_root, std::string at_key,
                     config_render_options options) const;
         virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
@@ -128,8 +145,22 @@ namespace hocon {
         shared_config at_key(shared_origin origin, std::string const& key) const;
         shared_config at_path(shared_origin origin, path raw_path) const;
 
+        class modifier {
+         public:
+            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const = 0;
+        };
+
+        class no_exceptions_modifier : public modifier {
+        public:
+            no_exceptions_modifier(std::string prefix);
+
+            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const override;
+            shared_value modify_child(std::string key, shared_value v) const;
+        private:
+            std::string _prefix;
+        };
+
     private:
         shared_origin _origin;
     };
-
 }  // namespace hocon
