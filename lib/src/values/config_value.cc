@@ -1,5 +1,6 @@
 #include <hocon/config_value.hpp>
 #include <internal/exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/config_util.hpp>
 #include <hocon/config_object.hpp>
 #include <internal/objects/simple_config_object.hpp>
@@ -89,6 +90,22 @@ namespace hocon {
     shared_config config_value::at_path(std::string const& path_expression) const {
         shared_origin origin = make_shared<simple_config_origin>("at_path(" + path_expression + ")");
         return at_path(move(origin), path::new_path(path_expression));
+    }
+
+    config_value::no_exceptions_modifier::no_exceptions_modifier(string prefix): _prefix(std::move(prefix)) {}
+
+    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) const {
+        try {
+            return modify_child(key_or_null, v);
+        } catch (runtime_error& e) {
+            throw e;
+        } catch (exception& e) {
+            throw config_exception("Unexpected exception:", e);
+        }
+    }
+
+    shared_value config_value::no_exceptions_modifier::modify_child(string key, shared_value v) const {
+        return v->relativized(_prefix);
     }
 
 }  // namespace hocon
