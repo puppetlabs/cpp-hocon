@@ -4,7 +4,7 @@
 #include <internal/nodes/abstract_config_node.hpp>
 #include <internal/nodes/config_node_object.hpp>
 #include <internal/simple_config_document.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <internal/config_document_parser.hpp>
 #include <internal/simple_include_context.hpp>

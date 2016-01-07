@@ -1,5 +1,5 @@
 #include <internal/nodes/config_node_simple_value.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/tokens.hpp>
 #include <internal/values/config_string.hpp>
 

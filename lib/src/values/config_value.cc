@@ -1,4 +1,5 @@
 #include <hocon/config_value.hpp>
+#include <internal/exception.hpp>
 #include <internal/config_util.hpp>
 #include <hocon/config_object.hpp>
 #include <internal/objects/simple_config_object.hpp>

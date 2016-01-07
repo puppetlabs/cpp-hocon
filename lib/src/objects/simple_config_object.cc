@@ -1,6 +1,6 @@
 #include <internal/objects/simple_config_object.hpp>
 #include <hocon/config_value.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/simple_config_origin.hpp>
 
 using namespace std;
