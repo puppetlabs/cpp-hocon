@@ -140,7 +140,7 @@ namespace hocon {
                 if (auto single_token = dynamic_pointer_cast<config_node_single_token>(children()[i])) {
                     if (single_token->get_token()->get_token_type() == token_type::NEWLINE) {
                         seen_new_line = true;
-                        indentation.push_back(make_shared<config_node_single_token>(make_shared<line>(nullptr)));
+                        indentation.push_back(make_shared<config_node_single_token>(make_shared<line>()));
                     }
                 }
             } else {
@@ -157,7 +157,7 @@ namespace hocon {
             }
         }
         if (indentation.empty()) {
-            indentation.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(nullptr, " ")));
+            indentation.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(" ")));
         } else {
             // Calculate the indentation of the ending curly brace to get the indentation of the root
             shared_node last = children().back();
@@ -171,7 +171,7 @@ namespace hocon {
                 }
                 indent += "  ";
                 indentation.push_back(make_shared<config_node_single_token>(
-                        make_shared<ignored_whitespace>(nullptr, indent)));
+                        make_shared<ignored_whitespace>(indent)));
                 return indentation;
             }
         }
@@ -230,9 +230,9 @@ namespace hocon {
         shared_node_list new_nodes;
         new_nodes.insert(new_nodes.end(), indent.begin(), indent.end());
         new_nodes.push_back(make_shared<config_node_path>(desired_path.first()));
-        new_nodes.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(nullptr, " ")));
+        new_nodes.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(" ")));
         new_nodes.push_back(make_shared<config_node_single_token>(tokens::colon_token()));
-        new_nodes.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(nullptr, " ")));
+        new_nodes.push_back(make_shared<config_node_single_token>(make_shared<ignored_whitespace>(" ")));
 
         if (raw_path.length() == 1) {
             new_nodes.push_back(indented_value);
@@ -241,7 +241,7 @@ namespace hocon {
             shared_node_list new_object_nodes;
             new_object_nodes.push_back(make_shared<config_node_single_token>(tokens::open_curly_token()));
             if (indent.empty()) {
-                new_object_nodes.push_back(make_shared<config_node_single_token>(make_shared<line>(nullptr)));
+                new_object_nodes.push_back(make_shared<config_node_single_token>(make_shared<line>()));
             }
             new_object_nodes.insert(new_object_nodes.end(), indent.begin(), indent.end());
             new_object_nodes.push_back(make_shared<config_node_single_token>(tokens::close_curly_token()));

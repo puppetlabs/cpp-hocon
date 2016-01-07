@@ -8,7 +8,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_node_root::config_node_root(shared_node_list children, shared_origin origin) :
+    config_node_root::config_node_root(shared_node_list children, config_origin origin) :
             config_node_complex_value(move(children)), _origin(move(origin)) { }
 
     shared_ptr<config_node_complex_value> config_node_root::new_node(shared_node_list nodes) {

@@ -14,14 +14,14 @@ using namespace std;
 
 namespace hocon { namespace config_document_parser {
 
-    shared_ptr<config_node_root> parse(token_iterator tokens, shared_origin origin,
+    shared_ptr<config_node_root> parse(token_iterator tokens, config_origin origin,
                                                                     config_parse_options options)
     {
         parse_context context { options.get_syntax(), move(origin), move(tokens) };
         return context.parse();
     }
 
-    shared_node_value parse_value(token_iterator tokens, shared_origin origin,
+    shared_node_value parse_value(token_iterator tokens, config_origin origin,
                                                           config_parse_options options)
     {
         parse_context context { options.get_syntax(), move(origin), move(tokens) };
@@ -29,7 +29,7 @@ namespace hocon { namespace config_document_parser {
     }
 
     /** Parse context */
-    parse_context::parse_context(config_syntax flavor, shared_origin origin, token_iterator tokens) :
+    parse_context::parse_context(config_syntax flavor, config_origin origin, token_iterator tokens) :
         _line_number(1), _tokens(move(tokens)), _flavor(flavor), _base_origin(move(origin)) { }
 
     shared_token parse_context::pop_token() {
@@ -241,7 +241,7 @@ namespace hocon { namespace config_document_parser {
         if (_flavor == config_syntax::JSON) {
             if (tokens::is_value_with_type(token, config_value_type::STRING)) {
                 single_token_iterator it(token);
-                return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, nullptr));
+                return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, config_origin()));
             } else {
                 throw parse_exception("Expecting close brace } or a field name here, got " + token->to_string());
             }
@@ -259,7 +259,7 @@ namespace hocon { namespace config_document_parser {
 
             put_back(t);
             token_list_iterator it { expression };
-            return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, nullptr));
+            return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, config_origin()));
         }
     }
 

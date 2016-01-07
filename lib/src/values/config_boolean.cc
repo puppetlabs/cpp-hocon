@@ -4,7 +4,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_boolean::config_boolean(shared_origin origin, bool value) :
+    config_boolean::config_boolean(config_origin origin, bool value) :
         config_value(move(origin)), _value(value) { }
 
     config_value_type config_boolean::value_type() const {

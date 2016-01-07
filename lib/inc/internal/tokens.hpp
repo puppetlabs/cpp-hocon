@@ -11,7 +11,7 @@ namespace hocon {
         value(shared_value value, std::string original_text);
 
         std::string to_string() const override;
-        shared_origin const& origin() const override;
+        config_origin const& origin() const override;
 
         shared_value get_value() const;
 
@@ -23,7 +23,7 @@ namespace hocon {
 
     class line : public token {
     public:
-        line(shared_origin origin);
+        line(config_origin origin = config_origin());
 
         std::string to_string() const override;
 
@@ -32,7 +32,7 @@ namespace hocon {
 
     class unquoted_text : public token {
     public:
-        unquoted_text(shared_origin origin, std::string text);
+        unquoted_text(config_origin origin, std::string text);
 
         std::string to_string() const override;
 
@@ -41,7 +41,8 @@ namespace hocon {
 
     class ignored_whitespace : public token {
     public:
-        ignored_whitespace(shared_origin origin, std::string whitespace);
+        ignored_whitespace(config_origin origin, std::string whitespace);
+        ignored_whitespace(std::string whitespace);
 
         std::string to_string() const override;
 
@@ -50,7 +51,7 @@ namespace hocon {
 
     class problem : public token {
     public:
-        problem(shared_origin origin, std::string what, std::string message, bool suggest_quotes);
+        problem(config_origin origin, std::string what, std::string message, bool suggest_quotes);
 
         std::string what() const;
         std::string message() const;
@@ -68,7 +69,7 @@ namespace hocon {
 
     class comment : public token {
     public:
-        comment(shared_origin origin, std::string text);
+        comment(config_origin origin, std::string text);
 
         std::string text() const;
 
@@ -81,21 +82,21 @@ namespace hocon {
 
     class double_slash_comment : public comment {
     public:
-        double_slash_comment(shared_origin origin, std::string text);
+        double_slash_comment(config_origin origin, std::string text);
 
         std::string token_text() const override;
     };
 
     class hash_comment : public comment {
     public:
-        hash_comment(shared_origin origin, std::string text);
+        hash_comment(config_origin origin, std::string text);
 
         std::string token_text() const override;
     };
 
     class substitution : public token {
     public:
-        substitution(shared_origin origin, bool optional, token_list expression);
+        substitution(config_origin origin, bool optional, token_list expression);
 
         bool optional() const;
         token_list const& expression() const;

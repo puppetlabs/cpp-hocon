@@ -26,7 +26,7 @@ namespace hocon {
         _whitespace += c;
     }
 
-    shared_token token_iterator::whitespace_saver::check(token_type type, shared_origin base_origin, int line_number)
+    shared_token token_iterator::whitespace_saver::check(token_type type, config_origin base_origin, int line_number)
     {
         if (is_simple_value(type)) {
             return next_is_simple_value(base_origin, line_number);
@@ -40,7 +40,7 @@ namespace hocon {
      * discards any whitespace we were saving between
      * simple values.
      */
-    shared_token token_iterator::whitespace_saver::next_is_not_simple_value(shared_origin base_origin, int line_number)
+    shared_token token_iterator::whitespace_saver::next_is_not_simple_value(config_origin base_origin, int line_number)
     {
         _last_token_was_simple_value = false;
         return create_whitespace_token(base_origin, line_number);
@@ -51,7 +51,7 @@ namespace hocon {
      * so creates a whitespace token if the previous
      * token also was simple.
      */
-    shared_token token_iterator::whitespace_saver::next_is_simple_value(shared_origin base_origin, int line_number) {
+    shared_token token_iterator::whitespace_saver::next_is_simple_value(config_origin base_origin, int line_number) {
         shared_token t = create_whitespace_token(base_origin, line_number);
         if (!_last_token_was_simple_value) {
             _last_token_was_simple_value = true;
@@ -59,7 +59,7 @@ namespace hocon {
         return t;
     }
 
-    shared_token token_iterator::whitespace_saver::create_whitespace_token(shared_origin base_origin, int line_number) {
+    shared_token token_iterator::whitespace_saver::create_whitespace_token(config_origin base_origin, int line_number) {
         if (_whitespace.length() > 0) {
             shared_token t;
             if (_last_token_was_simple_value) {
@@ -76,14 +76,14 @@ namespace hocon {
     /**
      * Token Iterator
      */
-    token_iterator::token_iterator(shared_origin origin, unique_ptr<std::istream> input, bool allow_comments) :
+    token_iterator::token_iterator(config_origin origin, unique_ptr<std::istream> input, bool allow_comments) :
             _origin(move(origin)), _input(move(input)), _allow_comments(allow_comments),
-            _line_number(1), _line_origin(_origin->with_line_number(1))
+            _line_number(1), _line_origin(_origin.with_line_number(1))
     {
         _tokens.push(tokens::start_token());
     }
 
-    token_iterator::token_iterator(shared_origin origin, unique_ptr<std::istream> input, config_syntax flavor) :
+    token_iterator::token_iterator(config_origin origin, unique_ptr<std::istream> input, config_syntax flavor) :
         token_iterator(move(origin), move(input), flavor != config_syntax::JSON) {}
 
     /**
@@ -149,8 +149,8 @@ namespace hocon {
                 type == token_type::UNQUOTED_TEXT;
     }
 
-    shared_origin token_iterator::line_origin(shared_origin origin, int line_number) {
-        return origin->with_line_number(line_number);
+    config_origin token_iterator::line_origin(config_origin origin, int line_number) {
+        return origin.with_line_number(line_number);
     }
 
     string token_iterator::render(token_list tokens) {
@@ -347,7 +347,7 @@ namespace hocon {
                     throw config_exception("End of input but triple-quoted string was still open");
                 } else if (c == '\n') {
                     _line_number++;
-                    _line_origin = _origin->with_line_number(_line_number);
+                    _line_origin = _origin.with_line_number(_line_number);
                 }
             }
             parsed += c;
@@ -458,7 +458,7 @@ namespace hocon {
         } else if (c == '\n') {
             shared_token newline = make_shared<line>(_line_origin);
             _line_number++;
-            _line_origin = _origin->with_line_number(_line_number);
+            _line_origin = _origin.with_line_number(_line_number);
             return newline;
         } else {
             shared_token t;

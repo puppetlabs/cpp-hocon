@@ -7,7 +7,7 @@ using namespace std;
 
 namespace hocon {
 
-    config_object::config_object(shared_origin origin) : config_value(move(origin)),
+    config_object::config_object(config_origin origin) : config_value(move(origin)),
             _config(make_shared<config>(dynamic_pointer_cast<config_object>(shared_from_this()))) { }
 
     shared_value config_object::peek_path(path desired_path) const {

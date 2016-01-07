@@ -1,5 +1,5 @@
 #include <internal/token.hpp>
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 
 using namespace std;
 
@@ -8,10 +8,12 @@ namespace hocon {
     unsupported_exception::unsupported_exception(string const& message) :
         runtime_error(message) { }
 
-    token::token(token_type type, shared_origin origin, string token_text, string debug_string) :
+    token::token(token_type type, config_origin origin, string token_text, string debug_string) :
         _token_type(type), _origin(move(origin)), _token_text(move(token_text)),
         _debug_string(move(debug_string)) { }
 
+    token::token(token_type type, string token_text, string debug_string) :
+        token(type, config_origin(), move(token_text), move(debug_string)) {}
 
     token_type token::get_token_type() const {
         return _token_type;
@@ -27,13 +29,13 @@ namespace hocon {
 
     int token::line_number() const {
         if (_origin) {
-            return _origin->line_number();
+            return _origin.line_number();
         } else {
             return -1;
         }
     }
 
-    shared_origin const& token::origin() const {
+    config_origin const& token::origin() const {
         if (_origin) {
             return _origin;
         } else {

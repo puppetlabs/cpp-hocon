@@ -16,7 +16,7 @@ namespace hocon {
         return _object;
     }
 
-    shared_origin config::origin() const {
+    config_origin config::origin() const {
         return _object->origin();
     }
 
@@ -233,7 +233,7 @@ namespace hocon {
         return make_shared<config>(root()->with_only_path(raw_path));
     }
 
-    shared_config config::at_key(shared_origin origin, string const& key) const {
+    shared_config config::at_key(config_origin origin, string const& key) const {
         return root()->at_key(origin, key);
     }
 

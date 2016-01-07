@@ -1,10 +1,10 @@
 #pragma once
 
 #include <hocon/config_parse_options.hpp>
+#include <hocon/config_origin.hpp>
 #include <internal/nodes/config_node_object.hpp>
 #include <internal/nodes/config_node_root.hpp>
 #include <internal/nodes/config_node_include.hpp>
-#include <internal/simple_config_origin.hpp>
 #include <internal/tokenizer.hpp>
 
 #include <stack>
@@ -17,14 +17,14 @@ namespace hocon { namespace config_document_parser {
     };
 
     std::shared_ptr<config_node_root> parse(token_iterator tokens,
-                                                   shared_origin origin, config_parse_options options);
+                                                   config_origin origin, config_parse_options options);
 
     shared_node_value parse_value(token_iterator tokens,
-                                         shared_origin origin, config_parse_options options);
+                                         config_origin origin, config_parse_options options);
 
     class parse_context {
     public:
-        parse_context(config_syntax flavor, shared_origin origin, token_iterator tokens);
+        parse_context(config_syntax flavor, config_origin origin, token_iterator tokens);
 
         std::shared_ptr<config_node_root> parse();
 
@@ -72,7 +72,7 @@ namespace hocon { namespace config_document_parser {
         std::stack<shared_token> _buffer;
         token_iterator _tokens;
         config_syntax _flavor;
-        shared_origin _base_origin;
+        config_origin _base_origin;
 
         // this is the number of "equals" we are inside,
         // used to modify the error message to reflect that

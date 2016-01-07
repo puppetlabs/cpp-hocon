@@ -5,10 +5,10 @@
 using namespace hocon;
 using namespace std;
 
-TEST_CASE("simple_config_origin equality", "[config_values]") {
-    auto org1 = simple_config_origin("foo");
-    auto org2 = simple_config_origin("foo");
-    auto org3 = simple_config_origin("bar");
+TEST_CASE("config_origin equality", "[config_values]") {
+    auto org1 = config_origin("foo");
+    auto org2 = config_origin("foo");
+    auto org3 = config_origin("bar");
 
     SECTION("different origins with the same name should be equal") {
         REQUIRE(org1 == org2);

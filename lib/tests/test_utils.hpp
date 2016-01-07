@@ -1,6 +1,6 @@
 #pragma once
 
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 #include <internal/tokens.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/values/config_boolean.hpp>
@@ -19,7 +19,7 @@
 
 namespace hocon {
 
-    shared_origin fake_origin(std::string description = "fake", int line_number = 0);
+    config_origin fake_origin(std::string description = "fake", int line_number = 0);
 
     /** Tokens */
     std::shared_ptr<value> string_token(std::string text, config_string_type type = config_string_type::QUOTED);

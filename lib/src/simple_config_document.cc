@@ -19,7 +19,7 @@ namespace hocon {
             throw new config_exception("empty value for " + path + " passed to with_value_text");
         }
 
-        shared_origin origin = make_shared<simple_config_origin>("single value parsing");
+        auto origin = config_origin("single value parsing");
         token_iterator tokens {origin, unique_ptr<istream>{new stringstream(new_value)}, _parse_options->get_syntax()};
         shared_node_value parsed_value = config_document_parser::parse_value(move(tokens), origin, *_parse_options);
 
