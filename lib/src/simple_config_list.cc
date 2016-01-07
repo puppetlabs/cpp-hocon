@@ -3,4 +3,5 @@
 using namespace std;
 
 namespace hocon {
-} //namespace hocon
+
+}  // namespace hocon

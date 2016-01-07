@@ -114,7 +114,7 @@ namespace hocon {
          *         path.
          */
         shared_config at_path(std::string const& path_expression) const;
-        
+
         /**
          * This is used when including one file in another; the included file is
          * relativized to the path it's included into in the parent file. The point
@@ -155,10 +155,8 @@ namespace hocon {
         private:
             std::string _prefix;
         };
+
     private:
         shared_origin _origin;
     };
-    
-    
-
 }  // namespace hocon

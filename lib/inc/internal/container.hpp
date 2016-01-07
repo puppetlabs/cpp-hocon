@@ -24,5 +24,5 @@ namespace hocon {
          */
         virtual bool has_descendant(shared_value descendant) const = 0;
     };
-} //namespace hocon
 
+}  // namespace hocon

@@ -37,6 +37,5 @@ namespace hocon {
     class config_list : public config_value {
     public:
         virtual std::shared_ptr<const config_list> with_origin(shared_origin origin) = 0;
-
     };
 }
