@@ -55,7 +55,7 @@ set(PROJECT_SOURCES
     src/config_document_factory.cc
     src/config_parser.cc
     src/parseable.cc
-    src/simple_include_context.cc
+    src/config_include_context.cc
     src/simple_includer.cc
     src/config_resolve_options.cc
     src/config.cc

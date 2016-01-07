@@ -7,7 +7,6 @@
 #include <internal/config_exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <internal/config_document_parser.hpp>
-#include <internal/simple_include_context.hpp>
 
 using namespace std;
 
