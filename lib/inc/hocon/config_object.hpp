@@ -3,10 +3,11 @@
 #include "config_value.hpp"
 #include "path.hpp"
 #include <unordered_map>
+#include "export.h"
 
 namespace hocon {
 
-    class config_object : public config_value {
+    class LIBCPP_HOCON_EXPORT config_object : public config_value {
         friend class config;
         friend class simple_config_object;
     public:

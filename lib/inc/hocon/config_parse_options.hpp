@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include "config_syntax.hpp"
+#include "export.h"
 
 namespace hocon {
     class config_includer;
@@ -24,7 +25,7 @@ namespace hocon {
      *
      * ClassLoader is Java-specific, so it was not ported to C++.
      */
-    class config_parse_options {
+    class LIBCPP_HOCON_EXPORT config_parse_options {
     public:
         /**
          * Gets an instance of <code>config_parse_options</code> with all fields

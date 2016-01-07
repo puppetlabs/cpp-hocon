@@ -1,5 +1,7 @@
 #pragma once
 
+#include "export.h"
+
 namespace hocon {
 
     /**
@@ -25,7 +27,7 @@ namespace hocon {
      * environment variables or other external system information. (Right now,
      * environment variables are the only example.)
      */
-    class config_resolve_options {
+    class LIBCPP_HOCON_EXPORT config_resolve_options {
     public:
         config_resolve_options(bool use_system_environment = true, bool allow_unresolved = false);
 

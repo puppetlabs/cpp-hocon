@@ -1,10 +1,11 @@
 #pragma once
 
 #include <memory>
+#include "export.h"
 
 namespace hocon {
 
-    class config_mergeable {
+    class LIBCPP_HOCON_EXPORT config_mergeable {
     public:
         /**
          * Returns a new value computed by merging this value with another, with

@@ -4,6 +4,7 @@
 #include "config_render_options.hpp"
 #include "path.hpp"
 #include <string>
+#include "export.h"
 
 namespace hocon {
 
@@ -32,7 +33,7 @@ namespace hocon {
      * Also, this interface is likely to grow new methods over time, so third-party
      * implementations will break.
      */
-    class config_value : public std::enable_shared_from_this<config_value> {
+    class LIBCPP_HOCON_EXPORT config_value : public std::enable_shared_from_this<config_value> {
         friend class token;
         friend class value;
         friend class default_transformer;

@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "export.h"
 
 namespace hocon {
 
-    class path {
+    class LIBCPP_HOCON_EXPORT path {
     public:
         path();
         path(std::string first, path const& remainder);
