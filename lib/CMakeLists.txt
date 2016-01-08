@@ -61,6 +61,7 @@ set(PROJECT_SOURCES
     src/config.cc
     src/default_transformer.cc
     src/substitution_expression.cc
+    src/simple_config_list.cc
 )
 
 ## An object target is generated that can be used by both the library and test executable targets.
