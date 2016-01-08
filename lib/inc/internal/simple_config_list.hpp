@@ -21,9 +21,9 @@ namespace hocon {
         // using iterator = std::vector<shared_value>::const_iterator;
         simple_config_list(shared_origin origin, std::vector<shared_value> value);
         simple_config_list(shared_origin origin, std::vector<shared_value> value, resolve_status status);
-        config_value_type value_type() const;
+        config_value_type value_type() const { return config_value_type::LIST; }
         // unwrapped()
-        resolve_status get_resolve_status() const {return _resolved ? resolve_status::RESOLVED : resolve_status::UNRESOLVED;}
+        resolve_status get_resolve_status() const {return _resolved;}
         shared_value replace_child(shared_value child, shared_value replacement) const override;
         bool has_descendant(shared_value descendant) const;
 
@@ -73,7 +73,7 @@ namespace hocon {
     private:
         static const long _serial_version_UID = 2L;
         const std::vector<shared_value> _value;
-        const bool _resolved;
+        const resolve_status _resolved;
 
         static const std::string exception_string() {return "config_list is immutable, you can't call simple_config_list.";}
 

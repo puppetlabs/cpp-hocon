@@ -35,6 +35,15 @@ namespace hocon {
         return result;
     }
 
+    resolve_status resolve_status_from_values(std::vector<shared_value> const& values) {
+        for (auto& v: values) {
+            if (v->get_resolve_status() == resolve_status::UNRESOLVED) {
+                return resolve_status::UNRESOLVED;
+            }
+        }
+        return resolve_status::RESOLVED;
+    }
+
     void config_value::render(std::string &result, int indent, bool at_root, std::string at_key,
                                          config_render_options options) const {
         if (!at_key.empty()) {

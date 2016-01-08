@@ -129,11 +129,13 @@ namespace hocon {
          */
         shared_value relativized(std::string prefix) const { return shared_from_this(); }
 
+        virtual resolve_status get_resolve_status() const;
+
+        friend resolve_status resolve_status_from_values(std::vector<shared_value> v);
     protected:
         config_value(shared_origin origin);
 
         virtual std::string transform_to_string() const;
-        virtual resolve_status get_resolve_status() const;
         void render(std::string& result, int indent, bool at_root, std::string at_key,
                     config_render_options options) const;
         virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
