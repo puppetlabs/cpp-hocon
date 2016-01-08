@@ -69,7 +69,7 @@ add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
 
 add_library(lib${PROJECT_NAME} $<TARGET_OBJECTS:libprojectsrc>)
-set_target_properties(lib${PROJECT_NAME} PROPERTIES PREFIX "" IMPORT_PREFIX "" VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+set_target_properties(lib${PROJECT_NAME} PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 target_link_libraries(lib${PROJECT_NAME}
     ${LEATHERMAN_LIBRARIES}
     ${Boost_LIBRARIES}
@@ -77,20 +77,10 @@ target_link_libraries(lib${PROJECT_NAME}
 
 # Generate the export header for restricting symbols exported from the library.
 # Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.
-include(GenerateExportHeader)
-generate_export_header(lib${PROJECT_NAME} EXPORT_FILE_NAME "${CMAKE_CURRENT_LIST_DIR}/inc/hocon/export.h")
-if (NOT APPLE)
-    add_compiler_export_flags()
-endif()
-if (WIN32)
-    add_definitions("-Dlib${PROJECT_NAME_LOWER}_EXPORTS")
-endif()
+symbol_exports(lib${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/inc/hocon/export.h")
 
 # This correctly handles DLL installation on Windows.
-install(TARGETS lib${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+leatherman_install(lib${PROJECT_NAME})
 install(DIRECTORY inc/hocon DESTINATION include)
 
 add_subdirectory(tests)

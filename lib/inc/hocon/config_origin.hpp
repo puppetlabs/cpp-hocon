@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include <memory>
+#include "export.h"
 
 namespace hocon {
 
@@ -33,7 +34,7 @@ namespace hocon {
          *
          * @return string describing the origin
          */
-        virtual std::string description() const = 0;
+        LIBCPP_HOCON_EXPORT virtual std::string description() const = 0;
 
         /**
          * Returns a {@code ConfigOrigin} based on this one, but with the given
@@ -52,7 +53,7 @@ namespace hocon {
          * @param lineNumber the new line number
          * @return the created ConfigOrigin
          */
-        virtual shared_origin with_line_number(int line_number) const = 0;
+        LIBCPP_HOCON_EXPORT virtual shared_origin with_line_number(int line_number) const = 0;
 
         /**
          * Returns a line number where the value or exception originated. This will
@@ -60,7 +61,7 @@ namespace hocon {
          *
          * @return line number or -1 if none is available
          */
-         virtual int line_number() const = 0;
+        LIBCPP_HOCON_EXPORT virtual int line_number() const = 0;
     };
 
 }  // namespace hocon

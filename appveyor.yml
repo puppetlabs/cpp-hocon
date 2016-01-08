@@ -11,7 +11,7 @@ install:
   - ps: 7z.exe x boost.7z -oC:\tools | FIND /V "ing  "
 
 build_script:
-  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DBOOST_STATIC=ON -DBOOST_NOWIDE_SKIP_TESTS=ON -Wno-dev .
+  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DBOOST_STATIC=ON -Wno-dev .
   - ps: mingw32-make install
 
 test_script:

@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include "export.h"
 
 namespace hocon {
 
@@ -163,7 +164,7 @@ namespace hocon {
      * interface is likely to grow new methods over time, so third-party
      * implementations will break.
      */
-    class config : public config_mergeable, public std::enable_shared_from_this<config> {
+    class LIBCPP_HOCON_EXPORT config : public config_mergeable, public std::enable_shared_from_this<config> {
         friend class config_object;
         friend class config_value;
 

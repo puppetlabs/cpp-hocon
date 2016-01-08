@@ -1,5 +1,7 @@
 #pragma once
 
+#include "export.h"
+
 namespace hocon {
 
     /**
@@ -8,7 +10,7 @@ namespace hocon {
      * If you do not implement this but do implement {@link config_includer},
      * attempts to load files will use the default includer.
      */
-    class config_includer_file {
+    class LIBCPP_HOCON_EXPORT config_includer_file {
     public:
         /**
          * Parses another item to be included. The returned object typically would
