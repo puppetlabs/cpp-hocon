@@ -1,5 +1,5 @@
 #include <hocon/path.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/path_builder.hpp>
 #include <internal/config_util.hpp>
 #include <internal/path_parser.hpp>

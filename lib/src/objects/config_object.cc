@@ -1,6 +1,6 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <hocon/path.hpp>
 
 using namespace std;

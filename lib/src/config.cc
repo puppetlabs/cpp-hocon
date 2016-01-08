@@ -1,6 +1,6 @@
 #include <hocon/config.hpp>
 #include <internal/values/config_null.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/default_transformer.hpp>
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_number.hpp>

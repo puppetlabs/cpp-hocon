@@ -1,5 +1,5 @@
 #include <internal/tokens.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <iostream>
 
