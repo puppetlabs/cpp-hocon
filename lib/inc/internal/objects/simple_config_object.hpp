@@ -7,7 +7,7 @@ namespace hocon {
 
     class simple_config_object : public config_object {
     public:
-        simple_config_object(shared_origin origin, std::unordered_map<std::string, shared_value> value,
+        simple_config_object(config_origin origin, std::unordered_map<std::string, shared_value> value,
                              resolve_status status = resolve_status::RESOLVED, bool ignores_fallbacks = false);
 
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;

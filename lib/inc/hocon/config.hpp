@@ -184,7 +184,7 @@ namespace hocon {
          *
          * @return the origin of the {@code Config} for use in error messages
          */
-        virtual shared_origin origin() const;
+        virtual config_origin origin() const;
 
         std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<config_mergeable> other) const override;
 
@@ -591,7 +591,7 @@ namespace hocon {
         shared_value find(std::string const& path_expression, config_value_type expected) const;
         shared_value find(path path_expression, config_value_type expected, path original_path) const;
         shared_value find(path path_expression, config_value_type expected) const;
-        shared_config at_key(shared_origin origin, std::string const& key) const;
+        shared_config at_key(config_origin origin, std::string const& key) const;
 
         // TODO: memory and duration parsing
 

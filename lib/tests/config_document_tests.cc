@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include <hocon/parser/config_document_factory.hpp>
-#include <internal/simple_config_document.hpp>
+#include <hocon/parser/config_document.hpp>
 #include "fixtures.hpp"
 
 using namespace hocon;
@@ -12,9 +12,9 @@ void replace_test(string original_text, string final_text, string new_value,
                                                             make_shared<config_parse_options>(
                                                                     config_parse_options().set_syntax(
                                                                             syntax)));
-    REQUIRE(original_text == config_doc->render());
-    auto new_doc = config_doc->with_value_text(replace_path, new_value);
-    REQUIRE(final_text == new_doc->render());
+    REQUIRE(original_text == config_doc.render());
+    auto new_doc = config_doc.with_value_text(replace_path, new_value);
+    REQUIRE(final_text == new_doc.render());
 }
 
 TEST_CASE("replacement of elements in a document", "[config-doc]") {
@@ -67,15 +67,15 @@ TEST_CASE("replacement of elements in a document", "[config-doc]") {
 TEST_CASE("removal of duplicates", "[config-doc]") {
     string original_text = "{a: b, a.b.c: d, a: e}";
     auto config_doc = config_document_factory::parse_string(original_text);
-    REQUIRE("{a: 2}" == config_doc->with_value_text("a", "2")->render());
+    REQUIRE("{a: 2}" == config_doc.with_value_text("a", "2").render());
 
     original_text = "{a: b, a: e, a.b.c:d}";
     config_doc = config_document_factory::parse_string(original_text);
-    REQUIRE("{a: 2, }" == config_doc->with_value_text("a", "2")->render());
+    REQUIRE("{a: 2, }" == config_doc.with_value_text("a", "2").render());
 
     original_text = "{a.b.c: d}";
     config_doc = config_document_factory::parse_string(original_text);
-    REQUIRE("{ a : 2}" == config_doc->with_value_text("a", "2")->render());
+    REQUIRE("{ a : 2}" == config_doc.with_value_text("a", "2").render());
 }
 
 TEST_CASE("set new value", "[config-doc]") {
@@ -108,5 +108,5 @@ TEST_CASE("parse from file", "[doc-parser]") {
     string original_text = "{ a : b }";
     string directory = TEST_FILE_DIR;
     auto doc = config_document_factory::parse_file(directory + "/test.conf");
-    REQUIRE(doc->render() == original_text);
+    REQUIRE(doc.render() == original_text);
 }

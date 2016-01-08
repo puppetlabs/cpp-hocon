@@ -3,11 +3,10 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <internal/nodes/abstract_config_node.hpp>
 #include <internal/nodes/config_node_object.hpp>
-#include <internal/simple_config_document.hpp>
+#include <hocon/parser/config_document.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <internal/config_document_parser.hpp>
-#include <internal/simple_include_context.hpp>
 
 using namespace std;
 
@@ -32,7 +31,7 @@ namespace hocon {
         // TODO: add include context stuff
 
         if (_initial_options->get_origin_description()) {
-            _initial_origin = make_shared<simple_config_origin>(*_initial_options->get_origin_description());
+            _initial_origin = config_origin(*_initial_options->get_origin_description());
         } else {
             _initial_origin = create_origin();
         }
@@ -52,7 +51,7 @@ namespace hocon {
         return _initial_options;
     }
 
-    shared_ptr<const config_origin> parseable::origin() const {
+    config_origin parseable::origin() const {
         return _initial_origin;
     }
 
@@ -92,11 +91,11 @@ namespace hocon {
                                                         (options()->set_origin_description(nullptr))));
     }
 
-    shared_ptr<config_document> parseable::parse_config_document() {
+    config_document parseable::parse_config_document() {
         return parse_document(_initial_options);
     }
 
-    shared_ptr<config_document> parseable::parse_document(shared_parse_options base_options) {
+    config_document parseable::parse_document(shared_parse_options base_options) {
         // note that we are NOT using our "initialOptions",
         // but using the ones from the passed-in options. The idea is that
         // callers can get our original options and then parse with different
@@ -104,31 +103,30 @@ namespace hocon {
         shared_parse_options options = fixup_options(base_options);
 
         // passed in options can override origin
-        shared_origin origin = _initial_origin;
+        config_origin origin = _initial_origin;
         if (options->get_origin_description()) {
-            origin = make_shared<simple_config_origin>(*options->get_origin_description());
+            origin = config_origin(*options->get_origin_description());
         }
         return parse_document(origin, move(options));
     }
 
-    std::shared_ptr<config_document> parseable::parse_document(shared_origin origin,
-                                                               shared_parse_options final_options) {
+    config_document parseable::parse_document(config_origin origin,
+                                              shared_parse_options final_options) {
         try {
             return raw_parse_document(origin, final_options);
         } catch (runtime_error& e) {
             if (final_options->get_allow_missing()) {
                 shared_node_list children;
                 children.push_back(make_shared<config_node_object>(shared_node_list { }));
-                return make_shared<simple_config_document>(make_shared<config_node_root>(children, origin),
-                                                           final_options);
+                return config_document(make_shared<config_node_root>(children, origin), final_options);
             } else {
-                throw config_exception("exception loading " + origin->description() + ": " + e.what());
+                throw config_exception("exception loading " + origin.description() + ": " + e.what());
             }
         }
     }
 
-    std::shared_ptr<config_document> parseable::raw_parse_document(shared_origin origin,
-                                                                   shared_parse_options options) {
+    config_document parseable::raw_parse_document(config_origin origin,
+                                                  shared_parse_options options) {
         auto stream = reader(options);
 
         config_syntax cont_type = content_type();
@@ -143,11 +141,11 @@ namespace hocon {
         return raw_parse_document(move(stream), move(origin), options_with_content_type);
     }
 
-    std::shared_ptr<config_document> parseable::raw_parse_document(std::unique_ptr<std::istream> stream,
-                                                                   shared_origin origin,
-                                                                   shared_parse_options options) {
+    config_document parseable::raw_parse_document(std::unique_ptr<std::istream> stream,
+                                                  config_origin origin,
+                                                  shared_parse_options options) {
         auto tokens = token_iterator(origin, move(stream), options->get_syntax());
-        return make_shared<simple_config_document>(config_document_parser::parse(move(tokens), origin, *options), options);
+        return config_document(config_document_parser::parse(move(tokens), origin, *options), options);
     }
 
 
@@ -164,7 +162,7 @@ namespace hocon {
 //
 //    }
 //
-//    shared_value parseable::raw_parse_value(shared_origin origin, shared_parse_options options) {
+//    shared_value parseable::raw_parse_value(config_origin origin, shared_parse_options options) {
 //        auto stream = reader(options);
 //
 //        // after reader() we will have loaded the content type
@@ -179,7 +177,7 @@ namespace hocon {
 //        return raw_parse_value(move(stream), origin, options_with_content_type);
 //    }
 //
-//    shared_value parseable::raw_parse_value(unique_ptr<istream> stream, shared_origin origin,
+//    shared_value parseable::raw_parse_value(unique_ptr<istream> stream, config_origin origin,
 //                                            shared_parse_options options) {
 //        token_iterator tokens(origin, move(stream), options->get_syntax());
 //        auto document = config_document_parser::parse(tokens, origin, *options);
@@ -200,8 +198,8 @@ namespace hocon {
         return unique_ptr<istream>(new boost::nowide::ifstream(_input.c_str()));
     }
 
-    shared_origin parseable_file::create_origin() {
-        return make_shared<simple_config_origin>("file: " + _input);
+    config_origin parseable_file::create_origin() {
+        return config_origin("file: " + _input);
     }
 
     config_syntax parseable_file::guess_syntax() {
@@ -217,8 +215,8 @@ namespace hocon {
         return unique_ptr<istringstream>(new istringstream(_input));
     }
 
-    shared_origin parseable_string::create_origin() {
-        return make_shared<simple_config_origin>("string");
+    config_origin parseable_string::create_origin() {
+        return config_origin("string");
     }
 
     /** Parseable resources */
@@ -231,8 +229,8 @@ namespace hocon {
         throw config_exception("reader() should not be called on resources");
     }
 
-    shared_origin parseable_resources::create_origin() {
-        return make_shared<simple_config_origin>(_resource);
+    config_origin parseable_resources::create_origin() {
+        return config_origin(_resource);
     }
 
     /** Parseable Not Found */
@@ -245,7 +243,7 @@ namespace hocon {
         throw config_exception(_message);
     }
 
-    shared_origin parseable_not_found::create_origin() {
-        return make_shared<simple_config_origin>(_what);
+    config_origin parseable_not_found::create_origin() {
+        return config_origin(_what);
     }
 }  // namespace hocon

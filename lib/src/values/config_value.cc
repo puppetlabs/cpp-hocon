@@ -3,20 +3,20 @@
 #include <hocon/config_object.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/objects/simple_config_object.hpp>
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 
 using namespace std;
 
 namespace hocon {
 
-    config_value::config_value(shared_origin origin) :
+    config_value::config_value(config_origin origin) :
         _origin(move(origin)) { }
 
     string config_value::transform_to_string() const {
         return "";
     }
 
-    shared_origin const& config_value::origin() const {
+    config_origin const& config_value::origin() const {
         return _origin;
     }
 
@@ -75,7 +75,7 @@ namespace hocon {
         result += transform_to_string();
     }
 
-    shared_config config_value::at_path(shared_origin origin, path raw_path) const {
+    shared_config config_value::at_path(config_origin origin, path raw_path) const {
         path parent = raw_path.parent();
         shared_config result = at_key(origin, *raw_path.last());
         while (!parent.empty()) {
@@ -86,17 +86,17 @@ namespace hocon {
         return result;
     }
 
-    shared_config config_value::at_key(shared_origin origin, std::string const& key) const {
+    shared_config config_value::at_key(config_origin origin, std::string const& key) const {
         unordered_map<string, shared_value> map { make_pair(key, shared_from_this()) };
         return simple_config_object(origin, map).to_config();
     }
 
     shared_config config_value::at_key(std::string const& key) const {
-        return at_key(make_shared<simple_config_origin>("at_key(" + key + ")"), key);
+        return at_key(config_origin("at_key(" + key + ")"), key);
     }
 
     shared_config config_value::at_path(std::string const& path_expression) const {
-        shared_origin origin = make_shared<simple_config_origin>("at_path(" + path_expression + ")");
+        auto origin = config_origin("at_path(" + path_expression + ")");
         return at_path(move(origin), path::new_path(path_expression));
     }
 

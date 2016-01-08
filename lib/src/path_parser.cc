@@ -19,7 +19,7 @@ namespace hocon {
     }
 
     /** Path parser */
-    const shared_origin path_parser::api_origin = make_shared<simple_config_origin>("path parameter");
+    const config_origin path_parser::api_origin = config_origin("path parameter");
 
     config_node_path path_parser::parse_path_node(string const& path_string, config_syntax flavor) {
         token_iterator tokens = token_iterator(api_origin,
@@ -44,7 +44,7 @@ namespace hocon {
     }
 
     config_node_path path_parser::parse_path_node_expression(iterator& expression,
-                                                             shared_origin origin,
+                                                             config_origin origin,
                                                              string const& original_text,
                                                              config_syntax flavor)
     {
@@ -53,7 +53,7 @@ namespace hocon {
         return config_node_path(path, tokens);
     }
 
-    path path_parser::parse_path_expression(iterator& expression, shared_origin origin,
+    path path_parser::parse_path_expression(iterator& expression, config_origin origin,
                                             string const& original_text, token_list* path_tokens,
                                             config_syntax flavor)
     {
@@ -231,7 +231,7 @@ namespace hocon {
     path path_parser::fast_path_build(path tail, string s) {
         size_t split_at = s.find_last_of('.');
         token_list tokens;
-        tokens.push_back(make_shared<unquoted_text>(nullptr, s));
+        tokens.push_back(make_shared<unquoted_text>(config_origin(), s));
         path with_one_more_element = path(s.substr(split_at + 1), tail);
         if (split_at == string::npos) {
             return with_one_more_element;

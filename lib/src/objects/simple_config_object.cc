@@ -1,13 +1,13 @@
 #include <internal/objects/simple_config_object.hpp>
 #include <hocon/config_value.hpp>
 #include <internal/config_exception.hpp>
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 
 using namespace std;
 
 namespace hocon {
 
-    simple_config_object::simple_config_object(shared_origin origin,
+    simple_config_object::simple_config_object(config_origin origin,
                                                unordered_map <std::string, shared_value> value,
                                                resolve_status status, bool ignores_fallbacks) :
         config_object(move(origin)), _value(move(value)), _ignores_fallbacks(ignores_fallbacks) { }
@@ -39,8 +39,7 @@ namespace hocon {
                 }
             }
             // as soon as we have a non-object, replace it entirely
-            shared_config subtree = value->at_path(
-                    make_shared<simple_config_origin>("with_value(" + next.render() + ")"), next);
+            shared_config subtree = value->at_path(config_origin{"with_value(" + next.render() + ")"}, next);
             return with_value(key, subtree->root());
         }
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "simple_config_origin.hpp"
+#include <hocon/config_origin.hpp>
 
 #include <string>
 
@@ -17,13 +17,14 @@ namespace hocon {
 
     class token {
     public:
-        token(token_type type, shared_origin origin = nullptr,
+        token(token_type type, config_origin origin,
               std::string token_text = "", std::string debug_string = "");
+        token(token_type type, std::string token_text = "", std::string debug_string = "");
 
         virtual token_type get_token_type() const;
         virtual std::string token_text() const;
         virtual std::string to_string() const;
-        virtual shared_origin const& origin() const;
+        virtual config_origin const& origin() const;
 
         int line_number() const;
 
@@ -33,7 +34,7 @@ namespace hocon {
         token_type _token_type;
 
         /** For singleton tokens this is null. */
-        shared_origin _origin;
+        config_origin _origin;
 
         std::string _token_text;
         std::string _debug_string;

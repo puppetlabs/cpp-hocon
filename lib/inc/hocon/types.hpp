@@ -12,7 +12,6 @@ namespace hocon {
     using shared_object = std::shared_ptr<const config_object>;
 
     class config_origin;
-    using shared_origin = std::shared_ptr<const config_origin>;
 
     class path;
 

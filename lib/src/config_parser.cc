@@ -7,7 +7,7 @@ namespace hocon { namespace config_parser {
     using namespace std;
 
     shared_value parse(shared_ptr<const config_node_root> document,
-            shared_origin origin,
+            config_origin origin,
             shared_parse_options const& options,
             shared_ptr<config_include_context> include_context)
     {
@@ -15,7 +15,7 @@ namespace hocon { namespace config_parser {
         return context.parse();
     }
 
-    parse_context::parse_context(config_syntax flavor, shared_origin origin, shared_ptr<const config_node_root> document,
+    parse_context::parse_context(config_syntax flavor, config_origin origin, shared_ptr<const config_node_root> document,
             void* includer, shared_ptr<config_include_context> include_context) :
         _line_number(1), _document(document), /*_includer(includer),*/ _include_context(include_context),
         /*_flavor(flavor),*/ _base_origin(origin), array_count(0)

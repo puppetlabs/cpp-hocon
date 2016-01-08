@@ -2,9 +2,13 @@
 
 #include "types.hpp"
 #include <memory>
+#include <vector>
+#include <string>
 #include "export.h"
 
 namespace hocon {
+
+    enum class origin_type { GENERIC, FILE, RESOURCE };
 
     /**
      * Represents the origin (such as filename and line number) of a
@@ -28,13 +32,14 @@ namespace hocon {
      */
     class config_origin {
     public:
+        //-------------------- PUBLIC API --------------------
         /**
          * Returns a string describing the origin of a value or exception. This will
          * never return null.
          *
          * @return string describing the origin
          */
-        LIBCPP_HOCON_EXPORT virtual std::string description() const = 0;
+        LIBCPP_HOCON_EXPORT std::string description() const;
 
         /**
          * Returns a {@code ConfigOrigin} based on this one, but with the given
@@ -53,7 +58,7 @@ namespace hocon {
          * @param lineNumber the new line number
          * @return the created ConfigOrigin
          */
-        LIBCPP_HOCON_EXPORT virtual shared_origin with_line_number(int line_number) const = 0;
+        LIBCPP_HOCON_EXPORT config_origin with_line_number(int line_number) const;
 
         /**
          * Returns a line number where the value or exception originated. This will
@@ -61,7 +66,26 @@ namespace hocon {
          *
          * @return line number or -1 if none is available
          */
-        LIBCPP_HOCON_EXPORT virtual int line_number() const = 0;
+        LIBCPP_HOCON_EXPORT int line_number() const;
+
+        //-------------------- INTERNAL API --------------------
+        // Declares a null origin.
+        config_origin() {}
+        config_origin(std::string description, int line_number = -1, int end_line_number = -1,
+            origin_type org_type = origin_type::GENERIC, std::string resource_or_null = {},
+            std::vector<std::string> comments_or_null = {});
+
+        config_origin append_comments(std::vector<std::string> comments) const;
+
+        operator bool() const { return _impl != nullptr; }
+
+        bool operator==(const config_origin &other) const;
+        bool operator!=(const config_origin &other) const;
+
+    private:
+        // Use a shared_ptr implementation to share identical origins between multiple objects.
+        struct simple_config_origin;
+        std::shared_ptr<const simple_config_origin> _impl;
     };
 
 }  // namespace hocon

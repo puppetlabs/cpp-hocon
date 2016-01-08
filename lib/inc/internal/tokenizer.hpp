@@ -29,8 +29,8 @@ namespace hocon {
 
     class token_iterator : public iterator {
     public:
-        token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);
-        token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, config_syntax flavor);
+        token_iterator(config_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);
+        token_iterator(config_origin origin, std::unique_ptr<std::istream> input, config_syntax flavor);
 
         bool has_next() override;
         shared_token next() override;
@@ -42,12 +42,12 @@ namespace hocon {
         public:
             whitespace_saver();
             void add(char c);
-            shared_token check(token_type type, shared_origin base_origin, int line_number);
+            shared_token check(token_type type, config_origin base_origin, int line_number);
 
         private:
-            shared_token next_is_not_simple_value(shared_origin base_origin, int line_number);
-            shared_token next_is_simple_value(shared_origin origin, int line_number);
-            shared_token create_whitespace_token(shared_origin base_origin, int line_number);
+            shared_token next_is_not_simple_value(config_origin base_origin, int line_number);
+            shared_token next_is_simple_value(config_origin origin, int line_number);
+            shared_token create_whitespace_token(config_origin base_origin, int line_number);
 
             std::string _whitespace;
             bool _last_token_was_simple_value;
@@ -88,14 +88,14 @@ namespace hocon {
 
         static bool is_simple_value(token_type type);
         static std::string as_string(char c);
-        static shared_origin line_origin(shared_origin base_origin, int line_number);
+        static config_origin line_origin(config_origin base_origin, int line_number);
 
-        shared_origin _origin;
+        config_origin _origin;
         std::unique_ptr<std::istream> _input;
         std::vector<char> _buffer;
         bool _allow_comments;
         int _line_number;
-        shared_origin _line_origin;
+        config_origin _line_origin;
         std::queue<shared_token> _tokens;
         whitespace_saver _whitespace_saver;
     };

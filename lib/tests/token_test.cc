@@ -2,7 +2,7 @@
 
 #include <internal/token.hpp>
 #include <internal/tokens.hpp>
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_boolean.hpp>
 #include "test_utils.hpp"

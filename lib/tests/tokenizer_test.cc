@@ -42,8 +42,8 @@ TEST_CASE("tokenize basic strings", "[tokenizer]") {
         string source = "\n\n";
         token_list expected {
                 tokens::start_token(),
-                make_shared<line>(fake_origin()->with_line_number(1)),
-                make_shared<line>(fake_origin()->with_line_number(2)),
+                make_shared<line>(fake_origin().with_line_number(1)),
+                make_shared<line>(fake_origin().with_line_number(2)),
                 tokens::end_token()
         };
         tokenizer_test(source, expected);

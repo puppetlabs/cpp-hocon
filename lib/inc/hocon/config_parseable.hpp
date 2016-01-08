@@ -38,7 +38,7 @@ namespace hocon {
         /**
          * Returns a config_origin describing the origin of the paresable item.
          */
-        virtual std::shared_ptr<const config_origin> origin() const = 0;
+        virtual config_origin origin() const = 0;
 
         /**
          * Get the initial options, which can be modified then passed to parse().

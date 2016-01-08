@@ -6,6 +6,8 @@
 
 namespace hocon {
 
+    class parseable;
+
     /**
      * Context provided to a {@link config_includer}; this interface is only useful
      * inside a {@code config_includer} implementation, and is not intended for apps
@@ -18,8 +20,9 @@ namespace hocon {
      * interface is likely to grow new methods over time, so third-party
      * implementations will break.
      */
-    class LIBCPP_HOCON_EXPORT config_include_context {
+    class config_include_context {
     public:
+        //-------------------- PUBLIC API --------------------
         /**
          * Tries to find a name relative to whatever is doing the including, for
          * example in the same directory as the file doing the including. Returns
@@ -36,7 +39,7 @@ namespace hocon {
          * @return parseable item relative to the resource doing the including, or
          *         null
          */
-        virtual std::shared_ptr<config_parseable> relative_to(std::string file_name) const = 0;
+        LIBCPP_HOCON_EXPORT std::shared_ptr<config_parseable> relative_to(std::string file_name) const;
 
         /**
          * Parse options to use (if you use another method to get a
@@ -45,7 +48,13 @@ namespace hocon {
          *
          * @return the parse options
          */
-        virtual config_parse_options parse_options() const = 0;
+        LIBCPP_HOCON_EXPORT config_parse_options parse_options() const;
+
+        //-------------------- INTERNAL API --------------------
+        config_include_context(std::shared_ptr<parseable> parseable);
+
+    private:
+        std::shared_ptr<parseable> _parseable;
     };
 
 }  // namespace hocon

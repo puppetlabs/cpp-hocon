@@ -1,7 +1,7 @@
 #pragma once
 
 #include <hocon/config_value.hpp>
-#include <internal/simple_config_origin.hpp>
+#include <hocon/config_origin.hpp>
 
 #include <string>
 
@@ -16,7 +16,7 @@ namespace hocon {
      */
     class config_null : public config_value {
     public:
-        config_null(shared_origin origin);
+        config_null(config_origin origin);
 
         config_value_type value_type() const override;
         std::string transform_to_string() const override;

@@ -46,8 +46,8 @@ set(PROJECT_SOURCES
     src/token.cc
     src/tokens.cc
     src/tokenizer.cc
-    src/simple_config_document.cc
-    src/simple_config_origin.cc
+    src/config_document.cc
+    src/config_origin.cc
     src/config_util.cc
     src/config_parse_options.cc
     src/config_render_options.cc
@@ -55,7 +55,7 @@ set(PROJECT_SOURCES
     src/config_document_factory.cc
     src/config_parser.cc
     src/parseable.cc
-    src/simple_include_context.cc
+    src/config_include_context.cc
     src/simple_includer.cc
     src/config_resolve_options.cc
     src/config.cc

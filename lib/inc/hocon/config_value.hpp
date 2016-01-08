@@ -46,7 +46,7 @@ namespace hocon {
          *
          * @return where the value came from
          */
-        virtual shared_origin const& origin() const;
+        virtual config_origin const& origin() const;
 
         /**
          * The config_value_type of the value; matches the JSON type schema.
@@ -135,15 +135,15 @@ namespace hocon {
         friend resolve_status resolve_status_from_values(std::vector<shared_value> const& v);
 
     protected:
-        config_value(shared_origin origin);
+        config_value(config_origin origin);
 
         virtual std::string transform_to_string() const;
         void render(std::string& result, int indent, bool at_root, std::string at_key,
                     config_render_options options) const;
         virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
 
-        shared_config at_key(shared_origin origin, std::string const& key) const;
-        shared_config at_path(shared_origin origin, path raw_path) const;
+        shared_config at_key(config_origin origin, std::string const& key) const;
+        shared_config at_path(config_origin origin, path raw_path) const;
 
         class modifier {
          public:
@@ -161,6 +161,6 @@ namespace hocon {
         };
 
     private:
-        shared_origin _origin;
+        config_origin _origin;
     };
 }  // namespace hocon
