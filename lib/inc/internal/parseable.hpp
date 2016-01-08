@@ -23,7 +23,7 @@ namespace hocon {
 
         void post_construct(shared_parse_options base_options);
 
-        std::shared_ptr<config_document> parse_config_document();
+        config_document parse_config_document();
 
         shared_parse_options options() const override;
         config_origin origin() const override;
@@ -37,12 +37,12 @@ namespace hocon {
         virtual std::shared_ptr<config_parseable> relative_to(std::string file_name);
 
     private:
-        std::shared_ptr<config_document> parse_document(shared_parse_options base_options);
-        std::shared_ptr<config_document> parse_document(config_origin origin, shared_parse_options final_options);
-        std::shared_ptr<config_document> raw_parse_document(std::unique_ptr<std::istream> stream, config_origin origin,
+        config_document parse_document(shared_parse_options base_options);
+        config_document parse_document(config_origin origin, shared_parse_options final_options);
+        config_document raw_parse_document(std::unique_ptr<std::istream> stream, config_origin origin,
                                            shared_parse_options options);
-        std::shared_ptr<config_document> raw_parse_document(config_origin origin,
-                                                            shared_parse_options options);
+        config_document raw_parse_document(config_origin origin,
+                                           shared_parse_options options);
 
         shared_parse_options fixup_options(shared_parse_options base_options);
 

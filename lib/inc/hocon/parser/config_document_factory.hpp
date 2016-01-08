@@ -18,10 +18,10 @@ namespace hocon { namespace config_document_factory {
      *       parse options to control how the file is interpreted
      * @return the parsed configuration
      */
-    LIBCPP_HOCON_EXPORT std::shared_ptr<config_document> parse_file(std::string input_file_path, shared_parse_options options);
+    LIBCPP_HOCON_EXPORT config_document parse_file(std::string input_file_path, shared_parse_options options);
 
     /** Parses a file into a config_document instance using default options. */
-    LIBCPP_HOCON_EXPORT std::shared_ptr<config_document> parse_file(std::string input_file_path);
+    LIBCPP_HOCON_EXPORT config_document parse_file(std::string input_file_path);
 
     /**
      * Parses a string which should be valid HOCON or JSON.
@@ -30,9 +30,9 @@ namespace hocon { namespace config_document_factory {
      * @param options parse options
      * @return the parsed configuration
      */
-    LIBCPP_HOCON_EXPORT std::shared_ptr<config_document> parse_string(std::string s, shared_parse_options options);
+    LIBCPP_HOCON_EXPORT config_document parse_string(std::string s, shared_parse_options options);
 
     /** Parses a string into a config_document instance using default options. */
-    LIBCPP_HOCON_EXPORT std::shared_ptr<config_document> parse_string(std::string s);
+    LIBCPP_HOCON_EXPORT config_document parse_string(std::string s);
 
 }}  // namespace hocon::config_document_factory

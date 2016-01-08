@@ -3,9 +3,12 @@
 #include <string>
 #include <memory>
 #include <hocon/config_value.hpp>
+#include <hocon/config_parse_options.hpp>
 #include "../export.h"
 
 namespace hocon {
+    class config_node_root;
+
     /**
      * Represents an individual HOCON or JSON file, preserving all
      * formatting and syntax details.  This can be used to replace
@@ -25,6 +28,7 @@ namespace hocon {
      */
     class LIBCPP_HOCON_EXPORT config_document {
     public:
+        //-------------------- PUBLIC API --------------------
         /**
          * Returns a new config_document that is a copy of the current config_document,
          * but with the desired value set at the desired path. If the path exists, it will
@@ -43,7 +47,7 @@ namespace hocon {
          *                  into the config_document.
          * @return a copy of the config_document with the desired value at the desired path
          */
-        virtual std::unique_ptr<config_document> with_value_text(std::string path, std::string newValue) const = 0;
+        config_document with_value_text(std::string path, std::string newValue) const;
 
         /**
          * Returns a new config_document that is a copy of the current
@@ -57,8 +61,7 @@ namespace hocon {
          *                 config_document.
          * @return a copy of the config_document with the desired value at the desired path
          */
-        virtual std::unique_ptr<config_document> with_value(std::string path,
-                                                            std::shared_ptr<config_value> new_value) const = 0;
+        config_document with_value(std::string path, std::shared_ptr<config_value> new_value) const;
 
         /**
          * Returns a new config_document that is a copy of the current config_document, but with
@@ -69,7 +72,7 @@ namespace hocon {
          * @param path the path to remove from the document
          * @return a copy of the config_document with the desired value removed from the document.
          */
-        virtual std::unique_ptr<config_document> without_path(std::string path) const = 0;
+        config_document without_path(std::string path) const;
 
         /**
          * Returns a boolean indicating whether or not a config_document has a value at the desired path.
@@ -77,14 +80,22 @@ namespace hocon {
          * @param path the path to check
          * @return true if the path exists in the document, otherwise false
          */
-        virtual bool has_path(std::string const& path) const = 0;
+        bool has_path(std::string const& path) const;
 
         /**
          * The original text of the input, modified if necessary with
          * any replaced or added values.
          * @return the modified original text
          */
-        virtual std::string render() const = 0;
+        std::string render() const;
+
+        //-------------------- INTERNAL API --------------------
+        config_document(std::shared_ptr<const config_node_root> root,
+                        shared_parse_options opts);
+
+    private:
+        std::shared_ptr<const config_node_root> _config_node_tree;
+        shared_parse_options _parse_options;
     };
 
     /**
