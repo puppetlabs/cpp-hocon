@@ -63,7 +63,9 @@ set(PROJECT_SOURCES
     src/substitution_expression.cc
     src/simple_config_list.cc
     src/config_delayed_merge.cc
+    src/config_delayed_merge_object
 )
+
 
 ## An object target is generated that can be used by both the library and test executable targets.
 ## Without the intermediate target, unexported symbols can't be tested.

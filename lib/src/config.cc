@@ -196,7 +196,7 @@ namespace hocon {
         return _object;
     }
 
-    shared_ptr<const config_mergeable> config::with_fallback(shared_ptr<config_mergeable> other) const {
+    shared_ptr<const config_mergeable> config::with_fallback(shared_ptr<const config_mergeable> other) const {
         // TODO: this isn't technically the same functionality as the Java, but full
         // functionality requires having merging working, see AbstractConfigValue#withFallback
         return dynamic_pointer_cast<const config_mergeable>(shared_from_this());

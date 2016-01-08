@@ -6,7 +6,6 @@
 #include <internal/simple_config_origin.hpp>
 #include <internal/container.hpp>
 #include <internal/config_delayed_merge.hpp>
-#include <internal/mergeable_value.hpp>
 #include <algorithm>
 
 using namespace std;
@@ -154,11 +153,11 @@ namespace hocon {
         return v->relativized(_prefix);
     }
 
-    shared_value config_value::with_fallback(std::shared_ptr<const config_mergeable> mergeable) {
+    shared_ptr<const config_mergeable> config_value::with_fallback(std::shared_ptr<const config_mergeable> mergeable) const {
         if (ignores_fallbacks()) {
             return shared_from_this();
         } else {
-            auto other = dynamic_pointer_cast<const mergeable_value>(mergeable)->to_fallback_value();
+            auto other = dynamic_pointer_cast<const config_mergeable>(mergeable)->to_fallback_value();
 
             if (auto unmergeable_other = dynamic_pointer_cast<const unmergeable>(other)) {
                 return merged_with_the_unmergeable(unmergeable_other);
@@ -198,27 +197,16 @@ namespace hocon {
 
         // if we turn out to be an object, and the fallback also does,
         // then a merge may be required; delay until we resolve.
-        std::vector<shared_value> new_stack { stack };
 
         auto unmerged_values = fallback->unmerged_values();
-        new_stack.insert(new_stack.end(), unmerged_values.begin(), unmerged_values.end());
-        return construct_delayed_merge(config_object::merge_origins(new_stack), new_stack);
+        stack.insert(stack.end(), unmerged_values.begin(), unmerged_values.end());
+        return construct_delayed_merge(config_object::merge_origins(stack), move(stack));
     }
 
     shared_value config_value::merged_with_the_unmergeable(std::shared_ptr<const unmergeable> fallback) const {
         require_not_ignoring_fallbacks();
 
         return merged_with_the_unmergeable({ shared_from_this() }, move(fallback));
-    }
-
-    shared_value config_value::delay_merge(std::vector<shared_value> stack, shared_value fallback) const {
-        // if we turn out to be an object, and the fallback also does,
-        // then a merge may be required.
-        // if we contain a substitution, resolving it may need to look
-        // back to the fallback.
-        std::vector<shared_value> new_stack { stack };
-        new_stack.push_back(fallback);
-        return construct_delayed_merge(config_object::merge_origins(new_stack), new_stack);
     }
 
     shared_value config_value::merged_with_object(vector<shared_value> stack, shared_object fallback) const {
@@ -257,4 +245,18 @@ namespace hocon {
 
         return merged_with_object({ shared_from_this() }, move(fallback));
     }
+
+    shared_value config_value::to_fallback_value() const {
+        return shared_from_this();
+    }
+
+    shared_value config_value::delay_merge(std::vector<shared_value> stack, shared_value fallback) const {
+        // if we turn out to be an object, and the fallback also does,
+        // then a merge may be required.
+        // if we contain a substitution, resolving it may need to look
+        // back to the fallback.
+        stack.push_back(move(fallback));
+        return construct_delayed_merge(config_object::merge_origins(stack), move(stack));
+    }
+
 }  // namespace hocon

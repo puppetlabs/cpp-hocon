@@ -1,6 +1,7 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
 #include <internal/simple_config_origin.hpp>
+#include <internal/config_delayed_merge_object.hpp>
 #include <internal/config_exception.hpp>
 #include <hocon/path.hpp>
 
@@ -44,6 +45,10 @@ namespace hocon {
         }
     }
 
+    shared_value config_object::construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const {
+        return make_shared<config_delayed_merge_object>(move(origin), move(stack));
+    }
+
     std::shared_ptr<const config> config_object::to_config() const {
         return _config;
     }
@@ -52,18 +57,13 @@ namespace hocon {
         return config_value_type::OBJECT;
     }
 
-    shared_value config_object::with_fallback(shared_ptr<const config_mergeable> mergeable) {
-        return dynamic_pointer_cast<const config_value>(config_value::with_fallback(mergeable));
-    }
-
-    shared_origin config_object::merge_origins(std::vector<shared_value> stack) {
+    shared_origin config_object::merge_origins(std::vector<shared_value> const& stack) {
         if (stack.empty()) {
             throw config_exception("can't merge origins on empty list");
         }
 
         vector<shared_origin> origins;
         shared_origin first_origin = nullptr;
-        int num_merged = 0;
 
         for (shared_value v : stack) {
             if (first_origin == nullptr) {
@@ -77,16 +77,16 @@ namespace hocon {
                 // likely to be "implementation details"
             } else {
                 origins.push_back(v->origin());
-                num_merged += 1;
             }
         }
 
-        if (num_merged == 0) {
+        if (origins.size() == 0) {
             // the configs were all empty, so just use the first one
             origins.push_back(first_origin);
         }
 
         return simple_config_origin::merge_origins(origins);
     }
+
 
 }  // namespace hocon
