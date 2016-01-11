@@ -13,7 +13,7 @@ namespace hocon {
     */
     class unmergeable {
     public:
-        virtual std::vector<shared_value> unmerged_values() const = 0;
+        virtual std::vector<shared_value> const& unmerged_values() const = 0;
     };
 
 }  // namespace hocon

@@ -31,10 +31,28 @@ namespace hocon {
 
         std::shared_ptr<const simple_config_origin> append_comments(std::vector<std::string> comments) const;
 
+        static shared_origin merge_origins(shared_origin a, shared_origin b);
+        static shared_origin merge_origins(std::vector<shared_value> const& stack);
+        static shared_origin merge_origins(std::vector<shared_origin> const& stack);
+
         bool operator==(const simple_config_origin &other) const;
         bool operator!=(const simple_config_origin &other) const;
 
     private:
+        static std::shared_ptr<const simple_config_origin> merge_two(std::shared_ptr<const simple_config_origin> a,
+                                                                     std::shared_ptr<const simple_config_origin> b);
+
+        // this picks the best pair to merge, because the pair has the most in
+        // common. we want to merge two lines in the same file rather than something
+        // else with one of the lines; because two lines in the same file can be
+        // better consolidated.
+        static std::shared_ptr<const simple_config_origin> merge_three(std::shared_ptr<const simple_config_origin> a,
+                                                                       std::shared_ptr<const simple_config_origin> b,
+                                                                       std::shared_ptr<const simple_config_origin> c);
+
+        static int similarity(std::shared_ptr<const simple_config_origin> a,
+                              std::shared_ptr<const simple_config_origin> b);
+
         std::string _description;
         int _line_number;
         int _end_line_number;

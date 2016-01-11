@@ -6,6 +6,7 @@
 namespace hocon {
 
     class LIBCPP_HOCON_EXPORT config_mergeable {
+        friend class config_value;
     public:
         /**
          * Returns a new value computed by merging this value with another, with
@@ -58,8 +59,9 @@ namespace hocon {
          * @return a new object (or the original one, if the fallback doesn't get
          *         used)
          */
-        virtual std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<config_mergeable> other) const = 0;
+        virtual std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<const config_mergeable> other) const = 0;
 
+    protected:
         /**
          * Converts a config to its root object and a config_value to itself.
          * Originally in the MergeableValue interface, squashing to ease C++ public API separation

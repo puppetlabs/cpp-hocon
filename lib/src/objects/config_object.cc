@@ -1,5 +1,7 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
+#include <internal/simple_config_origin.hpp>
+#include <internal/config_delayed_merge_object.hpp>
 #include <internal/config_exception.hpp>
 #include <hocon/path.hpp>
 
@@ -43,6 +45,10 @@ namespace hocon {
         }
     }
 
+    shared_value config_object::construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const {
+        return make_shared<config_delayed_merge_object>(move(origin), move(stack));
+    }
+
     std::shared_ptr<const config> config_object::to_config() const {
         return _config;
     }
@@ -50,5 +56,37 @@ namespace hocon {
     config_value_type config_object::value_type() const {
         return config_value_type::OBJECT;
     }
+
+    shared_origin config_object::merge_origins(std::vector<shared_value> const& stack) {
+        if (stack.empty()) {
+            throw config_exception("can't merge origins on empty list");
+        }
+
+        vector<shared_origin> origins;
+        shared_origin first_origin = nullptr;
+
+        for (shared_value v : stack) {
+            if (first_origin == nullptr) {
+                first_origin = v->origin();
+            }
+
+            auto cv = dynamic_pointer_cast<const config_object>(v);
+            if (cv && cv->get_resolve_status() == resolve_status::RESOLVED && cv->is_empty()) {
+                // don't include empty files or the .empty()
+                // config in the description, since they are
+                // likely to be "implementation details"
+            } else {
+                origins.push_back(v->origin());
+            }
+        }
+
+        if (origins.size() == 0) {
+            // the configs were all empty, so just use the first one
+            origins.push_back(first_origin);
+        }
+
+        return simple_config_origin::merge_origins(origins);
+    }
+
 
 }  // namespace hocon

@@ -186,7 +186,7 @@ namespace hocon {
          */
         virtual shared_origin origin() const;
 
-        std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<config_mergeable> other) const override;
+        std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<const config_mergeable> other) const override;
 
         shared_value to_fallback_value() const override;
 

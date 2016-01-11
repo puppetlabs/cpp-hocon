@@ -2,11 +2,14 @@
 
 #include "config_origin.hpp"
 #include "config_render_options.hpp"
+#include "config_mergeable.hpp"
 #include "path.hpp"
 #include <string>
 #include "export.h"
 
 namespace hocon {
+
+    class unmergeable;
 
     /**
      * The type of a configuration value (following the <a
@@ -33,11 +36,12 @@ namespace hocon {
      * Also, this interface is likely to grow new methods over time, so third-party
      * implementations will break.
      */
-    class LIBCPP_HOCON_EXPORT config_value : public std::enable_shared_from_this<config_value> {
+    class LIBCPP_HOCON_EXPORT config_value : public config_mergeable, public std::enable_shared_from_this<config_value> {
         friend class token;
         friend class value;
         friend class default_transformer;
         friend class config;
+        friend class config_object;
         friend class simple_config_object;
     public:
         /**
@@ -134,6 +138,8 @@ namespace hocon {
 
         friend resolve_status resolve_status_from_values(std::vector<shared_value> const& v);
 
+        std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<const config_mergeable> other) const override;
+
     protected:
         config_value(shared_origin origin);
 
@@ -163,8 +169,32 @@ namespace hocon {
         private:
             std::string _prefix;
         };
+        void require_not_ignoring_fallbacks() const;
+
+        /* this is virtualized rather than a field because only some subclasses
+         * really need to store the boolean, and they may be able to pack it
+         * with another boolean to save space.
+         */
+        bool ignores_fallbacks() const;
+        shared_value with_fallbacks_ignored() const;
+
+        shared_value merged_with_the_unmergeable(std::vector<shared_value> stack,
+                                                 std::shared_ptr<const unmergeable> fallback) const;
+        shared_value merged_with_the_unmergeable(std::shared_ptr<const unmergeable> fallback) const;
+
+        shared_value merged_with_object(std::vector<shared_value> stack, shared_object fallback) const;
+        shared_value merged_with_object(shared_object fallback) const;
+
+        shared_value merged_with_non_object(std::vector<shared_value> stack, shared_value fallback) const;
+        shared_value merged_with_non_object(shared_value fallback) const;
+
+        virtual shared_value construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const;
+
+        shared_value to_fallback_value() const override;
 
     private:
+        shared_value delay_merge(std::vector<shared_value> stack, shared_value fallback) const;
+
         shared_origin _origin;
     };
 }  // namespace hocon
