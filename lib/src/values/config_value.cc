@@ -4,6 +4,8 @@
 #include <internal/config_exception.hpp>
 #include <internal/objects/simple_config_object.hpp>
 #include <internal/simple_config_origin.hpp>
+#include <internal/container.hpp>
+#include <algorithm>
 
 using namespace std;
 
@@ -98,6 +100,40 @@ namespace hocon {
     shared_config config_value::at_path(std::string const& path_expression) const {
         shared_origin origin = make_shared<simple_config_origin>("at_path(" + path_expression + ")");
         return at_path(move(origin), path::new_path(path_expression));
+    }
+
+    std::vector<shared_value> config_value::replace_child_in_list(std::vector<shared_value> const& values,
+                                                                  shared_value const& child, shared_value replacement)
+    {
+        vector<shared_value> new_list = values;
+        auto it = find(new_list.begin(), new_list.end(), child);
+        assert(it != values.end());
+
+        if (replacement) {
+            *it = move(replacement);
+        } else {
+            new_list.erase(it);
+        }
+        return new_list;
+    }
+
+    bool config_value::has_descendant_in_list(std::vector<shared_value> const& values, shared_value const& descendant)
+    {
+        // Simple breadth-first-search for descendants
+        // We look for the same object via pointer comparison, not equivalent objects.
+        if (find(values.begin(), values.end(), descendant) != values.end()) {
+            return true;
+        }
+
+        for (auto& v : values) {
+            if (auto c = dynamic_pointer_cast<const container>(v)) {
+                if (c->has_descendant(descendant)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     config_value::no_exceptions_modifier::no_exceptions_modifier(string prefix): _prefix(std::move(prefix)) {}

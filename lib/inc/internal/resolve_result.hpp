@@ -3,15 +3,14 @@
 #include <memory>
 
 namespace hocon {
-    // TODO: yolo
-    template<typename V>
-    class resolve_result {
-    public:
-        resolve_result(resolve_context context, V value) :
-            _context(std::move(context)), _value(std::move(value)) {}
 
-    private:
-        resolve_context _context;
-        V _value;
+    template<typename V>
+    struct resolve_result {
+        resolve_result(std::shared_ptr<const resolve_context> c, V v) :
+            context(std::move(c)), value(std::move(v)) {}
+
+        std::shared_ptr<const resolve_context> context;
+        V value;
     };
+
 }  // namespace hocon
