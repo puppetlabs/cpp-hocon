@@ -1,11 +1,28 @@
 #include <hocon/config_value.hpp>
 #include <internal/simple_config_list.hpp>
 #include <internal/config_exception.hpp>
+#include <internal/resolve_context.hpp>
+#include <internal/resolve_source.hpp>
+#include <internal/resolve_result.hpp>
 #include <algorithm>
 
 using namespace std;
 
 namespace hocon {
+
+    struct simple_config_list::resolve_modifier : public modifier {
+        resolve_modifier(resolve_context c, resolve_source s) : context(move(c)), source(move(s)) {}
+
+        shared_value modify_child_may_throw(string key, shared_value v) override
+        {
+            resolve_result<shared_value> result = context.resolve(v, source);
+            context = result.context;
+            return result.value;
+        }
+
+        resolve_context context;
+        resolve_source source;
+    };
 
     simple_config_list::simple_config_list(shared_origin origin, std::vector<shared_value> value)
             : config_list(move(origin)), _value(move(value)), _resolved(resolve_status_from_values(_value)) { }
@@ -33,21 +50,26 @@ namespace hocon {
         return has_descendant_in_list(_value, descendant);
     }
 
-    resolve_result<shared_ptr<const simple_config_list>>
-    simple_config_list::resolve_substitutions(std::shared_ptr<resolve_context> context,
-                                              std::shared_ptr<resolve_source> source) const
+    resolve_result<shared_value>
+    simple_config_list::resolve_substitutions(resolve_context const& context, resolve_source const& source) const
     {
         if (_resolved == resolve_status::RESOLVED) {
-            return resolve_result<shared_ptr<const simple_config_list>>(context, dynamic_pointer_cast<const simple_config_list>(shared_from_this()));
+            return resolve_result<shared_value>(context, shared_from_this());
         }
 
-        // TODO Implement the rest
-        throw config_exception("resolve_substitutions implementation incomplete");
+        if (context.is_restricted_to_child()) {
+            return resolve_result<shared_value>(context, shared_from_this());
+        } else {
+            resolve_modifier modifier{context, source.push_parent(dynamic_pointer_cast<const container>(shared_from_this()))};
+            auto value = modify_may_throw(modifier, context.options().get_allow_unresolved() ? boost::optional<resolve_status>() : resolve_status::RESOLVED);
+            return resolve_result<shared_value>(modifier.context, value);
+        }
     }
 
     std::shared_ptr<const simple_config_list> simple_config_list::relativized(const std::string prefix) const
     {
-        return modify(make_shared<no_exceptions_modifier>(move(prefix)), get_resolve_status());
+        no_exceptions_modifier modifier(move(prefix));
+        return modify(modifier, get_resolve_status());
     }
 
     std::shared_ptr<const simple_config_list> simple_config_list::concatenate(shared_ptr<const simple_config_list> other) const
@@ -92,33 +114,19 @@ namespace hocon {
     }
 
     std::shared_ptr<const simple_config_list>
-    simple_config_list::modify(std::shared_ptr<no_exceptions_modifier> modifier,
-                               resolve_status new_resolve_status) const
+    simple_config_list::modify(no_exceptions_modifier& modifier,
+                               boost::optional<resolve_status> new_resolve_status) const
     {
         // TODO: Do we want similar exception wrapping?
         return modify_may_throw(modifier, new_resolve_status);
     }
 
     std::shared_ptr<const simple_config_list>
-    simple_config_list::modify_may_throw(std::shared_ptr<modifier> modifier,
-                                         resolve_status new_resolve_status) const
+    simple_config_list::modify_may_throw(modifier& modifier,
+                                         boost::optional<resolve_status> new_resolve_status) const
     {
         // TODO
         return {};
-    }
-
-    simple_config_list::resolve_modifier::resolve_modifier(std::shared_ptr<resolve_context> context,
-                                                           std::shared_ptr<resolve_source> source)
-    {
-        // TODO
-    }
-
-    shared_value
-    simple_config_list::resolve_modifier::modify_child_may_throw(std::string key,
-                                                                 shared_value v) const
-    {
-        // TODO
-        return v;
     }
 
 }  // namespace hocon

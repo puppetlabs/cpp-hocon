@@ -29,11 +29,19 @@ namespace hocon {
          */
         shared_object with_only_path_or_null(path raw_path) const override;
 
+    protected:
+        resolve_result<shared_value>
+            resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
+
     private:
         std::unordered_map<std::string, shared_value> _value;
-        // TODO: Put these back when needed, currently cause an unused error
-//        bool _resolved;
+        resolve_status _resolved;
         bool _ignores_fallbacks;
+
+        std::shared_ptr<simple_config_object> modify(no_exceptions_modifier& modifier) const;
+        std::shared_ptr<simple_config_object> modify_may_throw(modifier& modifier) const;
+
+        struct resolve_modifier;
     };
 
 }  // namespace hocon

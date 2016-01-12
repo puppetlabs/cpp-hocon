@@ -64,6 +64,8 @@ set(PROJECT_SOURCES
     src/simple_config_list.cc
     src/config_delayed_merge.cc
     src/config_delayed_merge_object.cc
+    src/resolve_context.cc
+    src/resolve_source.cc
 )
 
 

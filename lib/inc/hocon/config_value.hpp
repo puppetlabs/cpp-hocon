@@ -10,6 +10,11 @@
 namespace hocon {
 
     class unmergeable;
+    class resolve_source;
+    class resolve_context;
+
+    template<typename T>
+    struct resolve_result;
 
     /**
      * The type of a configuration value (following the <a
@@ -151,20 +156,23 @@ namespace hocon {
         shared_config at_key(shared_origin origin, std::string const& key) const;
         shared_config at_path(shared_origin origin, path raw_path) const;
 
+        virtual resolve_result<shared_value>
+            resolve_substitutions(resolve_context const& context, resolve_source const& source) const;
+
         static std::vector<shared_value> replace_child_in_list(std::vector<shared_value> const& values,
                                                                shared_value const& child, shared_value replacement);
         static bool has_descendant_in_list(std::vector<shared_value> const& values, shared_value const& descendant);
 
         class modifier {
          public:
-            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const = 0;
+            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) = 0;
         };
 
         class no_exceptions_modifier : public modifier {
         public:
             no_exceptions_modifier(std::string prefix);
 
-            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const override;
+            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) override;
             shared_value modify_child(std::string key, shared_value v) const;
         private:
             std::string _prefix;

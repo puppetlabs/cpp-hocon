@@ -6,6 +6,7 @@
 #include <internal/simple_config_origin.hpp>
 #include <internal/container.hpp>
 #include <internal/config_delayed_merge.hpp>
+#include <internal/resolve_result.hpp>
 #include <algorithm>
 
 using namespace std;
@@ -103,6 +104,13 @@ namespace hocon {
         return at_path(move(origin), path::new_path(path_expression));
     }
 
+    resolve_result<shared_value>
+    config_value::resolve_substitutions(resolve_context const& context,
+                                        resolve_source const& source) const
+    {
+        return resolve_result<shared_value>(context, shared_from_this());
+    }
+
     std::vector<shared_value> config_value::replace_child_in_list(std::vector<shared_value> const& values,
                                                                   shared_value const& child, shared_value replacement)
     {
@@ -139,7 +147,7 @@ namespace hocon {
 
     config_value::no_exceptions_modifier::no_exceptions_modifier(string prefix): _prefix(std::move(prefix)) {}
 
-    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) const {
+    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) {
         try {
             return modify_child(key_or_null, v);
         } catch (runtime_error& e) {
