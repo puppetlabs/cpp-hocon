@@ -1,5 +1,6 @@
 #include <hocon/config_value.hpp>
 #include <internal/simple_config_list.hpp>
+#include <internal/simple_config_origin.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/resolve_context.hpp>
 #include <internal/resolve_source.hpp>
@@ -74,12 +75,12 @@ namespace hocon {
 
     std::shared_ptr<const simple_config_list> simple_config_list::concatenate(shared_ptr<const simple_config_list> other) const
     {
-        // TODO merge origins
+        auto combined_origin = simple_config_origin::merge_origins(origin(), other->origin());
         vector<shared_value> combined;
         combined.reserve(size() + other->size());
         combined.insert(combined.end(), begin(), end());
         combined.insert(combined.end(), other->begin(), other->end());
-        return make_shared<simple_config_list>(origin(), move(combined));
+        return make_shared<simple_config_list>(combined_origin, move(combined));
     }
 
     std::shared_ptr<const config_list> simple_config_list::with_origin(shared_origin origin) const
