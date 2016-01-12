@@ -63,7 +63,7 @@ set(PROJECT_SOURCES
     src/substitution_expression.cc
     src/simple_config_list.cc
     src/config_delayed_merge.cc
-    src/config_delayed_merge_object
+    src/config_delayed_merge_object.cc
 )
 
 
