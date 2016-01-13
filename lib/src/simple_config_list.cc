@@ -173,8 +173,34 @@ namespace hocon {
     simple_config_list::modify_may_throw(modifier& modifier,
                                          boost::optional<resolve_status> new_resolve_status) const
     {
-        // TODO
-        return {};
+        bool init = false;
+        vector<shared_value> changed;
+        for (auto it = _value.begin(), endIt = _value.end(); it != endIt; ++it) {
+            auto modified = modifier.modify_child_may_throw({}, *it);
+
+            // lazy-create the new list if required
+            if (changed.empty() && modified != *it) {
+                changed.reserve(_value.size());
+                changed.insert(changed.end(), _value.begin(), it);
+                init = true;
+            }
+
+            // once the new list is created, all elements have to go in it.
+            // if modify_child returned null, we drop that element.
+            if (init && modified) {
+                changed.push_back(move(modified));
+            }
+        }
+
+        if (init) {
+            if (new_resolve_status) {
+                return make_shared<simple_config_list>(origin(), move(changed), *new_resolve_status);
+            } else {
+                return make_shared<simple_config_list>(origin(), move(changed));
+            }
+        } else {
+            return dynamic_pointer_cast<const simple_config_list>(shared_from_this());
+        }
     }
 
 }  // namespace hocon
