@@ -133,8 +133,11 @@ namespace hocon {
             new_map.emplace(key, value);
         }
 
-        // TODO: the resolved arugment is incorrect, fix when implementing resolve functionality
-        return make_shared<simple_config_object>(origin(), new_map, resolve_status::RESOLVED, _ignores_fallbacks);
+        return make_shared<simple_config_object>(origin(), new_map, _resolved, _ignores_fallbacks);
+    }
+
+    shared_value simple_config_object::new_copy(shared_origin origin) const {
+        return make_shared<simple_config_object>(move(origin), _value, _resolved, _ignores_fallbacks);
     }
 
     resolve_result<shared_value>

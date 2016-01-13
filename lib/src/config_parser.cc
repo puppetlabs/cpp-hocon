@@ -44,8 +44,9 @@ namespace hocon { namespace config_parser {
                     if (last_was_newline && !result) {
                         comments.clear();
                     } else if (result) {
-                        // TODO
-                        // result = result->with_origin(result->origin()->append_comments(move(comments)));
+                        auto origin = dynamic_pointer_cast<const simple_config_origin>(result->origin());
+                        assert(origin);
+                        result = result->with_origin(origin->append_comments(move(comments)));
                         break;
                     }
                     last_was_newline = true;

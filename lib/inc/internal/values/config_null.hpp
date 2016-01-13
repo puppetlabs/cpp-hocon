@@ -20,6 +20,9 @@ namespace hocon {
 
         config_value_type value_type() const override;
         std::string transform_to_string() const override;
+
+    protected:
+        shared_value new_copy(shared_origin) const override;
     };
 
 }  // namespace hocon

@@ -48,16 +48,15 @@ namespace hocon {
         iterator end() const { return _value.end(); }
 
         std::shared_ptr<const simple_config_list> concatenate(std::shared_ptr<const simple_config_list> other) const;
-        std::shared_ptr<const config_list> with_origin(shared_origin origin) const override;
 
         bool operator==(simple_config_list const& other) const;
 
     protected:
         resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
+        shared_value new_copy(shared_origin origin) const override;
 
         void render_list(std::string s, int indent, bool atRoot, std::shared_ptr<config_render_options> options) const;
-        std::shared_ptr<const simple_config_list> new_copy(shared_origin) const {return std::dynamic_pointer_cast<const simple_config_list>(shared_from_this());}
 
     private:
         static const long _serial_version_UID = 2L;

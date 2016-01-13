@@ -115,15 +115,25 @@ namespace hocon {
         shared_config at_key(std::string const& key) const;
 
         /**
-         * Places the value inside a {@link Config} at the given path. See also
-         * {@link ConfigValue#atKey(String)}.
+         * Places the value inside a {@link config} at the given path. See also
+         * {@link config_value#at_key(String)}.
          *
          * @param path
          *            path to store this value at.
-         * @return a {@code Config} instance containing this value at the given
+         * @return a {@code config} instance containing this value at the given
          *         path.
          */
         shared_config at_path(std::string const& path_expression) const;
+
+        /**
+         * Returns a {@code config_value} based on this one, but with the given
+         * origin. This is useful when you are parsing a new format of file or setting
+         * comments for a single config_value.
+         *
+         * @param origin the origin set on the returned value
+         * @return the new config_value with the given origin
+         */
+        virtual shared_value with_origin(shared_origin origin) const;
 
         /**
          * This is used when including one file in another; the included file is
@@ -155,6 +165,8 @@ namespace hocon {
 
         shared_config at_key(shared_origin origin, std::string const& key) const;
         shared_config at_path(shared_origin origin, path raw_path) const;
+
+        virtual shared_value new_copy(shared_origin origin) const = 0;
 
         virtual resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const;

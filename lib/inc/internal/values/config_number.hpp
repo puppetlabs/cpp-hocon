@@ -30,7 +30,7 @@ namespace hocon {
         static std::shared_ptr<config_number> new_number(
                 shared_origin origin, double value, std::string original_text);
 
-    private:
+    protected:
         std::string _original_text;
     };
 

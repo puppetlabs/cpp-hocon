@@ -83,11 +83,11 @@ namespace hocon {
         return make_shared<simple_config_list>(combined_origin, move(combined));
     }
 
-    std::shared_ptr<const config_list> simple_config_list::with_origin(shared_origin origin) const
+    shared_value simple_config_list::new_copy(shared_origin origin) const
     {
-        // TODO: implement config_value::with_origin
-        // return config_value::with_origin(move(origin));
-        return {};
+        // TODO: Copies the list, but the list is immutable so we could share the vector.
+        //       Best to deal with in a rewrite that encapsulates shared_ptr and immutability better.
+        return make_shared<simple_config_list>(move(origin), _value);
     }
 
     bool simple_config_list::operator==(simple_config_list const& other) const

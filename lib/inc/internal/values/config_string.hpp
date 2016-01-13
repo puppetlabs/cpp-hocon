@@ -15,6 +15,9 @@ namespace hocon {
 
         bool was_quoted() const;
 
+    protected:
+        shared_value new_copy(shared_origin) const override;
+
     private:
         std::string _text;
         config_string_type _quoted;

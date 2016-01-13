@@ -104,6 +104,14 @@ namespace hocon {
         return at_path(move(origin), path::new_path(path_expression));
     }
 
+    shared_value config_value::with_origin(shared_origin origin) const {
+        if (_origin == origin) {
+            return shared_from_this();
+        } else {
+            return new_copy(move(origin));
+        }
+    }
+
     resolve_result<shared_value>
     config_value::resolve_substitutions(resolve_context const& context,
                                         resolve_source const& source) const

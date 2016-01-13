@@ -32,6 +32,7 @@ namespace hocon {
     protected:
         resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
+        shared_value new_copy(shared_origin) const override;
 
     private:
         std::unordered_map<std::string, shared_value> _value;

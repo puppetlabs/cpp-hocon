@@ -27,5 +27,9 @@ namespace hocon {
         return _stack;
     }
 
+    shared_value config_delayed_merge::new_copy(shared_origin origin) const {
+        return make_shared<config_delayed_merge>(move(origin), _stack);
+    }
+
 }  // namespace hocon::config_delayed_merge
 
