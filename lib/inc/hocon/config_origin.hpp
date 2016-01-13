@@ -2,6 +2,8 @@
 
 #include "types.hpp"
 #include <memory>
+#include <string>
+#include <vector>
 #include "export.h"
 
 namespace hocon {
@@ -34,7 +36,7 @@ namespace hocon {
          *
          * @return string describing the origin
          */
-        LIBCPP_HOCON_EXPORT virtual std::string description() const = 0;
+        LIBCPP_HOCON_EXPORT virtual std::string const& description() const = 0;
 
         /**
          * Returns a {@code ConfigOrigin} based on this one, but with the given
@@ -62,6 +64,18 @@ namespace hocon {
          * @return line number or -1 if none is available
          */
         LIBCPP_HOCON_EXPORT virtual int line_number() const = 0;
+
+        /**
+         * Returns any comments that appeared to "go with" this place in the file.
+         * Often an empty list, but never null. The details of this are subject to
+         * change, but at the moment comments that are immediately before an array
+         * element or object field, with no blank line after the comment, "go with"
+         * that element or field.
+         *
+         * @return any comments that seemed to "go with" this origin, empty list if
+         *         none
+         */
+        LIBCPP_HOCON_EXPORT virtual std::vector<std::string> const& comments() const = 0;
     };
 
 }  // namespace hocon

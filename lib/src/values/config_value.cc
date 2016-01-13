@@ -79,6 +79,12 @@ namespace hocon {
         result += transform_to_string();
     }
 
+    void config_value::indent(std::string &result, int indent, config_render_options const& options) {
+        if (options.get_formatted()) {
+            result.append(' ', indent*4);
+        }
+    }
+
     shared_config config_value::at_path(shared_origin origin, path raw_path) const {
         path parent = raw_path.parent();
         shared_config result = at_key(origin, *raw_path.last());

@@ -6,6 +6,8 @@
 #include <internal/resolve_source.hpp>
 #include <internal/resolve_result.hpp>
 #include <algorithm>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 using namespace std;
 
@@ -106,12 +108,57 @@ namespace hocon {
         return false;
     }
 
-    void simple_config_list::render_list(std::string s,
-                                         int indent,
-                                         bool atRoot,
-                                         std::shared_ptr<config_render_options> options) const
+    void simple_config_list::render(std::string& sb,
+                                    int num_indent,
+                                    bool at_root,
+                                    config_render_options options) const
     {
-        // TODO: Investigate config_value::render with similar function signature.
+        if (_value.empty()) {
+            sb.append("[]");
+        } else {
+            sb.push_back('[');
+            if (options.get_formatted()) {
+                sb.push_back('\n');
+            }
+            for (auto &v : _value) {
+                if (options.get_origin_comments()) {
+                    // Could be done more efficiently with a split_iterator, but those are trickier to use with range-for.
+                    vector<string> lines;
+                    boost::algorithm::split(lines, v->origin()->description(), boost::is_any_of("\n"));
+                    for (auto& l : lines) {
+                        indent(sb, num_indent+1, options);
+                        sb.push_back('#');
+                        if (!l.empty()) {
+                            sb.push_back(' ');
+                        }
+                        sb.append(l);
+                        sb.push_back('\n');
+                    }
+                }
+                if (options.get_comments()) {
+                    for (auto& comment : v->origin()->comments()) {
+                        indent(sb, num_indent+1, options);
+                        sb.append("# ");
+                        sb.append(comment);
+                        sb.push_back('\n');
+                    }
+                }
+                indent(sb, num_indent+1, options);
+
+                v->render(sb, num_indent+1, at_root, options);
+                sb.push_back(',');
+                if (options.get_formatted()) {
+                    sb.push_back('\n');
+                }
+            }
+            sb.pop_back();  // chop comma or newline
+            if (options.get_formatted()) {
+                sb.pop_back();  // chop comma and put back newline
+                sb.push_back('\n');
+                indent(sb, num_indent, options);
+            }
+            sb.push_back(']');
+        }
     }
 
     std::shared_ptr<const simple_config_list>

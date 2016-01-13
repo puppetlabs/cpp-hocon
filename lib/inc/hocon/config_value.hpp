@@ -48,6 +48,7 @@ namespace hocon {
         friend class config;
         friend class config_object;
         friend class simple_config_object;
+        friend class simple_config_list;
     public:
         /**
          * The origin of the value (file, line number, etc.), for debugging and
@@ -162,6 +163,7 @@ namespace hocon {
         void render(std::string& result, int indent, bool at_root, std::string at_key,
                     config_render_options options) const;
         virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
+        static void indent(std::string& result, int indent, config_render_options const& options);
 
         shared_config at_key(shared_origin origin, std::string const& key) const;
         shared_config at_path(shared_origin origin, path raw_path) const;

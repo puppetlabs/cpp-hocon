@@ -13,7 +13,7 @@ namespace hocon {
         return config_render_options(value, _comments, _formatted, _json);
     }
 
-    bool config_render_options::get_origin_comments() {
+    bool config_render_options::get_origin_comments() const {
         return _origin_comments;
     }
 
@@ -21,7 +21,7 @@ namespace hocon {
         return config_render_options(_origin_comments, value, _formatted, _json);
     }
 
-    bool config_render_options::get_comments() {
+    bool config_render_options::get_comments() const {
         return _comments;
     }
 
@@ -29,7 +29,7 @@ namespace hocon {
         return config_render_options(_origin_comments, _comments, value, _json);
     }
 
-    bool config_render_options::get_formatted() {
+    bool config_render_options::get_formatted() const {
         return _formatted;
     }
 
@@ -37,7 +37,7 @@ namespace hocon {
         return config_render_options(_origin_comments, _comments, _formatted, value);
     }
 
-    bool config_render_options::get_json() {
+    bool config_render_options::get_json() const {
         return _json;
     }
 

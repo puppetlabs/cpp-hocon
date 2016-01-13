@@ -56,7 +56,7 @@ namespace hocon {
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         shared_value new_copy(shared_origin origin) const override;
 
-        void render_list(std::string s, int indent, bool atRoot, std::shared_ptr<config_render_options> options) const;
+        void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
 
     private:
         static const long _serial_version_UID = 2L;
