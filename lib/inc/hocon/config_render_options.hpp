@@ -51,7 +51,7 @@ namespace hocon {
          *
          * @return true if comments should be rendered
          */
-        bool get_comments();
+        bool get_comments() const;
 
         /**
          * Returns options with origin comments toggled. If this is enabled, the
@@ -77,7 +77,7 @@ namespace hocon {
          *
          * @return true if origin comments should be rendered
          */
-        bool get_origin_comments();
+        bool get_origin_comments() const;
 
         /**
          * Returns options with formatting toggled. Formatting means indentation and
@@ -95,7 +95,7 @@ namespace hocon {
          *
          * @return true if the options enable formatting
          */
-        bool get_formatted();
+        bool get_formatted() const;
 
         /**
          * Returns options with JSON toggled. JSON means that HOCON extensions
@@ -116,7 +116,7 @@ namespace hocon {
          *
          * @return true if only JSON should be rendered
          */
-        bool get_json();
+        bool get_json() const;
 
     private:
         bool _origin_comments;

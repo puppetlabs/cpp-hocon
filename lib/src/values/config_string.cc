@@ -15,6 +15,10 @@ namespace hocon {
         return _text;
     }
 
+    shared_value config_string::new_copy(shared_origin origin) const {
+        return make_shared<config_string>(move(origin), _text, _quoted);
+    }
+
     bool config_string::was_quoted() const {
         return _quoted == config_string_type::QUOTED;
     }

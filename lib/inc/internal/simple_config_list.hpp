@@ -4,12 +4,10 @@
 #include <hocon/config_list.hpp>
 #include <hocon/config_render_options.hpp>
 #include <internal/container.hpp>
-#include <internal/resolve_result.hpp>
-#include <internal/resolve_context.hpp>
-#include <internal/resolve_source.hpp>
 #include <algorithm>
 #include <memory>
 #include <vector>
+#include <boost/optional.hpp>
 
 namespace hocon {
 
@@ -29,15 +27,12 @@ namespace hocon {
         shared_value replace_child(shared_value const& child, shared_value replacement) const override;
         bool has_descendant(shared_value const& descendant) const override;
 
-        resolve_result<std::shared_ptr<const simple_config_list>>
-            resolve_substitutions(std::shared_ptr<resolve_context> context, std::shared_ptr<resolve_source> source) const;
         std::shared_ptr<const simple_config_list> relativized(const std::string prefix) const;
 
         bool contains(shared_value v) const { return std::find(_value.begin(), _value.end(), v) != _value.end(); }
         bool contains_all(std::vector<shared_value>) const;
         shared_value get(int index) const { return _value[index]; }
 
-        // YOLO
         int index_of(shared_value v) {
             auto pos = find(_value.begin(), _value.end(), v);
             if (pos == _value.end()) {
@@ -47,39 +42,34 @@ namespace hocon {
             }
         }
 
-
-        bool is_empty() const {return _value.empty();}
+        bool is_empty() const { return _value.empty(); }
         int size() const { return _value.size(); }
         iterator begin() const { return _value.begin(); }
         iterator end() const { return _value.end(); }
 
         std::shared_ptr<const simple_config_list> concatenate(std::shared_ptr<const simple_config_list> other) const;
-        std::shared_ptr<const config_list> with_origin(shared_origin origin) const override;
 
         bool operator==(simple_config_list const& other) const;
 
     protected:
-        void render_list(std::string s, int indent, bool atRoot, std::shared_ptr<config_render_options> options) const;
-        std::shared_ptr<const simple_config_list> new_copy(shared_origin) const {return std::dynamic_pointer_cast<const simple_config_list>(shared_from_this());}
+        resolve_result<shared_value>
+            resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
+        shared_value new_copy(shared_origin origin) const override;
+
+        void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
 
     private:
         static const long _serial_version_UID = 2L;
         const std::vector<shared_value> _value;
         const resolve_status _resolved;
 
-        std::shared_ptr<const simple_config_list> modify(std::shared_ptr<no_exceptions_modifier> modifier, resolve_status new_resolve_status) const;
-        std::shared_ptr<const simple_config_list> modify_may_throw(std::shared_ptr<modifier> modifier, resolve_status new_resolve_status) const;
+        std::shared_ptr<const simple_config_list>
+        modify(no_exceptions_modifier& modifier, boost::optional<resolve_status> new_resolve_status) const;
 
-        class resolve_modifier : public modifier {
-        public:
-            resolve_modifier(std::shared_ptr<resolve_context> context, std::shared_ptr<resolve_source> source);
-            shared_value modify_child_may_throw(std::string key, shared_value v) const override;
+        std::shared_ptr<const simple_config_list>
+        modify_may_throw(modifier& modifier, boost::optional<resolve_status> new_resolve_status) const;
 
-        private:
-            std::vector<shared_value> _value;
-            const std::shared_ptr<resolve_source> _source;
-            std::shared_ptr<resolve_context> _context;
-        };
+        struct resolve_modifier;
     };
 
 }   // namespace hocon

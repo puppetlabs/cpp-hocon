@@ -1,11 +1,31 @@
 #include <hocon/config_value.hpp>
 #include <internal/simple_config_list.hpp>
+#include <internal/simple_config_origin.hpp>
 #include <internal/config_exception.hpp>
+#include <internal/resolve_context.hpp>
+#include <internal/resolve_source.hpp>
+#include <internal/resolve_result.hpp>
 #include <algorithm>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 using namespace std;
 
 namespace hocon {
+
+    struct simple_config_list::resolve_modifier : public modifier {
+        resolve_modifier(resolve_context c, resolve_source s) : context(move(c)), source(move(s)) {}
+
+        shared_value modify_child_may_throw(string key, shared_value v) override
+        {
+            resolve_result<shared_value> result = context.resolve(v, source);
+            context = result.context;
+            return result.value;
+        }
+
+        resolve_context context;
+        resolve_source source;
+    };
 
     simple_config_list::simple_config_list(shared_origin origin, std::vector<shared_value> value)
             : config_list(move(origin)), _value(move(value)), _resolved(resolve_status_from_values(_value)) { }
@@ -33,38 +53,43 @@ namespace hocon {
         return has_descendant_in_list(_value, descendant);
     }
 
-    resolve_result<shared_ptr<const simple_config_list>>
-    simple_config_list::resolve_substitutions(std::shared_ptr<resolve_context> context,
-                                              std::shared_ptr<resolve_source> source) const
+    resolve_result<shared_value>
+    simple_config_list::resolve_substitutions(resolve_context const& context, resolve_source const& source) const
     {
         if (_resolved == resolve_status::RESOLVED) {
-            return resolve_result<shared_ptr<const simple_config_list>>(context, dynamic_pointer_cast<const simple_config_list>(shared_from_this()));
+            return resolve_result<shared_value>(context, shared_from_this());
         }
 
-        // TODO Implement the rest
-        throw config_exception("resolve_substitutions implementation incomplete");
+        if (context.is_restricted_to_child()) {
+            return resolve_result<shared_value>(context, shared_from_this());
+        } else {
+            resolve_modifier modifier{context, source.push_parent(dynamic_pointer_cast<const container>(shared_from_this()))};
+            auto value = modify_may_throw(modifier, context.options().get_allow_unresolved() ? boost::optional<resolve_status>() : resolve_status::RESOLVED);
+            return resolve_result<shared_value>(modifier.context, value);
+        }
     }
 
     std::shared_ptr<const simple_config_list> simple_config_list::relativized(const std::string prefix) const
     {
-        return modify(make_shared<no_exceptions_modifier>(move(prefix)), get_resolve_status());
+        no_exceptions_modifier modifier(move(prefix));
+        return modify(modifier, get_resolve_status());
     }
 
     std::shared_ptr<const simple_config_list> simple_config_list::concatenate(shared_ptr<const simple_config_list> other) const
     {
-        // TODO merge origins
+        auto combined_origin = simple_config_origin::merge_origins(origin(), other->origin());
         vector<shared_value> combined;
         combined.reserve(size() + other->size());
         combined.insert(combined.end(), begin(), end());
         combined.insert(combined.end(), other->begin(), other->end());
-        return make_shared<simple_config_list>(origin(), move(combined));
+        return make_shared<simple_config_list>(combined_origin, move(combined));
     }
 
-    std::shared_ptr<const config_list> simple_config_list::with_origin(shared_origin origin) const
+    shared_value simple_config_list::new_copy(shared_origin origin) const
     {
-        // TODO: implement config_value::with_origin
-        // return config_value::with_origin(move(origin));
-        return {};
+        // TODO: Copies the list, but the list is immutable so we could share the vector.
+        //       Best to deal with in a rewrite that encapsulates shared_ptr and immutability better.
+        return make_shared<simple_config_list>(move(origin), _value);
     }
 
     bool simple_config_list::operator==(simple_config_list const& other) const
@@ -83,42 +108,99 @@ namespace hocon {
         return false;
     }
 
-    void simple_config_list::render_list(std::string s,
-                                         int indent,
-                                         bool atRoot,
-                                         std::shared_ptr<config_render_options> options) const
+    void simple_config_list::render(std::string& sb,
+                                    int num_indent,
+                                    bool at_root,
+                                    config_render_options options) const
     {
-        // TODO: Investigate config_value::render with similar function signature.
+        if (_value.empty()) {
+            sb.append("[]");
+        } else {
+            sb.push_back('[');
+            if (options.get_formatted()) {
+                sb.push_back('\n');
+            }
+            for (auto &v : _value) {
+                if (options.get_origin_comments()) {
+                    // Could be done more efficiently with a split_iterator, but those are trickier to use with range-for.
+                    vector<string> lines;
+                    boost::algorithm::split(lines, v->origin()->description(), boost::is_any_of("\n"));
+                    for (auto& l : lines) {
+                        indent(sb, num_indent+1, options);
+                        sb.push_back('#');
+                        if (!l.empty()) {
+                            sb.push_back(' ');
+                        }
+                        sb.append(l);
+                        sb.push_back('\n');
+                    }
+                }
+                if (options.get_comments()) {
+                    for (auto& comment : v->origin()->comments()) {
+                        indent(sb, num_indent+1, options);
+                        sb.append("# ");
+                        sb.append(comment);
+                        sb.push_back('\n');
+                    }
+                }
+                indent(sb, num_indent+1, options);
+
+                v->render(sb, num_indent+1, at_root, options);
+                sb.push_back(',');
+                if (options.get_formatted()) {
+                    sb.push_back('\n');
+                }
+            }
+            sb.pop_back();  // chop comma or newline
+            if (options.get_formatted()) {
+                sb.pop_back();  // chop comma and put back newline
+                sb.push_back('\n');
+                indent(sb, num_indent, options);
+            }
+            sb.push_back(']');
+        }
     }
 
     std::shared_ptr<const simple_config_list>
-    simple_config_list::modify(std::shared_ptr<no_exceptions_modifier> modifier,
-                               resolve_status new_resolve_status) const
+    simple_config_list::modify(no_exceptions_modifier& modifier,
+                               boost::optional<resolve_status> new_resolve_status) const
     {
         // TODO: Do we want similar exception wrapping?
         return modify_may_throw(modifier, new_resolve_status);
     }
 
     std::shared_ptr<const simple_config_list>
-    simple_config_list::modify_may_throw(std::shared_ptr<modifier> modifier,
-                                         resolve_status new_resolve_status) const
+    simple_config_list::modify_may_throw(modifier& modifier,
+                                         boost::optional<resolve_status> new_resolve_status) const
     {
-        // TODO
-        return {};
-    }
+        bool init = false;
+        vector<shared_value> changed;
+        for (auto it = _value.begin(), endIt = _value.end(); it != endIt; ++it) {
+            auto modified = modifier.modify_child_may_throw({}, *it);
 
-    simple_config_list::resolve_modifier::resolve_modifier(std::shared_ptr<resolve_context> context,
-                                                           std::shared_ptr<resolve_source> source)
-    {
-        // TODO
-    }
+            // lazy-create the new list if required
+            if (changed.empty() && modified != *it) {
+                changed.reserve(_value.size());
+                changed.insert(changed.end(), _value.begin(), it);
+                init = true;
+            }
 
-    shared_value
-    simple_config_list::resolve_modifier::modify_child_may_throw(std::string key,
-                                                                 shared_value v) const
-    {
-        // TODO
-        return v;
+            // once the new list is created, all elements have to go in it.
+            // if modify_child returned null, we drop that element.
+            if (init && modified) {
+                changed.push_back(move(modified));
+            }
+        }
+
+        if (init) {
+            if (new_resolve_status) {
+                return make_shared<simple_config_list>(origin(), move(changed), *new_resolve_status);
+            } else {
+                return make_shared<simple_config_list>(origin(), move(changed));
+            }
+        } else {
+            return dynamic_pointer_cast<const simple_config_list>(shared_from_this());
+        }
     }
 
 }  // namespace hocon

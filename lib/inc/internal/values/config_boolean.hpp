@@ -13,6 +13,9 @@ namespace hocon {
 
         bool bool_value() const;
 
+    protected:
+        shared_value new_copy(shared_origin) const override;
+
     private:
         bool _value;
     };

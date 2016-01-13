@@ -2,19 +2,39 @@
 #include <hocon/config_value.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/simple_config_origin.hpp>
+#include <internal/resolve_context.hpp>
+#include <internal/resolve_source.hpp>
+#include <internal/resolve_result.hpp>
+#include <internal/container.hpp>
 
 using namespace std;
 
 namespace hocon {
 
+    struct simple_config_object::resolve_modifier : public modifier {
+        // TODO: initialize origin_restrict
+        resolve_modifier(resolve_context c, resolve_source s) : context(move(c)), source(move(s)), origin_restrict("") {}
+
+        shared_value modify_child_may_throw(string key, shared_value v) override
+        {
+            // TODO: implement
+            return {};
+        }
+
+        resolve_context context;
+        resolve_source source;
+        string origin_restrict;
+    };
+
     simple_config_object::simple_config_object(shared_origin origin,
                                                unordered_map <std::string, shared_value> value,
                                                resolve_status status, bool ignores_fallbacks) :
-        config_object(move(origin)), _value(move(value)), _ignores_fallbacks(ignores_fallbacks) { }
+        config_object(move(origin)), _value(move(value)), _resolved(status), _ignores_fallbacks(ignores_fallbacks)
+    {}
 
-        shared_value simple_config_object::attempt_peek_with_partial_resolve(std::string const& key) const {
-            return _value.at(key);
-        }
+    shared_value simple_config_object::attempt_peek_with_partial_resolve(std::string const& key) const {
+        return _value.at(key);
+    }
 
     bool simple_config_object::is_empty() const {
         return _value.empty();
@@ -113,8 +133,36 @@ namespace hocon {
             new_map.emplace(key, value);
         }
 
-        // TODO: the resolved arugment is incorrect, fix when implementing resolve functionality
-        return make_shared<simple_config_object>(origin(), new_map, resolve_status::RESOLVED, _ignores_fallbacks);
+        return make_shared<simple_config_object>(origin(), new_map, _resolved, _ignores_fallbacks);
+    }
+
+    shared_value simple_config_object::new_copy(shared_origin origin) const {
+        return make_shared<simple_config_object>(move(origin), _value, _resolved, _ignores_fallbacks);
+    }
+
+    resolve_result<shared_value>
+    simple_config_object::resolve_substitutions(resolve_context const& context, resolve_source const& source) const
+    {
+        if (_resolved == resolve_status::RESOLVED) {
+            return resolve_result<shared_value>(context, shared_from_this());
+        }
+
+        resolve_source source_with_parent = source.push_parent(dynamic_pointer_cast<const container>(shared_from_this()));
+
+        resolve_modifier modifier{context, move(source_with_parent)};
+        auto value = modify_may_throw(modifier);
+        return resolve_result<shared_value>(modifier.context, value);
+    }
+
+    shared_ptr<simple_config_object> simple_config_object::modify(no_exceptions_modifier& modifier) const
+    {
+        return modify_may_throw(modifier);
+    }
+
+    shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier& modifier) const
+    {
+        // TODO: implement
+        return {};
     }
 
 }  // namespace hocon

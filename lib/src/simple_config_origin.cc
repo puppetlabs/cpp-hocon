@@ -33,8 +33,12 @@ namespace hocon {
         return _line_number;
     }
 
-    string simple_config_origin::description() const {
+    string const& simple_config_origin::description() const {
         return _description;
+    }
+
+    vector<string> const& simple_config_origin::comments() const {
+        return _comments_or_null;
     }
 
     shared_origin simple_config_origin::with_line_number(int line_number) const {

@@ -6,6 +6,7 @@
 #include <internal/simple_config_origin.hpp>
 #include <internal/container.hpp>
 #include <internal/config_delayed_merge.hpp>
+#include <internal/resolve_result.hpp>
 #include <algorithm>
 
 using namespace std;
@@ -78,6 +79,12 @@ namespace hocon {
         result += transform_to_string();
     }
 
+    void config_value::indent(std::string &result, int indent, config_render_options const& options) {
+        if (options.get_formatted()) {
+            result.append(' ', indent*4);
+        }
+    }
+
     shared_config config_value::at_path(shared_origin origin, path raw_path) const {
         path parent = raw_path.parent();
         shared_config result = at_key(origin, *raw_path.last());
@@ -101,6 +108,21 @@ namespace hocon {
     shared_config config_value::at_path(std::string const& path_expression) const {
         shared_origin origin = make_shared<simple_config_origin>("at_path(" + path_expression + ")");
         return at_path(move(origin), path::new_path(path_expression));
+    }
+
+    shared_value config_value::with_origin(shared_origin origin) const {
+        if (_origin == origin) {
+            return shared_from_this();
+        } else {
+            return new_copy(move(origin));
+        }
+    }
+
+    resolve_result<shared_value>
+    config_value::resolve_substitutions(resolve_context const& context,
+                                        resolve_source const& source) const
+    {
+        return resolve_result<shared_value>(context, shared_from_this());
     }
 
     std::vector<shared_value> config_value::replace_child_in_list(std::vector<shared_value> const& values,
@@ -139,7 +161,7 @@ namespace hocon {
 
     config_value::no_exceptions_modifier::no_exceptions_modifier(string prefix): _prefix(std::move(prefix)) {}
 
-    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) const {
+    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) {
         try {
             return modify_child(key_or_null, v);
         } catch (runtime_error& e) {

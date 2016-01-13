@@ -33,6 +33,11 @@ namespace hocon {
         return {};
     }
 
+    shared_value config_delayed_merge_object::new_copy(shared_origin origin) const {
+        // TODO
+        throw config_exception("config_delayed_merge_object::new_copy not implemented");
+    }
+
     shared_value config_delayed_merge_object::attempt_peek_with_partial_resolve(string const& key) const {
         // TODO
         return {};

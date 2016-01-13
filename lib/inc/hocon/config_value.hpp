@@ -10,6 +10,11 @@
 namespace hocon {
 
     class unmergeable;
+    class resolve_source;
+    class resolve_context;
+
+    template<typename T>
+    struct resolve_result;
 
     /**
      * The type of a configuration value (following the <a
@@ -43,6 +48,7 @@ namespace hocon {
         friend class config;
         friend class config_object;
         friend class simple_config_object;
+        friend class simple_config_list;
     public:
         /**
          * The origin of the value (file, line number, etc.), for debugging and
@@ -110,15 +116,25 @@ namespace hocon {
         shared_config at_key(std::string const& key) const;
 
         /**
-         * Places the value inside a {@link Config} at the given path. See also
-         * {@link ConfigValue#atKey(String)}.
+         * Places the value inside a {@link config} at the given path. See also
+         * {@link config_value#at_key(String)}.
          *
          * @param path
          *            path to store this value at.
-         * @return a {@code Config} instance containing this value at the given
+         * @return a {@code config} instance containing this value at the given
          *         path.
          */
         shared_config at_path(std::string const& path_expression) const;
+
+        /**
+         * Returns a {@code config_value} based on this one, but with the given
+         * origin. This is useful when you are parsing a new format of file or setting
+         * comments for a single config_value.
+         *
+         * @param origin the origin set on the returned value
+         * @return the new config_value with the given origin
+         */
+        virtual shared_value with_origin(shared_origin origin) const;
 
         /**
          * This is used when including one file in another; the included file is
@@ -147,9 +163,15 @@ namespace hocon {
         void render(std::string& result, int indent, bool at_root, std::string at_key,
                     config_render_options options) const;
         virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const;
+        static void indent(std::string& result, int indent, config_render_options const& options);
 
         shared_config at_key(shared_origin origin, std::string const& key) const;
         shared_config at_path(shared_origin origin, path raw_path) const;
+
+        virtual shared_value new_copy(shared_origin origin) const = 0;
+
+        virtual resolve_result<shared_value>
+            resolve_substitutions(resolve_context const& context, resolve_source const& source) const;
 
         static std::vector<shared_value> replace_child_in_list(std::vector<shared_value> const& values,
                                                                shared_value const& child, shared_value replacement);
@@ -157,14 +179,14 @@ namespace hocon {
 
         class modifier {
          public:
-            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const = 0;
+            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) = 0;
         };
 
         class no_exceptions_modifier : public modifier {
         public:
             no_exceptions_modifier(std::string prefix);
 
-            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) const override;
+            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) override;
             shared_value modify_child(std::string key, shared_value v) const;
         private:
             std::string _prefix;

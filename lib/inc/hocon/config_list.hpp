@@ -38,7 +38,5 @@ namespace hocon {
     class LIBCPP_HOCON_EXPORT config_list : public config_value {
     public:
         config_list(shared_origin origin) : config_value(move(origin)) {}
-
-        virtual std::shared_ptr<const config_list> with_origin(shared_origin origin) const = 0;
     };
 }  // namespace hocon

@@ -24,4 +24,8 @@ namespace hocon {
         return _value;
     }
 
+    shared_value config_int::new_copy(shared_origin origin) const {
+        return make_shared<config_int>(move(origin), _value, _original_text);
+    }
+
 }  // namespace hocon

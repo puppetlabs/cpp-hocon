@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdexcept>
+#include <string>
+
 namespace hocon {
 
     class config_exception : public std::runtime_error {

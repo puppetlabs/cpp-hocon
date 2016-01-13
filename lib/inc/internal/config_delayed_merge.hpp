@@ -13,6 +13,9 @@ namespace hocon {
         config_value_type value_type() const override;
         std::vector<shared_value> const& unmerged_values() const override;
 
+    protected:
+        shared_value new_copy(shared_origin) const override;
+
     private:
         std::vector<shared_value> _stack;
     };

@@ -16,6 +16,9 @@ namespace hocon {
         int64_t long_value() const override;
         double double_value() const override;
 
+    protected:
+        shared_value new_copy(shared_origin) const override;
+
     private:
         int64_t _value;
     };

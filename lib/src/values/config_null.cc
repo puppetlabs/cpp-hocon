@@ -15,4 +15,8 @@ namespace hocon {
         return "null";
     }
 
+    shared_value config_null::new_copy(shared_origin origin) const {
+        return make_shared<config_null>(move(origin));
+    }
+
 }  // namespace hocon
