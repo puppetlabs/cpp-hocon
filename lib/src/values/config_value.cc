@@ -221,7 +221,7 @@ namespace hocon {
         // then a merge may be required; delay until we resolve.
 
         auto unmerged_values = fallback->unmerged_values();
-        stack.insert(stack.end(), unmerged_values.begin(), unmerged_values.end());
+        stack.insert(stack.end(), make_move_iterator(unmerged_values.begin()), make_move_iterator(unmerged_values.end()));
         return construct_delayed_merge(config_object::merge_origins(stack), move(stack));
     }
 

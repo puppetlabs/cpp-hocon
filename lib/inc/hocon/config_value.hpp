@@ -49,6 +49,7 @@ namespace hocon {
         friend class config_object;
         friend class simple_config_object;
         friend class simple_config_list;
+        friend class config_concatenation;
     public:
         /**
          * The origin of the value (file, line number, etc.), for debugging and

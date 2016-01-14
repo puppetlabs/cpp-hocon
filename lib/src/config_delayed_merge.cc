@@ -23,7 +23,7 @@ namespace hocon {
         throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
     }
 
-    vector<shared_value> const& config_delayed_merge::unmerged_values() const {
+    vector<shared_value> config_delayed_merge::unmerged_values() const {
         return _stack;
     }
 
