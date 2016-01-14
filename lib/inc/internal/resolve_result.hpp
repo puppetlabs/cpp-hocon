@@ -1,5 +1,6 @@
 #pragma once
 #include <internal/resolve_context.hpp>
+#include <memory>
 
 namespace hocon {
 
@@ -11,5 +12,10 @@ namespace hocon {
         resolve_context context;
         V value;
     };
+
+    template<typename T>
+    static resolve_result<shared_value> make_resolve_result(resolve_context context, T value) {
+        return resolve_result<shared_value>(std::move(context), std::move(value));
+    }
 
 }  // namespace hocon
