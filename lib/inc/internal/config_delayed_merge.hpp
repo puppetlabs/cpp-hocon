@@ -11,7 +11,7 @@ namespace hocon {
         config_delayed_merge(shared_origin origin, std::vector<shared_value> stack);
 
         config_value_type value_type() const override;
-        std::vector<shared_value> const& unmerged_values() const override;
+        std::vector<shared_value> unmerged_values() const override;
 
     protected:
         shared_value new_copy(shared_origin) const override;

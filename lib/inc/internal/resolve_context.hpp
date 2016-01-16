@@ -2,6 +2,7 @@
 
 #include <hocon/types.hpp>
 #include <hocon/config_resolve_options.hpp>
+#include <hocon/path.hpp>
 
 namespace hocon {
 
@@ -17,8 +18,13 @@ namespace hocon {
         config_resolve_options options() const;
 
         resolve_result<shared_value> resolve(shared_value original, resolve_source const& source) const;
+        path restrict_to_child() const;
+
+        resolve_context restrict(path restrict_to) const;
+        resolve_context unrestricted() const;
 
     private:
         config_resolve_options _options;
+        path _restrict_to_child;
     };
 }  // namespace hocon

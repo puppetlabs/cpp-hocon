@@ -22,4 +22,18 @@ namespace hocon {
         throw config_exception("resolve_context::resolve is not yet implemented");
     }
 
+    path resolve_context::restrict_to_child() const {
+        return _restrict_to_child;
+    }
+
+    resolve_context resolve_context::restrict(path restrict_to) const {
+        // TODO: implement
+        throw config_exception("resolve_context::restrict is not yet implemented");
+    }
+
+    resolve_context resolve_context::unrestricted() const {
+        // TODO: implement
+        throw config_exception("resolve_context::unrestricted is not yet implemented");
+    }
+
 }  // namespace hocon
