@@ -140,6 +140,10 @@ namespace hocon {
         return make_shared<simple_config_object>(move(origin), _value, _resolved, _ignores_fallbacks);
     }
 
+    bool simple_config_object::operator==(config_value const& other) const {
+        return equals<simple_config_object>(other, [&](simple_config_object const& o) { return _value == o._value; });
+    }
+
     resolve_result<shared_value>
     simple_config_object::resolve_substitutions(resolve_context const& context, resolve_source const& source) const
     {

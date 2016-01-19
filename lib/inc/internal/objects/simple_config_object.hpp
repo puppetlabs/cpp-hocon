@@ -34,6 +34,8 @@ namespace hocon {
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         shared_value new_copy(shared_origin) const override;
 
+        bool operator==(config_value const& other) const override;
+
     private:
         std::unordered_map<std::string, shared_value> _value;
         resolve_status _resolved;

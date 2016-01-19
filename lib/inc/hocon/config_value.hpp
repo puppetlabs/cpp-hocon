@@ -170,6 +170,7 @@ namespace hocon {
         shared_config at_path(shared_origin origin, path raw_path) const;
 
         virtual shared_value new_copy(shared_origin origin) const = 0;
+        virtual bool operator==(config_value const& other) const = 0;
 
         virtual resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const;
@@ -214,6 +215,19 @@ namespace hocon {
         virtual shared_value construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const;
 
         shared_value to_fallback_value() const override;
+
+        template<typename T>
+        static bool equals(config_value const& other, std::function<bool(T const&)> checker)
+        {
+            // Use pointer casts to avoid exceptions.
+            auto other_t = dynamic_cast<T const*>(&other);
+            if (!other_t) {
+                return false;
+            }
+
+            // Pass to checker as a reference to clarify the object will exist.
+            return checker(*other_t);
+        }
 
     private:
         shared_value delay_merge(std::vector<shared_value> stack, shared_value fallback) const;

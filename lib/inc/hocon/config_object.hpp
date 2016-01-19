@@ -41,10 +41,8 @@ namespace hocon {
         virtual shared_object with_only_path(path raw_path) const = 0;
         virtual shared_object with_only_path_or_null(path raw_path) const = 0;
 
-
         static shared_value peek_path(const config_object* self, path desired_path);
         static shared_origin merge_origins(std::vector<shared_value> const& stack);
-
 
     private:
         std::shared_ptr<const config> _config;

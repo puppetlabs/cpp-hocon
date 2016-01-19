@@ -161,9 +161,9 @@ namespace hocon {
         return make_shared<config_concatenation>(origin(), move(new_pieces));
     }
 
-    bool config_concatenation::operator==(config_concatenation const& other) const {
+    bool config_concatenation::operator==(config_value const& other) const {
         // note that "origin" is deliberately NOT part of equality
-        return (_pieces == other._pieces);
+        return equals<config_concatenation>(other, [&](config_concatenation const& o) { return _pieces == o._pieces; });
     }
 
     shared_value config_concatenation::new_copy(shared_origin origin) const {
