@@ -23,4 +23,8 @@ namespace hocon {
         return make_shared<config_boolean>(move(origin), _value);
     }
 
+    bool config_boolean::operator==(config_value const& other) const {
+        return equals<config_boolean>(other, [&](config_boolean const& o) { return _value == o._value; });
+    }
+
 }  // namespace hocon

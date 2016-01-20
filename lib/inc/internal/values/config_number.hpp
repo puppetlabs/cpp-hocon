@@ -12,8 +12,8 @@ namespace hocon {
         config_number(shared_origin origin,
                       std::string original_text);
 
-        std::string transform_to_string() const;
-        config_value_type value_type() const;
+        std::string transform_to_string() const override;
+        config_value_type value_type() const override;
 
         virtual int64_t long_value() const = 0;
         virtual double double_value() const = 0;
@@ -31,6 +31,8 @@ namespace hocon {
                 shared_origin origin, double value, std::string original_text);
 
     protected:
+        bool operator==(config_value const& other) const override;
+
         std::string _original_text;
     };
 

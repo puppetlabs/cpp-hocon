@@ -23,4 +23,8 @@ namespace hocon {
         return _quoted == config_string_type::QUOTED;
     }
 
+    bool config_string::operator==(config_value const& other) const {
+        return equals<config_string>(other, [&](config_string const& o) { return _text == o._text; });
+    }
+
 }  // namespace hocon

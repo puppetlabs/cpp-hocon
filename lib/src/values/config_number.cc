@@ -65,4 +65,10 @@ namespace hocon {
         }
     }
 
+    bool config_number::operator==(config_value const& other) const {
+        return equals<config_number>(other, [&](config_number const& o) {
+            return long_value() == o.long_value() && double_value() == o.double_value();
+        });
+    }
+
 }  // namespace hocon

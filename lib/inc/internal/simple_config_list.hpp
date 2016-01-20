@@ -49,7 +49,6 @@ namespace hocon {
 
         std::shared_ptr<const simple_config_list> concatenate(std::shared_ptr<const simple_config_list> other) const;
 
-        bool operator==(simple_config_list const& other) const;
 
     protected:
         resolve_result<shared_value>
@@ -57,6 +56,7 @@ namespace hocon {
         shared_value new_copy(shared_origin origin) const override;
 
         void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
+        bool operator==(config_value const& other) const override;
 
     private:
         static const long _serial_version_UID = 2L;

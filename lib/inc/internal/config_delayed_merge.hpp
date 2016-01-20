@@ -15,6 +15,7 @@ namespace hocon {
 
     protected:
         shared_value new_copy(shared_origin) const override;
+        bool operator==(config_value const& other) const override;
 
     private:
         std::vector<shared_value> _stack;

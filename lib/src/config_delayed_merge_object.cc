@@ -68,4 +68,8 @@ namespace hocon {
         return {};
     }
 
+    bool config_delayed_merge_object::operator==(config_value const& other) const {
+        return equals<config_delayed_merge_object>(other, [&](config_delayed_merge_object const& o) { return _stack == o._stack; });
+    }
+
 }  // namespace hocon

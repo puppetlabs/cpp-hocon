@@ -19,4 +19,8 @@ namespace hocon {
         return make_shared<config_null>(move(origin));
     }
 
+    bool config_null::operator==(config_value const& other) const {
+        return dynamic_cast<config_null const*>(&other);
+    }
+
 }  // namespace hocon

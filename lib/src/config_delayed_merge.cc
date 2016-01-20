@@ -31,5 +31,9 @@ namespace hocon {
         return make_shared<config_delayed_merge>(move(origin), _stack);
     }
 
+    bool config_delayed_merge::operator==(config_value const& other) const {
+        return equals<config_delayed_merge>(other, [&](config_delayed_merge const& o) { return _stack == o._stack; });
+    }
+
 }  // namespace hocon::config_delayed_merge
 

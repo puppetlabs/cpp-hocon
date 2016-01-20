@@ -20,6 +20,8 @@ namespace hocon {
         shared_object with_only_path_or_null(path raw_path) const override;
         shared_value new_copy(shared_origin origin) const override;
 
+        bool operator==(config_value const& other) const override;
+
     private:
         const std::vector<shared_value> _stack;
     };

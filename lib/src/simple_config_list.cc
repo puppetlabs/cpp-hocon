@@ -92,20 +92,20 @@ namespace hocon {
         return make_shared<simple_config_list>(move(origin), _value);
     }
 
-    bool simple_config_list::operator==(simple_config_list const& other) const
+    bool simple_config_list::operator==(config_value const& other) const
     {
-        if (size() != other.size()) {
-            return false;
-        }
+        return equals<simple_config_list>(other, [&](simple_config_list const& o) {
+            if (size() != o.size()) {
+                return false;
+            }
 
-        if (equal(begin(), end(), other.begin(),
-                  [](shared_value const& a, shared_value const& b) { return a == b; })) {
-            return true;
-        }
+            if (equal(begin(), end(), o.begin(),
+                      [](shared_value const& a, shared_value const& b) { return a == b; })) {
+                return true;
+            }
 
-        // TODO: implement config_value::operator==
-        // return equal(begin(), end(), other.begin(), [](shared_value &a, shared_value &b) { return *a == *b; });
-        return false;
+            return equal(begin(), end(), o.begin(), [](shared_value const& a, shared_value const& b) { return *a == *b; });
+        });
     }
 
     void simple_config_list::render(std::string& sb,
