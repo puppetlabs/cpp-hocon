@@ -1,4 +1,5 @@
 #include <internal/config_parser.hpp>
+#include <internal/config_exception.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_complex_value.hpp>
@@ -24,7 +25,7 @@ namespace hocon { namespace config_parser {
     shared_value parse_context::parse_value(shared_node_value n, vector<string> comments)
     {
         // TODO
-        return {};
+        throw config_exception("config_parser::parse_context::parse_value not implemented");
     }
 
     shared_value parse_context::parse()

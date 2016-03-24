@@ -25,12 +25,12 @@ namespace hocon {
 
     shared_object config_delayed_merge_object::with_value(path raw_path, shared_value value) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::with_value not implemented");
     }
 
     shared_object config_delayed_merge_object::with_value(string key, shared_value value) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::with_value not implemented");
     }
 
     shared_value config_delayed_merge_object::new_copy(shared_origin origin) const {
@@ -40,32 +40,32 @@ namespace hocon {
 
     shared_value config_delayed_merge_object::attempt_peek_with_partial_resolve(string const& key) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::attempt_peek_with_partial_resolve not implemented");
     }
 
     bool config_delayed_merge_object::is_empty() const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::is_empty not implemented");
     }
 
     unordered_map<string, shared_value> const& config_delayed_merge_object::entry_set() const {
         // TODO
-        throw config_exception("");
+        throw config_exception("config_delayed_merge_object::entry_set not implemented");
     }
 
     shared_object config_delayed_merge_object::without_path(path raw_path) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::without_path not implemented");
     }
 
     shared_object config_delayed_merge_object::with_only_path(path raw_path) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::with_only_path not implemented");
     }
 
     shared_object config_delayed_merge_object::with_only_path_or_null(path raw_path) const {
         // TODO
-        return {};
+        throw config_exception("config_delayed_merge_object::with_only_path_or_null not implemented");
     }
 
     bool config_delayed_merge_object::operator==(config_value const& other) const {
