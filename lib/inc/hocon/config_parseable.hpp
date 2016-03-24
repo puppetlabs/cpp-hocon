@@ -1,10 +1,6 @@
 #pragma once
 
-#include "config_parse_options.hpp"
-#include "config_object.hpp"
-#include "config_origin.hpp"
-#include "parser/config_document.hpp"
-#include <memory>
+#include "types.hpp"
 #include "export.h"
 
 namespace hocon {
@@ -32,13 +28,12 @@ namespace hocon {
          *            {@link config_parseable#options()}
          * @return the parsed object
          */
-        // TODO: This relies on the ConfigParser, which has a separate ticket
-        // virtual std::shared_ptr<config_object> parse(shared_parse_options options) = 0;
+        virtual shared_object parse(shared_parse_options options) const = 0;
 
         /**
          * Returns a config_origin describing the origin of the paresable item.
          */
-        virtual std::shared_ptr<const config_origin> origin() const = 0;
+        virtual shared_origin origin() const = 0;
 
         /**
          * Get the initial options, which can be modified then passed to parse().

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "config_include_context.hpp"
-
+#include "types.hpp"
 #include <string>
 #include <memory>
 #include "export.h"
@@ -30,7 +29,7 @@ namespace hocon {
          * @param fallback the previous includer for chaining
          * @return a new includer
          */
-        virtual std::shared_ptr<config_includer> with_fallback(std::shared_ptr<config_includer> fallback) const = 0;
+        virtual shared_includer with_fallback(shared_includer fallback) const = 0;
 
         /**
          * Parses another item to be included. The returned object typically would
@@ -49,7 +48,6 @@ namespace hocon {
          *            the include statement's argument
          * @return a non-null config_object
          */
-        virtual std::shared_ptr<config_object> include(std::shared_ptr<config_include_context> context,
-                                      std::shared_ptr<std::string> what) const = 0;
+        virtual shared_object include(shared_include_context context, std::string what) const = 0;
     };
 }  // namespace hocon

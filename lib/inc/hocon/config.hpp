@@ -167,8 +167,27 @@ namespace hocon {
     class LIBCPP_HOCON_EXPORT config : public config_mergeable, public std::enable_shared_from_this<config> {
         friend class config_object;
         friend class config_value;
+        friend class config_parseable;
 
     public:
+        /**
+         * Parses a string (which should be valid HOCON or JSON by default, or
+         * the syntax specified in the options otherwise).
+         *
+         * @param s string to parse
+         * @param options parse options
+         * @return the parsed configuration
+         */
+        static shared_config parse_string(std::string s, shared_parse_options options);
+
+        /**
+         * Parses a string (which should be valid HOCON or JSON).
+         *
+         * @param s string to parse
+         * @return the parsed configuration
+         */
+        static shared_config parse_string(std::string s);
+
         /**
          * Gets the {@code Config} as a tree of {@link ConfigObject}. This is a
          * constant-time operation (it is not proportional to the number of values
@@ -592,6 +611,8 @@ namespace hocon {
         shared_value find(path path_expression, config_value_type expected, path original_path) const;
         shared_value find(path path_expression, config_value_type expected) const;
         shared_config at_key(shared_origin origin, std::string const& key) const;
+
+        shared_includer default_includer() const;
 
         // TODO: memory and duration parsing
 

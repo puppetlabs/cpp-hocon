@@ -1,6 +1,7 @@
 #pragma once
 
 #include "export.h"
+#include "types.hpp"
 
 namespace hocon {
 
@@ -23,8 +24,7 @@ namespace hocon {
          *            the include statement's argument (a file path)
          * @return a non-null config_object
          */
-        virtual std::shared_ptr<config_object> include_file(std::shared_ptr<config_include_context> context,
-                                                            std::string what) const = 0;
+        virtual shared_object include_file(shared_include_context context, std::string what) const = 0;
     };
 
 }  // namespace hocon

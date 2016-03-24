@@ -8,31 +8,34 @@ namespace hocon {
 
     class simple_includer : public config_includer, public config_includer_file {
     public:
-        simple_includer(std::shared_ptr<config_includer> fallback);
+        simple_includer(shared_includer fallback);
 
-        std::shared_ptr<config_object> include_file(std::shared_ptr<config_include_context>
-                                               context, std::string name) const override;
+        shared_includer with_fallback(shared_includer fallback) const override;
+
+        shared_object include(shared_include_context context, std::string what) const override;
+
+        shared_object include_file(shared_include_context context, std::string what) const override;
 
         static config_parse_options clear_for_include(shared_parse_options options);
 
     private:
-        std::shared_ptr<config_includer> _fallback;
+        shared_includer _fallback;
     };
 
     class name_source {
     public:
-        virtual std::shared_ptr<config_parseable> name_to_parseable(std::string name,
-                                                                    shared_parse_options parse_options) const = 0;
+        virtual shared_parseable name_to_parseable(std::string name,
+                                                   shared_parse_options parse_options) const = 0;
     };
 
     class relative_name_source : public name_source {
     public:
-        relative_name_source(std::shared_ptr<config_include_context> context);
+        relative_name_source(shared_include_context context);
 
-        std::shared_ptr<config_parseable> name_to_parseable(std::string name,
-                                                            shared_parse_options parse_options) const override;
+        shared_parseable name_to_parseable(std::string name,
+                                           shared_parse_options parse_options) const override;
     private:
-        const std::shared_ptr<config_include_context> _context;
+        const shared_include_context _context;
     };
 
 }  // namespace hocon

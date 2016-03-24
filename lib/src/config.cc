@@ -1,14 +1,27 @@
 #include <hocon/config.hpp>
+#include <hocon/config_parse_options.hpp>
 #include <internal/values/config_null.hpp>
 #include <internal/config_exception.hpp>
 #include <internal/default_transformer.hpp>
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_number.hpp>
 #include <internal/values/config_string.hpp>
+#include <internal/parseable.hpp>
+#include <internal/simple_includer.hpp>
 
 using namespace std;
 
 namespace hocon {
+
+    shared_config config::parse_string(string s, shared_parse_options options)
+    {
+        return parseable::new_string(move(s), options).parse()->to_config();
+    }
+
+    shared_config config::parse_string(string s)
+    {
+        return parse_string(move(s), make_shared<config_parse_options>());
+    }
 
     config::config(shared_object object) : _object(move(object)) { }
 
@@ -243,6 +256,11 @@ namespace hocon {
 
     shared_config config::at_path(std::string const& path) const {
         return root()->at_path(path);
+    }
+
+    shared_includer config::default_includer() const {
+        static auto _default_includer = make_shared<simple_includer>(nullptr);
+        return _default_includer;
     }
 
     void config::check_valid(shared_config reference, std::vector<std::string> restrict_to_paths) const {

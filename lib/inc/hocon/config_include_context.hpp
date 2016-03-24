@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config_parseable.hpp"
+#include "types.hpp"
 #include "config_parse_options.hpp"
 #include "export.h"
 
@@ -36,7 +36,7 @@ namespace hocon {
          * @return parseable item relative to the resource doing the including, or
          *         null
          */
-        virtual std::shared_ptr<config_parseable> relative_to(std::string file_name) const = 0;
+        virtual shared_parseable relative_to(std::string file_name) const = 0;
 
         /**
          * Parse options to use (if you use another method to get a

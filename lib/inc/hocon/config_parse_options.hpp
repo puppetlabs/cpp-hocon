@@ -1,13 +1,10 @@
 #pragma once
 
-#include <string>
-#include <memory>
+#include "types.hpp"
 #include "config_syntax.hpp"
 #include "export.h"
 
 namespace hocon {
-    class config_includer;
-
     /**
      * A set of options related to parsing.
      *
@@ -60,13 +57,13 @@ namespace hocon {
          * @param origin_description description to put in the {@link config_origin}
          * @return options with the origin description set
          */
-        config_parse_options set_origin_description(std::shared_ptr<std::string> origin_description) const;
+        config_parse_options set_origin_description(shared_string origin_description) const;
 
         /**
          * Gets the current origin description, which may be null for "automatic".
          * @return the current origin description or null
          */
-        std::shared_ptr<std::string> const& get_origin_description() const;
+        shared_string const& get_origin_description() const;
 
         /**
          * Set to false to throw an exception if the item being parsed (for example
@@ -91,7 +88,7 @@ namespace hocon {
          * @param includer the includer to use or null for default
          * @return new version of the parse options with different includer
          */
-        config_parse_options set_includer(std::shared_ptr<config_includer> includer) const;
+        config_parse_options set_includer(shared_includer includer) const;
 
         /**
          * Prepends a {@link config_includer} which customizes how
@@ -102,7 +99,7 @@ namespace hocon {
          * @param includer the includer to prepend (may not be null)
          * @return new version of the parse options with different includer
          */
-        config_parse_options prepend_includer(std::shared_ptr<config_includer> includer) const;
+        config_parse_options prepend_includer(shared_includer includer) const;
 
         /**
          * Appends a {@link config_includer} which customizes how
@@ -112,25 +109,23 @@ namespace hocon {
          * @param includer the includer to append (may not be null)
          * @return new version of the parse options with different includer
          */
-        config_parse_options append_includer(std::shared_ptr<config_includer> includer) const;
+        config_parse_options append_includer(shared_includer includer) const;
 
         /**
          * Gets the current includer (will be null for the default includer).
          * @return current includer or null
          */
-        std::shared_ptr<config_includer> const& get_includer() const;
+        shared_includer const& get_includer() const;
 
     private:
-        config_parse_options(std::shared_ptr<std::string> origin_desc,
-                             bool allow_missing, std::shared_ptr<config_includer> includer,
+        config_parse_options(shared_string origin_desc,
+                             bool allow_missing, shared_includer includer,
                              config_syntax syntax = config_syntax::UNSPECIFIED);
-        config_parse_options with_fallback_origin_description(std::shared_ptr<std::string> origin_description) const;
+        config_parse_options with_fallback_origin_description(shared_string origin_description) const;
 
         config_syntax _syntax;
-        std::shared_ptr<std::string> _origin_description;
+        shared_string _origin_description;
         bool _allow_missing;
-        std::shared_ptr<config_includer> _includer;
+        shared_includer _includer;
     };
-
-    using shared_parse_options = std::shared_ptr<const config_parse_options>;
 }  // namespace hocon

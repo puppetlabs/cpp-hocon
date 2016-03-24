@@ -19,7 +19,7 @@ endif()
 enable_testing()
 
 # Leatherman setup
-set(LEATHERMAN_COMPONENTS catch nowide)
+set(LEATHERMAN_COMPONENTS catch nowide util)
 find_package(Leatherman REQUIRED COMPONENTS ${LEATHERMAN_COMPONENTS})
 
 ## Before we find any packages, we want to pull in the common leatherman options, as they can affect commonly-used packages.
@@ -32,7 +32,7 @@ add_definitions(${LEATHERMAN_DEFINITIONS})
 include(leatherman)
 
 # Add other dependencies
-find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.54 REQUIRED COMPONENTS thread date_time chrono system program_options)
 
 # Display a summary of the features
 include(FeatureSummary)
