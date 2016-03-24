@@ -1,3 +1,5 @@
+environment:
+  LEATHERMAN_VERSION: 0.4.2
 install:
   - git submodule update --init --recursive
 
@@ -10,8 +12,14 @@ install:
   - ps: wget 'https://s3.amazonaws.com/kylo-pl-bucket/boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh.7z' -OutFile "$pwd\boost.7z"
   - ps: 7z.exe x boost.7z -oC:\tools | FIND /V "ing  "
 
+  - ps: wget 'https://s3.amazonaws.com/kylo-pl-bucket/curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh.7z' -OutFile "$pwd\curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh.7z"
+  - ps: 7z.exe x "curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh.7z" -oC:\tools | FIND /V "ing "
+
+  - ps: wget "https://github.com/puppetlabs/leatherman/releases/download/$env:LEATHERMAN_VERSION/leatherman.7z" -OutFile "$pwd\leatherman.7z"
+  - ps: 7z.exe x leatherman.7z -oC:\tools | FIND /V "ing "
+
 build_script:
-  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DBOOST_STATIC=ON -Wno-dev .
+  - ps: cmake -G "MinGW Makefiles" -DBOOST_ROOT="C:\tools\boost_1_58_0-x86_64_mingw-w64_4.8.3_win32_seh" -DCMAKE_PREFIX_PATH="C:\tools\leatherman;C:\tools\curl-7.42.1-x86_64_mingw-w64_4.8.3_win32_seh" -DCURL_STATIC=ON -DBOOST_STATIC=ON -Wno-dev .
   - ps: mingw32-make install
 
 test_script:
