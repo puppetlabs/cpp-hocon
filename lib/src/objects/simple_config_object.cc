@@ -18,7 +18,7 @@ namespace hocon {
         shared_value modify_child_may_throw(string key, shared_value v) override
         {
             // TODO: implement
-            return {};
+            throw config_exception("simple_config_object::resolve_modifier::modify_child_may_throw not implemented");
         }
 
         resolve_context context;
@@ -166,7 +166,7 @@ namespace hocon {
     shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier& modifier) const
     {
         // TODO: implement
-        return {};
+        throw config_exception("simple_config_object::modify_may_throw not implemented");
     }
 
 }  // namespace hocon
