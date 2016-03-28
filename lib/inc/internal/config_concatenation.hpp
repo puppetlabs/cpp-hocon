@@ -8,7 +8,7 @@
 
 namespace hocon {
 
-    class config_exception;
+    struct config_exception;
 
     /**
      * A ConfigConcatenation represents a list of values to be concatenated (see the
