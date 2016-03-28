@@ -1,6 +1,5 @@
 #include <internal/simple_include_context.hpp>
 #include <internal/simple_includer.hpp>
-#include <internal/config_exception.hpp>
 
 using namespace std;
 

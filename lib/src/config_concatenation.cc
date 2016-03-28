@@ -5,7 +5,7 @@
 #include <internal/default_transformer.hpp>
 #include <internal/simple_config_list.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/resolve_result.hpp>
 #include <internal/resolve_source.hpp>

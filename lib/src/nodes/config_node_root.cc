@@ -1,5 +1,5 @@
 #include <internal/nodes/config_node_root.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/nodes/config_node_array.hpp>
 #include <internal/nodes/config_node_object.hpp>
 #include <internal/path_parser.hpp>

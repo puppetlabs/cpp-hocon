@@ -1,6 +1,6 @@
 #include <internal/objects/simple_config_object.hpp>
 #include <hocon/config_value.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/simple_config_origin.hpp>
 #include <internal/resolve_context.hpp>
 #include <internal/resolve_source.hpp>
@@ -74,7 +74,7 @@ namespace hocon {
         if (object && !next.empty()) {
             auto value = object->without_path(next);
             unordered_map<string, shared_value> updated { make_pair(key, value) };
-            // TODO: the last arugment is incorrect, fix when implementing resolve functionality
+            // TODO: the last argument is incorrect, fix when implementing resolve functionality
             return make_shared<simple_config_object>(origin(), updated, resolve_status::RESOLVED, _ignores_fallbacks);
         } else if (!next.empty() || v == _value.end()) {
             return dynamic_pointer_cast<const config_object>(shared_from_this());
@@ -85,7 +85,7 @@ namespace hocon {
                     smaller.emplace(old);
                 }
             }
-            // TODO: the last arugment is incorrect, fix when implementing resolve functionality
+            // TODO: the last argument is incorrect, fix when implementing resolve functionality
             return make_shared<simple_config_object>(origin(), smaller, resolve_status::RESOLVED);
         }
     }
@@ -163,7 +163,7 @@ namespace hocon {
         return modify_may_throw(modifier);
     }
 
-    shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier& modifier) const
+    shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier&) const
     {
         // TODO: implement
         throw config_exception("simple_config_object::modify_may_throw not implemented");

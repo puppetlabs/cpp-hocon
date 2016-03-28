@@ -1,7 +1,7 @@
 #include <hocon/config.hpp>
 #include <hocon/config_parse_options.hpp>
 #include <internal/values/config_null.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/default_transformer.hpp>
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_number.hpp>

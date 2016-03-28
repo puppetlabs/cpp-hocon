@@ -1,6 +1,6 @@
 #include <internal/simple_includer.hpp>
 #include <internal/parseable.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 
 using namespace std;
 

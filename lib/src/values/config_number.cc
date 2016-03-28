@@ -2,7 +2,7 @@
 #include <internal/values/config_int.hpp>
 #include <internal/values/config_long.hpp>
 #include <internal/values/config_double.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <limits>
 
 using namespace std;

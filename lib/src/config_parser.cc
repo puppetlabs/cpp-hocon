@@ -1,5 +1,5 @@
 #include <internal/config_parser.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_complex_value.hpp>

@@ -7,7 +7,7 @@
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_string.hpp>
 #include <hocon/config_object.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 
 using namespace std;
 

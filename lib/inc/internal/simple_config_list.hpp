@@ -27,7 +27,7 @@ namespace hocon {
         shared_value replace_child(shared_value const& child, shared_value replacement) const override;
         bool has_descendant(shared_value const& descendant) const override;
 
-        std::shared_ptr<const simple_config_list> relativized(const std::string prefix) const;
+        shared_value relativized(const std::string prefix) const override;
 
         bool contains(shared_value v) const { return std::find(_value.begin(), _value.end(), v) != _value.end(); }
         bool contains_all(std::vector<shared_value>) const;
@@ -43,7 +43,7 @@ namespace hocon {
         }
 
         bool is_empty() const { return _value.empty(); }
-        int size() const { return _value.size(); }
+        size_t size() const { return _value.size(); }
         iterator begin() const { return _value.begin(); }
         iterator end() const { return _value.end(); }
 

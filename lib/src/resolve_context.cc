@@ -1,4 +1,4 @@
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/resolve_context.hpp>
 #include <internal/resolve_result.hpp>
 #include <internal/resolve_source.hpp>

@@ -149,7 +149,7 @@ namespace hocon {
          * @return value relativized to the given path or the same value if nothing
          *         to do
          */
-        shared_value relativized(std::string prefix) const { return shared_from_this(); }
+        virtual shared_value relativized(std::string prefix) const { return shared_from_this(); }
 
         virtual resolve_status get_resolve_status() const;
 

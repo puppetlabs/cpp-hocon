@@ -1,6 +1,6 @@
 #include <internal/config_delayed_merge_object.hpp>
 #include <internal/config_delayed_merge.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 
 using namespace std;
 

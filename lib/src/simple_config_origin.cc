@@ -1,6 +1,6 @@
 #include <hocon/config_value.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <algorithm>
 #include <stdexcept>
