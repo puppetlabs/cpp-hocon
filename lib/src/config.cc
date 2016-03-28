@@ -64,7 +64,7 @@ namespace hocon {
 
     bool config::has_path(string const& path_expression) const {
         shared_value peeked = has_path_peek(path_expression);
-        return peeked && peeked->value_type() != config_value_type::CONFIG_NULL;
+        return peeked && peeked->value_type() != config_value::type::CONFIG_NULL;
     }
 
     bool config::has_path_or_null(string const& path) const {
@@ -101,33 +101,33 @@ namespace hocon {
         return entries;
     }
 
-    shared_value config::throw_if_null(shared_value v, config_value_type expected, path original_path) {
-        if (v->value_type() == config_value_type::CONFIG_NULL) {
+    shared_value config::throw_if_null(shared_value v, config_value::type expected, path original_path) {
+        if (v->value_type() == config_value::type::CONFIG_NULL) {
             throw config_exception(original_path.render() + " was null");
         } else {
             return v;
         }
     }
 
-    shared_value config::find_key(shared_object self, string const& key, config_value_type expected,
+    shared_value config::find_key(shared_object self, string const& key, config_value::type expected,
                                          path original_path) {
         return throw_if_null(find_key_or_null(self, key, expected, original_path), expected, original_path);
     }
 
-    shared_value config::find_key_or_null(shared_object self, string const& key, config_value_type expected,
+    shared_value config::find_key_or_null(shared_object self, string const& key, config_value::type expected,
                                                  path original_path) {
         shared_value v = self->peek_assuming_resolved(key, original_path);
         if (!v) {
             throw config_exception("Value missing at " + original_path.render());
         }
 
-        if (expected != config_value_type::UNSPECIFIED) {
+        if (expected != config_value::type::UNSPECIFIED) {
             v = default_transformer::transform(v, expected);
         }
 
-        if (expected != config_value_type::UNSPECIFIED &&
+        if (expected != config_value::type::UNSPECIFIED &&
                 v->value_type() != expected &&
-                v->value_type() != config_value_type::CONFIG_NULL) {
+                v->value_type() != config_value::type::CONFIG_NULL) {
             throw config_exception(original_path.render() + " could not be converted to the requested type");
         } else {
             return v;
@@ -135,7 +135,7 @@ namespace hocon {
     }
 
     shared_value config::find_or_null(shared_object self, path desired_path,
-                                             config_value_type expected, path original_path) {
+                                             config_value::type expected, path original_path) {
         try {
             string key = *desired_path.first();
             path next = desired_path.remainder();
@@ -143,7 +143,7 @@ namespace hocon {
                 return find_key_or_null(self, key, expected, original_path);
             } else {
                 shared_object o = dynamic_pointer_cast<const config_object>(
-                        find_key(self, key, config_value_type::OBJECT,
+                        find_key(self, key, config_value::type::OBJECT,
                                  original_path.sub_path(0, original_path.length() - next.length())));
                 return find_or_null(o, next, expected, original_path);
             }
@@ -153,52 +153,52 @@ namespace hocon {
         }
     }
 
-    shared_value config::find_or_null(string const& path_expression, config_value_type expected) const {
+    shared_value config::find_or_null(string const& path_expression, config_value::type expected) const {
         path raw_path = path::new_path(path_expression);
         return find_or_null(raw_path, expected, raw_path);
     }
 
-    shared_value config::find(string const& path_expression, config_value_type expected) const {
+    shared_value config::find(string const& path_expression, config_value::type expected) const {
         path raw_path = path::new_path(path_expression);
         return find(raw_path, expected, raw_path);
     }
 
     bool config::get_is_null(string const& path_expression) const {
-        shared_value v = find_or_null(path_expression, config_value_type::UNSPECIFIED);
-        return v->value_type() == config_value_type::CONFIG_NULL;
+        shared_value v = find_or_null(path_expression, config_value::type::UNSPECIFIED);
+        return v->value_type() == config_value::type::CONFIG_NULL;
     }
 
     shared_ptr<const config_value> config::get_value(string const& path_expression) const {
-        return find(path_expression, config_value_type::UNSPECIFIED);
+        return find(path_expression, config_value::type::UNSPECIFIED);
     }
 
     bool config::get_bool(string const& path_expression) const {
-        shared_value v = find(path_expression, config_value_type::BOOLEAN);
+        shared_value v = find(path_expression, config_value::type::BOOLEAN);
         return dynamic_pointer_cast<const config_boolean>(v)->bool_value();
     }
 
     int config::get_int(string const& path_expression) const {
-        shared_value v = find(path_expression, config_value_type::NUMBER);
+        shared_value v = find(path_expression, config_value::type::NUMBER);
         return dynamic_pointer_cast<const config_number>(v)->int_value_range_checked(path_expression);
     }
 
     int64_t config::get_long(string const& path_expression) const {
-        shared_value v = find(path_expression, config_value_type::NUMBER);
+        shared_value v = find(path_expression, config_value::type::NUMBER);
         return dynamic_pointer_cast<const config_number>(v)->long_value();
     }
 
     double config::get_double(string const& path_expression) const {
-        shared_value v = find(path_expression, config_value_type::NUMBER);
+        shared_value v = find(path_expression, config_value::type::NUMBER);
         return dynamic_pointer_cast<const config_number>(v)->double_value();
     }
 
     string config::get_string(string const& path_expression) const {
-        shared_value v = find(path_expression, config_value_type::STRING);
+        shared_value v = find(path_expression, config_value::type::STRING);
         return dynamic_pointer_cast<const config_string>(v)->transform_to_string();
     }
 
     shared_ptr<const config_object> config::get_object(string const& path_expression) const {
-        return dynamic_pointer_cast<const config_object>(find(path_expression, config_value_type::OBJECT));
+        return dynamic_pointer_cast<const config_object>(find(path_expression, config_value::type::OBJECT));
     }
 
     shared_config config::get_config(string const& path_expression) const {
@@ -220,7 +220,7 @@ namespace hocon {
     }
 
     template<typename T>
-    vector<T> config::get_homogeneous_unwrapped_list(string const& path, config_value_type expected) const {
+    vector<T> config::get_homogeneous_unwrapped_list(string const& path, config_value::type expected) const {
         // TODO: this relies on complex config_value types
         // Also will need to some design decisions about getting naked values of type T
         // out of anonymous config values... possible a templated version of the Java's unwrapped method?
@@ -272,12 +272,12 @@ namespace hocon {
         return root()->peek_path(desired_path);
     }
 
-    shared_value config::find_or_null(path path_expression, config_value_type expected,
+    shared_value config::find_or_null(path path_expression, config_value::type expected,
             path original_path) const {
         return find_or_null(_object, path_expression, expected, original_path);
     }
 
-    shared_value config::find(path path_expression, config_value_type expected, path original_path) const {
+    shared_value config::find(path path_expression, config_value::type expected, path original_path) const {
         return throw_if_null(find_or_null(_object, path_expression, expected, original_path), expected, original_path);
     }
 

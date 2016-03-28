@@ -19,7 +19,7 @@ namespace hocon {
         }
     }
 
-    config_value_type config_delayed_merge::value_type() const {
+    config_value::type config_delayed_merge::value_type() const {
         throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
     }
 

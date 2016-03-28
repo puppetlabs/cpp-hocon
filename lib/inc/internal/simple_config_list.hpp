@@ -20,7 +20,7 @@ namespace hocon {
         simple_config_list(shared_origin origin, std::vector<shared_value> value);
         simple_config_list(shared_origin origin, std::vector<shared_value> value, resolve_status status);
 
-        config_value_type value_type() const override { return config_value_type::LIST; }
+        config_value::type value_type() const override { return config_value::type::LIST; }
         // unwrapped()
         resolve_status get_resolve_status() const override { return _resolved; }
 

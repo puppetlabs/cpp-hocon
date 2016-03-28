@@ -18,7 +18,7 @@ namespace hocon {
     public:
         config_null(shared_origin origin);
 
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
         std::string transform_to_string() const override;
 
     protected:

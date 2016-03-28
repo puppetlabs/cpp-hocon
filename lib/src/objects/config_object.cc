@@ -53,8 +53,8 @@ namespace hocon {
         return _config;
     }
 
-    config_value_type config_object::value_type() const {
-        return config_value_type::OBJECT;
+    config_value::type config_object::value_type() const {
+        return config_value::type::OBJECT;
     }
 
     shared_origin config_object::merge_origins(std::vector<shared_value> const& stack) {

@@ -239,7 +239,7 @@ namespace hocon { namespace config_document_parser {
 
     shared_ptr<config_node_path> parse_context::parse_key(shared_token token) {
         if (_flavor == config_syntax::JSON) {
-            if (tokens::is_value_with_type(token, config_value_type::STRING)) {
+            if (tokens::is_value_with_type(token, config_value::type::STRING)) {
                 single_token_iterator it(token);
                 return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, nullptr));
             } else {
@@ -316,7 +316,7 @@ namespace hocon { namespace config_document_parser {
             t = next_token_collecting_whitespace(children);
 
             // quoted string
-            if (!tokens::is_value_with_type(t, config_value_type::STRING)) {
+            if (!tokens::is_value_with_type(t, config_value::type::STRING)) {
                 throw parse_exception("expecting a quoted string inside file(), classpath(), or url(), rather than" +
                 t->to_string());
             }
@@ -329,7 +329,7 @@ namespace hocon { namespace config_document_parser {
                 throw parse_exception("expecting a close parentheses ')' here, not: " + t->to_string());
             }
             return make_shared<config_node_include>(children, kind);
-        } else if (tokens::is_value_with_type(t, config_value_type::STRING)) {
+        } else if (tokens::is_value_with_type(t, config_value::type::STRING)) {
             children.push_back(make_shared<config_node_simple_value>(t));
             return make_shared<config_node_include>(children, config_include_kind::HEURISTIC);
         } else {

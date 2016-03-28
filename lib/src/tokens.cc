@@ -234,7 +234,7 @@ namespace hocon {
         }
     }
 
-    bool tokens::is_value_with_type(shared_token token, config_value_type type) {
+    bool tokens::is_value_with_type(shared_token token, config_value::type type) {
         auto value_token = dynamic_pointer_cast<const value>(token);
         if (value_token) {
             return value_token->get_value()->value_type() == type;

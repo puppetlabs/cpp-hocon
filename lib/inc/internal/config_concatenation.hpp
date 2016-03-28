@@ -25,7 +25,7 @@ namespace hocon {
     public:
         config_concatenation(shared_origin origin, std::vector<shared_value> pieces);
 
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
         std::vector<shared_value> unmerged_values() const override;
 
         resolve_status get_resolve_status() const override;

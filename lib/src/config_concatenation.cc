@@ -37,7 +37,7 @@ namespace hocon {
         }
     }
 
-    config_value_type config_concatenation::value_type() const {
+    config_value::type config_concatenation::value_type() const {
         throw not_resolved();
     }
 
@@ -201,9 +201,9 @@ namespace hocon {
         // check for an object which can be converted to a list
         // (this will be an object with numeric keys, like foo.0, foo.1)
         if (dynamic_pointer_cast<const config_object>(left) && dynamic_pointer_cast<const simple_config_list>(right)) {
-            left = default_transformer::transform(left, config_value_type::LIST);
+            left = default_transformer::transform(left, config_value::type::LIST);
         } else if (dynamic_pointer_cast<const simple_config_list>(left) && dynamic_pointer_cast<const config_object>(right)) {
-            right = default_transformer::transform(right, config_value_type::LIST);
+            right = default_transformer::transform(right, config_value::type::LIST);
         }
 
         // Since this depends on the type of two instances, I couldn't think

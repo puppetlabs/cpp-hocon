@@ -5,6 +5,7 @@
 #include "config_mergeable.hpp"
 #include "path.hpp"
 #include <string>
+#include <vector>
 #include "export.h"
 
 namespace hocon {
@@ -15,14 +16,6 @@ namespace hocon {
 
     template<typename T>
     struct resolve_result;
-
-    /**
-     * The type of a configuration value (following the <a
-     * href="http://json.org">JSON</a> type schema).
-     */
-    enum class config_value_type {
-        OBJECT, LIST, NUMBER, BOOLEAN, CONFIG_NULL, STRING, UNSPECIFIED
-    };
 
     enum class resolve_status { RESOLVED, UNRESOLVED };
 
@@ -52,6 +45,26 @@ namespace hocon {
         friend class config_concatenation;
     public:
         /**
+         * The type of a configuration value (following the <a
+         * href="http://json.org">JSON</a> type schema).
+         */
+        enum class type {
+            OBJECT, LIST, NUMBER, BOOLEAN, CONFIG_NULL, STRING, UNSPECIFIED
+        };
+        static char const* type_name(type t) {
+            switch (t) {
+                case type::OBJECT: return "object";
+                case type::LIST: return "list";
+                case type::NUMBER: return "number";
+                case type::BOOLEAN: return "boolean";
+                case type::CONFIG_NULL: return "null";
+                case type::STRING: return "string";
+                case type::UNSPECIFIED: return "unspecified";
+                default: throw std::logic_error("Got impossible value for type enum");
+            }
+        }
+
+        /**
          * The origin of the value (file, line number, etc.), for debugging and
          * error messages.
          *
@@ -60,11 +73,20 @@ namespace hocon {
         virtual shared_origin const& origin() const;
 
         /**
-         * The config_value_type of the value; matches the JSON type schema.
+         * The type of the value; matches the JSON type schema.
          *
          * @return value's type
          */
-        virtual config_value_type value_type() const = 0;
+        virtual type value_type() const = 0;
+
+        /**
+         * The printable name of the value type.
+         *
+         * @return value's type's name
+         */
+        char const* value_type_name() const {
+            return type_name(value_type());
+        }
 
         /**
          * Renders the config value as a HOCON string. This method is primarily
