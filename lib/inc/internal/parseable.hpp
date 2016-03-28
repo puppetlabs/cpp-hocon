@@ -39,16 +39,21 @@ namespace hocon {
         virtual config_syntax content_type() const;
         virtual std::shared_ptr<config_parseable> relative_to(std::string file_name) const;
 
+        std::string to_string() const;
+
     private:
         std::shared_ptr<config_document> parse_document(shared_parse_options base_options) const;
         std::shared_ptr<config_document> parse_document(shared_origin origin, shared_parse_options final_options) const;
         std::shared_ptr<config_document> raw_parse_document(std::unique_ptr<std::istream> stream, shared_origin origin,
-                                           shared_parse_options options) const;
+                                                            shared_parse_options options) const;
         std::shared_ptr<config_document> raw_parse_document(shared_origin origin,
                                                             shared_parse_options options) const;
 
         shared_value parse_value(shared_parse_options base_options) const;
         shared_value parse_value(shared_origin origin, shared_parse_options options) const;
+        shared_value raw_parse_value(std::unique_ptr<std::istream> stream, shared_origin origin,
+                                     shared_parse_options options) const;
+        shared_value raw_parse_value(shared_origin origin, shared_parse_options options) const;
 
         shared_parse_options fixup_options(shared_parse_options base_options) const;
 

@@ -4,12 +4,15 @@
 #include <internal/nodes/abstract_config_node.hpp>
 #include <internal/nodes/config_node_object.hpp>
 #include <internal/simple_config_document.hpp>
+#include <internal/objects/simple_config_object.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <internal/config_document_parser.hpp>
 #include <internal/simple_include_context.hpp>
+#include <internal/config_parser.hpp>
 #include <boost/thread/tss.hpp>
-#include <stack>
+#include <vector>
+#include <numeric>
 #include <leatherman/util/scope_exit.hpp>
 
 using namespace std;
@@ -97,6 +100,10 @@ namespace hocon {
                                                         (options()->set_origin_description(nullptr))));
     }
 
+    string parseable::to_string() const {
+        return typeid(*this).name();
+    }
+
     shared_ptr<config_document> parseable::parse_config_document() {
         return parse_document(_initial_options);
     }
@@ -105,28 +112,31 @@ namespace hocon {
         if (auto obj = dynamic_pointer_cast<const config_object>(value)) {
             return obj;
         } else {
-            // TODO: more specific error message
-            throw config_exception("object at file root wrong type");
+            throw wrong_type_exception(*value->origin(), "", "object at file root", value->value_type_name());
         }
     }
 
     shared_object parseable::parse(shared_parse_options options) const {
-        static boost::thread_specific_ptr<stack<shared_ptr<const parseable>>> parse_stack;
+        static boost::thread_specific_ptr<vector<shared_ptr<const parseable>>> parse_stack;
         if (!parse_stack.get()) {
             // Initialize the stack
-            parse_stack.reset(new stack<shared_ptr<const parseable>>());
+            parse_stack.reset(new vector<shared_ptr<const parseable>>());
         }
 
         auto pstack = parse_stack.get();
         if (pstack->size() >= MAX_INCLUDE_DEPTH) {
-            // TODO: Expand error message.
-            throw config_exception("include statements nested more than " + to_string(MAX_INCLUDE_DEPTH)
-                                   + " times, you probably have a cycle in your includes.");
+            string stacktrace = accumulate(pstack->begin(), pstack->end(), string(), [](string s, shared_ptr<const parseable> p) {
+                return s + '\t' + p->to_string() + '\n';
+            });
+            throw parse_exception(*_initial_origin, "include statements nested more than "
+                                                    + std::to_string(MAX_INCLUDE_DEPTH)
+                                                    + " times, you probably have a cycle in your includes. Trace:\n"
+                                                    + stacktrace);
         }
 
-        pstack->push(shared_from_this());
+        pstack->push_back(shared_from_this());
         leatherman::util::scope_exit([&]() {
-            pstack->pop();
+            pstack->pop_back();
             if (pstack->empty()) {
                 parse_stack.reset();
             }
@@ -141,21 +151,53 @@ namespace hocon {
 
     shared_value parseable::parse_value(shared_parse_options base_options) const {
         auto options = fixup_options(base_options);
-        //
-        // shared_origin = ...
-        // return parse_value(origin, options);
-        // TODO: implement
-        throw config_exception("parseable::parse_value(options) not yet implemented");
+
+        // passed-in options can override origin
+        shared_origin origin = options->get_origin_description() ?
+                               make_shared<simple_config_origin>(*options->get_origin_description()) :
+                               _initial_origin;
+        return parse_value(origin, options);
     }
 
-    shared_value parseable::parse_value(shared_origin origin, shared_parse_options options) const {
-        // return raw_parse_value(origin, options);
-        // TODO: implement
-        throw config_exception("parseable::parse_value(origin, options) not yet implemented");
+    shared_value parseable::parse_value(shared_origin origin, shared_parse_options final_options) const {
+        try {
+            return raw_parse_value(origin, final_options);
+        } catch (runtime_error& e) {
+            if (final_options->get_allow_missing()) {
+                return make_shared<simple_config_object>(
+                        make_shared<simple_config_origin>(origin->description() + " (not found)"),
+                        unordered_map<string, shared_value>());
+            } else {
+                throw io_exception(*origin, typeid(*this).name() + string(": ") + e.what());
+            }
+        }
+    }
+
+    shared_value parseable::raw_parse_value(shared_origin origin, shared_parse_options options) const {
+        auto stream = reader(options);
+
+        // after reader() we will have loaded the content type
+        config_syntax cont_type = content_type();
+        shared_parse_options options_with_content_type;
+        if (cont_type != config_syntax::UNSPECIFIED) {
+            options_with_content_type = make_shared<config_parse_options>(options->set_syntax(cont_type));
+        } else {
+            options_with_content_type = options;
+        }
+
+        return raw_parse_value(move(stream), origin, options_with_content_type);
+    }
+
+    shared_value parseable::raw_parse_value(unique_ptr<istream> stream, shared_origin origin,
+                                            shared_parse_options options) const {
+        // TODO: need to handle PROPERTIES?
+        token_iterator tokens(origin, move(stream), options->get_syntax());
+        auto document = config_document_parser::parse(move(tokens), origin, *options);
+        return config_parser::parse(document, origin, options, _include_context);
     }
 
     shared_ptr<config_document> parseable::parse_document(shared_parse_options base_options) const {
-        // note that we are NOT using our "initialOptions",
+        // note that we are NOT using our "_initial_options",
         // but using the ones from the passed-in options. The idea is that
         // callers can get our original options and then parse with different
         // ones if they want.
@@ -207,31 +249,6 @@ namespace hocon {
         auto tokens = token_iterator(origin, move(stream), options->get_syntax());
         return make_shared<simple_config_document>(config_document_parser::parse(move(tokens), origin, *options), options);
     }
-
-
-
-    // TODO: These rely on the ConfigParser, another huge convoluted class to port that has its own ticket
-//    shared_value parseable::raw_parse_value(shared_origin origin, shared_parse_options options) {
-//        auto stream = reader(options);
-//
-//        // after reader() we will have loaded the content type
-//        config_syntax cont_type = content_type();
-//        shared_parse_options options_with_content_type;
-//        if (cont_type != config_syntax::UNSPECIFIED) {
-//            options_with_content_type = make_shared<config_parse_options>(options->set_syntax(cont_type));
-//        } else {
-//            options_with_content_type = options;
-//        }
-//
-//        return raw_parse_value(move(stream), origin, options_with_content_type);
-//    }
-//
-//    shared_value parseable::raw_parse_value(unique_ptr<istream> stream, shared_origin origin,
-//                                            shared_parse_options options) {
-//        token_iterator tokens(origin, move(stream), options->get_syntax());
-//        auto document = config_document_parser::parse(tokens, origin, *options);
-//        return config_parser.parse(document, origin, options, include_context());
-//    }
 
     unique_ptr<istream> parseable::reader(shared_parse_options options) const {
         return reader();
