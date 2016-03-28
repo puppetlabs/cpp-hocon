@@ -2,10 +2,10 @@
 #include <internal/config_util.hpp>
 #include <hocon/config_object.hpp>
 #include <hocon/config_exception.hpp>
-#include <internal/objects/simple_config_object.hpp>
+#include <internal/values/simple_config_object.hpp>
 #include <internal/simple_config_origin.hpp>
 #include <internal/container.hpp>
-#include <internal/config_delayed_merge.hpp>
+#include <internal/values/config_delayed_merge.hpp>
 #include <internal/resolve_result.hpp>
 #include <algorithm>
 

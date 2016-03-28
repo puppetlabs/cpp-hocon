@@ -1,5 +1,5 @@
 #include <hocon/config_value.hpp>
-#include <internal/simple_config_list.hpp>
+#include <internal/values/simple_config_list.hpp>
 #include <internal/simple_config_origin.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/resolve_context.hpp>

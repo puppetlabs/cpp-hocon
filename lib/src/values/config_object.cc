@@ -1,7 +1,7 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_delayed_merge_object.hpp>
+#include <internal/values/config_delayed_merge_object.hpp>
 #include <hocon/config_exception.hpp>
 #include <hocon/path.hpp>
 

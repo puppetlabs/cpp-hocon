@@ -1,9 +1,9 @@
 #include <hocon/config_object.hpp>
 #include <hocon/path.hpp>
-#include <internal/config_concatenation.hpp>
+#include <internal/values/config_concatenation.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/default_transformer.hpp>
-#include <internal/simple_config_list.hpp>
+#include <internal/values/simple_config_list.hpp>
 #include <internal/simple_config_origin.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/values/config_string.hpp>
