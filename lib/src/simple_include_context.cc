@@ -5,23 +5,14 @@ using namespace std;
 
 namespace hocon {
 
-    simple_include_context::simple_include_context(shared_ptr<parseable> parse) : _parseable(move(parse)) { }
+    simple_include_context::simple_include_context(parseable const& parse) : _parseable(parse) { }
 
-    shared_ptr<simple_include_context> simple_include_context::with_parseable(
-            shared_ptr<parseable> new_parseable) const {
-        return make_shared<simple_include_context>(new_parseable);
-    }
-
-    std::shared_ptr<config_parseable> simple_include_context::relative_to(std::string file_name) const {
-        if (_parseable) {
-            return _parseable->relative_to(file_name);
-        } else {
-            return nullptr;
-        }
+    shared_parseable simple_include_context::relative_to(std::string file_name) const {
+        return _parseable.relative_to(file_name);
     }
 
     config_parse_options simple_include_context::parse_options() const {
-        return simple_includer::clear_for_include(_parseable->options());
+        return simple_includer::clear_for_include(_parseable.options());
     }
 
 }  // namespace hocon

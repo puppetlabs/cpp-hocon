@@ -7,8 +7,8 @@ namespace hocon {
     config_null::config_null(shared_origin origin) :
             config_value(move(origin)) { }
 
-    config_value_type config_null::value_type() const {
-        return config_value_type::CONFIG_NULL;
+    config_value::type config_null::value_type() const {
+        return config_value::type::CONFIG_NULL;
     }
 
     string config_null::transform_to_string() const {

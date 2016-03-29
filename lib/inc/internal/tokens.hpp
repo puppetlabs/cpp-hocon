@@ -124,7 +124,10 @@ namespace hocon {
         static shared_token const& close_square_token();
         static shared_token const& plus_equals_token();
 
-        static bool is_value_with_type(shared_token t, config_value_type type);
+        static bool is_newline(shared_token);
+        static bool is_ignored_whitespace(shared_token);
+
+        static bool is_value_with_type(shared_token t, config_value::type type);
 
         static shared_value get_value(shared_token t);
     };

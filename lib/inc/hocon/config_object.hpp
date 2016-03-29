@@ -24,7 +24,7 @@ namespace hocon {
 
         config_object(shared_origin origin);
 
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
 
         virtual shared_object with_value(path raw_path, shared_value value) const = 0;
         virtual shared_object with_value(std::string key, shared_value value) const = 0;
@@ -43,9 +43,6 @@ namespace hocon {
 
         static shared_value peek_path(const config_object* self, path desired_path);
         static shared_origin merge_origins(std::vector<shared_value> const& stack);
-
-    private:
-        std::shared_ptr<const config> _config;
     };
 
 }  // namespace hocon

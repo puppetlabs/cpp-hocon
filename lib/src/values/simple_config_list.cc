@@ -1,11 +1,10 @@
 #include <hocon/config_value.hpp>
-#include <internal/simple_config_list.hpp>
+#include <internal/values/simple_config_list.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/resolve_context.hpp>
 #include <internal/resolve_source.hpp>
 #include <internal/resolve_result.hpp>
-#include <algorithm>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -63,13 +62,13 @@ namespace hocon {
         if (context.is_restricted_to_child()) {
             return resolve_result<shared_value>(context, shared_from_this());
         } else {
-            resolve_modifier modifier{context, source.push_parent(dynamic_pointer_cast<const container>(shared_from_this()))};
-            auto value = modify_may_throw(modifier, context.options().get_allow_unresolved() ? boost::optional<resolve_status>() : resolve_status::RESOLVED);
-            return resolve_result<shared_value>(modifier.context, value);
+            resolve_modifier mod{context, source.push_parent(dynamic_pointer_cast<const container>(shared_from_this()))};
+            auto value = modify_may_throw(mod, context.options().get_allow_unresolved() ? boost::optional<resolve_status>() : resolve_status::RESOLVED);
+            return resolve_result<shared_value>(mod.context, value);
         }
     }
 
-    std::shared_ptr<const simple_config_list> simple_config_list::relativized(const std::string prefix) const
+    shared_value simple_config_list::relativized(const std::string prefix) const
     {
         no_exceptions_modifier modifier(move(prefix));
         return modify(modifier, get_resolve_status());

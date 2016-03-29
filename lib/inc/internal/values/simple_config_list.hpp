@@ -20,14 +20,14 @@ namespace hocon {
         simple_config_list(shared_origin origin, std::vector<shared_value> value);
         simple_config_list(shared_origin origin, std::vector<shared_value> value, resolve_status status);
 
-        config_value_type value_type() const override { return config_value_type::LIST; }
+        config_value::type value_type() const override { return config_value::type::LIST; }
         // unwrapped()
         resolve_status get_resolve_status() const override { return _resolved; }
 
         shared_value replace_child(shared_value const& child, shared_value replacement) const override;
         bool has_descendant(shared_value const& descendant) const override;
 
-        std::shared_ptr<const simple_config_list> relativized(const std::string prefix) const;
+        shared_value relativized(const std::string prefix) const override;
 
         bool contains(shared_value v) const { return std::find(_value.begin(), _value.end(), v) != _value.end(); }
         bool contains_all(std::vector<shared_value>) const;
@@ -43,7 +43,7 @@ namespace hocon {
         }
 
         bool is_empty() const { return _value.empty(); }
-        int size() const { return _value.size(); }
+        size_t size() const { return _value.size(); }
         iterator begin() const { return _value.begin(); }
         iterator end() const { return _value.end(); }
 

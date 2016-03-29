@@ -7,14 +7,16 @@ namespace hocon {
 
     class simple_include_context : public config_include_context {
     public:
-        simple_include_context(std::shared_ptr<parseable> parseable);
+        // Include context is part of a parseable, so it can always expect a valid parseable reference.
+        simple_include_context(parseable const& parseable);
 
-        std::shared_ptr<simple_include_context> with_parseable(std::shared_ptr<parseable> new_parseable) const;
+        // Unused method
+        // shared_include_context with_parseable(weak_parseable new_parseable) const;
 
-        std::shared_ptr<config_parseable> relative_to(std::string file_name) const override;
+        shared_parseable relative_to(std::string file_name) const override;
         config_parse_options parse_options() const override;
 
     private:
-        std::shared_ptr<parseable> _parseable;
+        parseable const& _parseable;
     };
 }  // namespace hocon

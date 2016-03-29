@@ -1,4 +1,6 @@
 #include <internal/path_parser.hpp>
+#include <hocon/config.hpp>
+#include <hocon/config_parse_options.hpp>
 #include "test_utils.hpp"
 
 using namespace std;
@@ -135,6 +137,16 @@ namespace hocon {
     /** Paths */
     path test_path(initializer_list<string> path_strings) {
         return path(vector<string> { path_strings });
+    }
+
+    shared_object parse_object(std::string s) {
+        return parse_config(move(s))->root();
+    }
+
+    shared_config parse_config(std::string s) {
+        auto options = config_parse_options().
+            set_origin_description(make_shared<string>("test string")).set_syntax(config_syntax::CONF);
+        return config::parse_string(move(s), make_shared<config_parse_options>(move(options)));
     }
 
 }  // namespace hocon

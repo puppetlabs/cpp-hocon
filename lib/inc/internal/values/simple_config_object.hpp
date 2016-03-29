@@ -13,6 +13,7 @@ namespace hocon {
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;
 
         bool is_empty() const override;
+        size_t size() const { return _value.size(); }
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
 
         shared_object with_value(path raw_path, shared_value value) const override;

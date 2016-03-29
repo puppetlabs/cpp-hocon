@@ -76,10 +76,10 @@ TEST_CASE("single tokens", "[config-node]") {
     }
 }
 
-void simple_value_test(shared_token t, config_value_type type) {
+void simple_value_test(shared_token t, config_value::type type) {
     config_node_simple_value node(t);
-    // We pass UNSPECIFIED for substitutions, which do not have a config_value_type
-    if (type != config_value_type::UNSPECIFIED) {
+    // We pass UNSPECIFIED for substitutions, which do not have a config_value::type
+    if (type != config_value::type::UNSPECIFIED) {
         REQUIRE(type == node.get_value()->value_type());
     }
     REQUIRE(node.render() == t->token_text());
@@ -87,16 +87,16 @@ void simple_value_test(shared_token t, config_value_type type) {
 
 TEST_CASE("simple values", "[config-node]") {
     SECTION("basic value nodes") {
-        simple_value_test(int_token(10, "10"), config_value_type::NUMBER);
-        simple_value_test(double_token(2.5, "2.5"), config_value_type::NUMBER);
-        simple_value_test(bool_token(false), config_value_type::BOOLEAN);
-        simple_value_test(bool_token(true), config_value_type::BOOLEAN);
-        simple_value_test(null_token(), config_value_type::CONFIG_NULL);
-        simple_value_test(string_token("A string."), config_value_type::STRING);
-        simple_value_test(unquoted_text_token("unquoted"), config_value_type::STRING);
-        simple_value_test(substitution_token(string_token("c.d"), false), config_value_type::UNSPECIFIED);
-        simple_value_test(substitution_token(string_token("x.y"), true), config_value_type::UNSPECIFIED);
-        simple_value_test(substitution_token(unquoted_text_token("a.b"), false), config_value_type::UNSPECIFIED);
+        simple_value_test(int_token(10, "10"), config_value::type::NUMBER);
+        simple_value_test(double_token(2.5, "2.5"), config_value::type::NUMBER);
+        simple_value_test(bool_token(false), config_value::type::BOOLEAN);
+        simple_value_test(bool_token(true), config_value::type::BOOLEAN);
+        simple_value_test(null_token(), config_value::type::CONFIG_NULL);
+        simple_value_test(string_token("A string."), config_value::type::STRING);
+        simple_value_test(unquoted_text_token("unquoted"), config_value::type::STRING);
+        simple_value_test(substitution_token(string_token("c.d"), false), config_value::type::UNSPECIFIED);
+        simple_value_test(substitution_token(string_token("x.y"), true), config_value::type::UNSPECIFIED);
+        simple_value_test(substitution_token(unquoted_text_token("a.b"), false), config_value::type::UNSPECIFIED);
     }
 }
 

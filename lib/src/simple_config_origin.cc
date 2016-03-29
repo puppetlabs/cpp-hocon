@@ -1,6 +1,6 @@
 #include <hocon/config_value.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <algorithm>
 #include <stdexcept>
@@ -58,7 +58,19 @@ namespace hocon {
             // If they're not equal now, the concatenated comments won't be equal either.
             comments.insert(comments.begin(), _comments_or_null.begin(), _comments_or_null.end());
             return make_shared<simple_config_origin>(_description, _line_number, _line_number, _origin_type,
-                    _resource_or_null, move(comments));
+                                                     _resource_or_null, move(comments));
+        }
+    }
+
+    shared_ptr<const simple_config_origin> simple_config_origin::prepend_comments(vector<string> comments) const {
+        if (comments == _comments_or_null || comments.empty()) {
+            return shared_from_this();
+        } else {
+            // Don't re-use with_comments, because we've already checked whether they're equal.
+            // If they're not equal now, the concatenated comments won't be equal either.
+            comments.insert(comments.end(), _comments_or_null.begin(), _comments_or_null.end());
+            return make_shared<simple_config_origin>(_description, _line_number, _line_number, _origin_type,
+                                                     _resource_or_null, move(comments));
         }
     }
 

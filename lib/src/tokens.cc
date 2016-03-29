@@ -1,5 +1,5 @@
 #include <internal/tokens.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <iostream>
 
@@ -225,6 +225,14 @@ namespace hocon {
         return _plus_equals;
     }
 
+    bool tokens::is_newline(shared_token t) {
+        return dynamic_pointer_cast<const line>(t) != nullptr;
+    }
+
+    bool tokens::is_ignored_whitespace(shared_token t) {
+        return dynamic_pointer_cast<const ignored_whitespace>(t) != nullptr;
+    }
+
     /** Static token handler methods */
     shared_value tokens::get_value(shared_token t) {
         if (auto value_token = dynamic_pointer_cast<const value>(t)) {
@@ -234,7 +242,7 @@ namespace hocon {
         }
     }
 
-    bool tokens::is_value_with_type(shared_token token, config_value_type type) {
+    bool tokens::is_value_with_type(shared_token token, config_value::type type) {
         auto value_token = dynamic_pointer_cast<const value>(token);
         if (value_token) {
             return value_token->get_value()->value_type() == type;

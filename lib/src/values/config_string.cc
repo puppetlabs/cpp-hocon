@@ -7,8 +7,8 @@ namespace hocon {
     config_string::config_string(shared_origin origin, string text, config_string_type quoted) :
         config_value(move(origin)), _text(move(text)), _quoted(quoted) { }
 
-    config_value_type config_string::value_type() const {
-        return config_value_type::STRING;
+    config_value::type config_string::value_type() const {
+        return config_value::type::STRING;
     }
 
     string config_string::transform_to_string() const {

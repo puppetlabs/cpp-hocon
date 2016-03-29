@@ -10,7 +10,7 @@ namespace hocon {
     public:
         config_string(shared_origin origin, std::string text, config_string_type quoted);
 
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
         std::string transform_to_string() const override;
 
         bool was_quoted() const;

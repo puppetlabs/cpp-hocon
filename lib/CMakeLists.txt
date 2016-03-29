@@ -5,7 +5,7 @@ get_commit_string(PROJECT_COMMIT)
 configure_file("version.h.in" "${CMAKE_CURRENT_LIST_DIR}/inc/hocon/version.h")
 
 # Generate files for Doxygen
-configure_file("Doxyfile.in"       "${CMAKE_CURRENT_LIST_DIR}/Doxyfile")
+configure_file("Doxyfile.in" "${CMAKE_CURRENT_LIST_DIR}/Doxyfile")
 configure_file("namespaces.dox.in" "${CMAKE_CURRENT_LIST_DIR}/docs/namespaces.dox")
 
 # Set C++ compile flags based on project settings.
@@ -18,8 +18,8 @@ leatherman_logging_namespace("puppetlabs.${PROJECT_NAME}")
 include_directories(inc ${Boost_INCLUDE_DIRS} ${LEATHERMAN_INCLUDE_DIRS})
 
 set(PROJECT_SOURCES
-    src/objects/config_object.cc
-    src/objects/simple_config_object.cc
+    src/values/config_object.cc
+    src/values/simple_config_object.cc
     src/nodes/abstract_config_node.cc
     src/nodes/config_node_include.cc
     src/nodes/config_node_simple_value.cc
@@ -61,13 +61,13 @@ set(PROJECT_SOURCES
     src/config.cc
     src/default_transformer.cc
     src/substitution_expression.cc
-    src/simple_config_list.cc
-    src/config_delayed_merge.cc
-    src/config_delayed_merge_object.cc
+    src/values/simple_config_list.cc
+    src/values/config_delayed_merge.cc
+    src/values/config_delayed_merge_object.cc
     src/resolve_context.cc
     src/resolve_source.cc
-    src/config_concatenation.cc
-)
+    src/values/config_concatenation.cc
+    )
 
 
 ## An object target is generated that can be used by both the library and test executable targets.
@@ -80,7 +80,7 @@ set_target_properties(lib${PROJECT_NAME} PROPERTIES VERSION "${PROJECT_VERSION_M
 target_link_libraries(lib${PROJECT_NAME}
     ${LEATHERMAN_LIBRARIES}
     ${Boost_LIBRARIES}
-)
+    )
 
 # Generate the export header for restricting symbols exported from the library.
 # Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.

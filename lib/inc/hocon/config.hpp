@@ -78,7 +78,7 @@ namespace hocon {
      * <p>
      * Another difference between {@code config} and {@code config_object} is that
      * conceptually, {@code config_value}s with a {@link config_value#value_type()
-     * value_type()} of {@link config_value_type#NULL NULL} exist in a
+     * value_type()} of {@link config_value::type#NULL NULL} exist in a
      * {@code config_object}, while a {@code config} treats null values as if they
      * were missing. (With the exception of two methods: {@link config#has_path_or_null}
      * and {@link config#get_is_null} let you detect <code>null</code> values.)
@@ -89,7 +89,7 @@ namespace hocon {
      * <p>
      * The "getters" on a {@code config} all work in the same way. They never return
      * null, nor do they return a {@code config_value} with
-     * {@link config_value#value_type() value_type()} of {@link config_value_type#NULL
+     * {@link config_value#value_type() value_type()} of {@link config_value::type#NULL
      * NULL}. Instead, they throw {@link config_exception} if the value is
      * completely absent or set to null. If the value is set to null, a subtype of
      * {@code config_exception.missing} called {@link config_exception.null} will be
@@ -167,8 +167,27 @@ namespace hocon {
     class LIBCPP_HOCON_EXPORT config : public config_mergeable, public std::enable_shared_from_this<config> {
         friend class config_object;
         friend class config_value;
+        friend class config_parseable;
 
     public:
+        /**
+         * Parses a string (which should be valid HOCON or JSON by default, or
+         * the syntax specified in the options otherwise).
+         *
+         * @param s string to parse
+         * @param options parse options
+         * @return the parsed configuration
+         */
+        static shared_config parse_string(std::string s, shared_parse_options options);
+
+        /**
+         * Parses a string (which should be valid HOCON or JSON).
+         *
+         * @param s string to parse
+         * @return the parsed configuration
+         */
+        static shared_config parse_string(std::string s);
+
         /**
          * Gets the {@code Config} as a tree of {@link ConfigObject}. This is a
          * constant-time operation (it is not proportional to the number of values
@@ -588,10 +607,12 @@ namespace hocon {
     protected:
         bool operator==(config const& other) const;
 
-        shared_value find(std::string const& path_expression, config_value_type expected) const;
-        shared_value find(path path_expression, config_value_type expected, path original_path) const;
-        shared_value find(path path_expression, config_value_type expected) const;
+        shared_value find(std::string const& path_expression, config_value::type expected) const;
+        shared_value find(path path_expression, config_value::type expected, path original_path) const;
+        shared_value find(path path_expression, config_value::type expected) const;
         shared_config at_key(shared_origin origin, std::string const& key) const;
+
+        shared_includer default_includer() const;
 
         // TODO: memory and duration parsing
 
@@ -601,18 +622,18 @@ namespace hocon {
 
         static void find_paths(std::set<std::pair<std::string, std::shared_ptr<const config_value>>>& entries,
                                path parent, shared_object obj);
-        static shared_value throw_if_null(shared_value v, config_value_type expected, path original_path);
+        static shared_value throw_if_null(shared_value v, config_value::type expected, path original_path);
         static shared_value find_key(shared_object self, std::string const& key,
-                                     config_value_type expected, path original_path);
+                                     config_value::type expected, path original_path);
         static shared_value find_key_or_null(shared_object self, std::string const& key,
-                                             config_value_type expected, path original_path);
+                                             config_value::type expected, path original_path);
         static shared_value find_or_null(shared_object self, path desired_path,
-                                         config_value_type expected, path original_path);
-        shared_value find_or_null(std::string const& path_expression, config_value_type expected) const;
-        shared_value find_or_null(path path_expression, config_value_type expected, path original_path) const;
+                                         config_value::type expected, path original_path);
+        shared_value find_or_null(std::string const& path_expression, config_value::type expected) const;
+        shared_value find_or_null(path path_expression, config_value::type expected, path original_path) const;
 
         template<typename T>
-        std::vector<T> get_homogeneous_unwrapped_list(std::string const& path, config_value_type expected) const;
+        std::vector<T> get_homogeneous_unwrapped_list(std::string const& path, config_value::type expected) const;
 
         shared_object _object;
     };

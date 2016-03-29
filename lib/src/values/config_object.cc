@@ -1,16 +1,15 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
 #include <internal/simple_config_origin.hpp>
-#include <internal/config_delayed_merge_object.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/values/config_delayed_merge_object.hpp>
+#include <hocon/config_exception.hpp>
 #include <hocon/path.hpp>
 
 using namespace std;
 
 namespace hocon {
 
-    config_object::config_object(shared_origin origin) : config_value(move(origin)),
-            _config(make_shared<config>(dynamic_pointer_cast<config_object>(shared_from_this()))) { }
+    config_object::config_object(shared_origin origin) : config_value(move(origin)) { }
 
     shared_value config_object::peek_path(path desired_path) const {
         return peek_path(this, move(desired_path));
@@ -50,11 +49,11 @@ namespace hocon {
     }
 
     std::shared_ptr<const config> config_object::to_config() const {
-        return _config;
+        return make_shared<config>(dynamic_pointer_cast<const config_object>(shared_from_this()));
     }
 
-    config_value_type config_object::value_type() const {
-        return config_value_type::OBJECT;
+    config_value::type config_object::value_type() const {
+        return config_value::type::OBJECT;
     }
 
     shared_origin config_object::merge_origins(std::vector<shared_value> const& stack) {

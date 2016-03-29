@@ -8,7 +8,7 @@
 
 namespace hocon {
 
-    class config_exception;
+    struct config_exception;
 
     /**
      * A ConfigConcatenation represents a list of values to be concatenated (see the
@@ -25,7 +25,7 @@ namespace hocon {
     public:
         config_concatenation(shared_origin origin, std::vector<shared_value> pieces);
 
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
         std::vector<shared_value> unmerged_values() const override;
 
         resolve_status get_resolve_status() const override;
@@ -36,7 +36,7 @@ namespace hocon {
 
         static std::vector<shared_value> consolidate(std::vector<shared_value> pieces);
         static shared_value concatenate(std::vector<shared_value> pieces);
-        shared_value relativized(std::string prefix) const;
+        shared_value relativized(std::string prefix) const override;
 
     protected:
         shared_value new_copy(shared_origin origin) const override;

@@ -1,5 +1,5 @@
 #include <internal/nodes/config_node_path.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 
 using namespace std;
 

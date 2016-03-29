@@ -25,4 +25,15 @@ namespace hocon {
 
     using shared_string = std::shared_ptr<const std::string>;
 
+    class config_parse_options;
+    using shared_parse_options = std::shared_ptr<const config_parse_options>;
+
+    class config_includer;
+    using shared_includer = std::shared_ptr<const config_includer>;
+
+    class config_include_context;
+    using shared_include_context = std::shared_ptr<const config_include_context>;
+
+    class config_parseable;
+    using shared_parseable = std::shared_ptr<const config_parseable>;
 }  // namespace hocon

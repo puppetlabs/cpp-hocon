@@ -1,6 +1,6 @@
-#include <internal/config_delayed_merge.hpp>
-#include <internal/config_delayed_merge_object.hpp>
-#include <internal/config_exception.hpp>
+#include <internal/values/config_delayed_merge.hpp>
+#include <internal/values/config_delayed_merge_object.hpp>
+#include <hocon/config_exception.hpp>
 
 using namespace std;
 
@@ -19,7 +19,7 @@ namespace hocon {
         }
     }
 
-    config_value_type config_delayed_merge::value_type() const {
+    config_value::type config_delayed_merge::value_type() const {
         throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
     }
 

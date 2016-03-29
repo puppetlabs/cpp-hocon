@@ -5,8 +5,8 @@ using namespace std;
 
 namespace hocon {
 
-    config_parse_options::config_parse_options(shared_ptr<string> origin_desc,
-            bool allow_missing, shared_ptr<config_includer> includer, config_syntax syntax) :
+    config_parse_options::config_parse_options(shared_string origin_desc,
+            bool allow_missing, shared_includer includer, config_syntax syntax) :
         _syntax(syntax), _origin_description(move(origin_desc)),
         _allow_missing(allow_missing), _includer(move(includer)) {}
 
@@ -22,18 +22,18 @@ namespace hocon {
         return _syntax;
     }
 
-    config_parse_options config_parse_options::set_origin_description(shared_ptr<string> origin_description) const
+    config_parse_options config_parse_options::set_origin_description(shared_string origin_description) const
     {
         return config_parse_options{move(origin_description), _allow_missing, _includer, _syntax};
     }
 
 
-    shared_ptr<string> const& config_parse_options::get_origin_description() const
+    shared_string const& config_parse_options::get_origin_description() const
     {
         return _origin_description;
     }
 
-    config_parse_options config_parse_options::with_fallback_origin_description(shared_ptr<string> origin_description) const
+    config_parse_options config_parse_options::with_fallback_origin_description(shared_string origin_description) const
     {
         if (!_origin_description) {
             return set_origin_description(origin_description);
@@ -52,12 +52,12 @@ namespace hocon {
         return _allow_missing;
     }
 
-    config_parse_options config_parse_options::set_includer(shared_ptr<config_includer> includer) const
+    config_parse_options config_parse_options::set_includer(shared_includer includer) const
     {
         return config_parse_options{ _origin_description, _allow_missing, move(includer), _syntax};
     }
 
-    config_parse_options config_parse_options::prepend_includer(shared_ptr<config_includer> includer) const
+    config_parse_options config_parse_options::prepend_includer(shared_includer includer) const
     {
         if (!includer) {
             throw runtime_error("null includer passed to prepend_includer");
@@ -71,7 +71,7 @@ namespace hocon {
         }
     }
 
-    config_parse_options config_parse_options::append_includer(shared_ptr<config_includer> includer) const
+    config_parse_options config_parse_options::append_includer(shared_includer includer) const
     {
         if (!includer) {
             throw runtime_error("null includer passed to append_includer");
@@ -85,7 +85,7 @@ namespace hocon {
         }
     }
 
-    shared_ptr<config_includer> const& config_parse_options::get_includer() const
+    shared_includer const& config_parse_options::get_includer() const
     {
         return _includer;
     }

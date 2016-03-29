@@ -2,7 +2,7 @@
 #include <internal/values/config_int.hpp>
 #include <internal/values/config_long.hpp>
 #include <internal/values/config_double.hpp>
-#include <internal/config_exception.hpp>
+#include <hocon/config_exception.hpp>
 #include <limits>
 
 using namespace std;
@@ -12,8 +12,8 @@ namespace hocon {
     config_number::config_number(shared_origin origin, string original_text) :
             config_value(move(origin)), _original_text(move(original_text)) { }
 
-    config_value_type config_number::value_type() const {
-        return config_value_type::NUMBER;
+    config_value::type config_number::value_type() const {
+        return config_value::type::NUMBER;
     }
 
     string config_number::transform_to_string() const {

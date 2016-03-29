@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tokens.hpp"
-#include "config_exception.hpp"
+#include "hocon/config_exception.hpp"
 #include <hocon/config_syntax.hpp>
 
 #include <boost/nowide/fstream.hpp>

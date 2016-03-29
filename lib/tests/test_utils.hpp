@@ -86,4 +86,8 @@ namespace hocon {
 
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
+
+    shared_object parse_object(std::string);
+
+    shared_config parse_config(std::string);
 }  // namespace hocon

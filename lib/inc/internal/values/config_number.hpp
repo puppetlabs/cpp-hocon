@@ -13,7 +13,7 @@ namespace hocon {
                       std::string original_text);
 
         std::string transform_to_string() const override;
-        config_value_type value_type() const override;
+        config_value::type value_type() const override;
 
         virtual int64_t long_value() const = 0;
         virtual double double_value() const = 0;

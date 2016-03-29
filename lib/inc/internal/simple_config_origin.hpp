@@ -31,6 +31,7 @@ namespace hocon {
         shared_origin with_line_number(int line_number) const override;
 
         std::shared_ptr<const simple_config_origin> append_comments(std::vector<std::string> comments) const;
+        std::shared_ptr<const simple_config_origin> prepend_comments(std::vector<std::string> comments) const;
 
         static shared_origin merge_origins(shared_origin a, shared_origin b);
         static shared_origin merge_origins(std::vector<shared_value> const& stack);

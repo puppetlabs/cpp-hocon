@@ -10,7 +10,7 @@ set(TEST_CASES
     tokenizer_test.cc
     test_utils.cc
     config_document_tests.cc
-)
+    conf_parser_test.cc)
 
 add_executable(lib${PROJECT_NAME}_test $<TARGET_OBJECTS:libprojectsrc> ${TEST_CASES} main.cc)
 target_link_libraries(lib${PROJECT_NAME}_test
@@ -21,6 +21,6 @@ target_link_libraries(lib${PROJECT_NAME}_test
 add_test(NAME "unit_tests" COMMAND lib${PROJECT_NAME}_test)
 
 configure_file (
-        "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp.in"
-        "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp.in"
+    "${CMAKE_CURRENT_LIST_DIR}/fixtures.hpp"
 )
