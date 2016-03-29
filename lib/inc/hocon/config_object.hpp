@@ -43,9 +43,6 @@ namespace hocon {
 
         static shared_value peek_path(const config_object* self, path desired_path);
         static shared_origin merge_origins(std::vector<shared_value> const& stack);
-
-    private:
-        std::shared_ptr<const config> _config;
     };
 
 }  // namespace hocon

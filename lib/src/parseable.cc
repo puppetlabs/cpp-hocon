@@ -190,7 +190,7 @@ namespace hocon {
 
     shared_value parseable::raw_parse_value(unique_ptr<istream> stream, shared_origin origin,
                                             shared_parse_options options) const {
-        // TODO: need to handle PROPERTIES?
+        // config_syntax::PROPERTIES handling not needed because we don't plan to support it.
         token_iterator tokens(origin, move(stream), options->get_syntax());
         auto document = config_document_parser::parse(move(tokens), origin, *options);
         return config_parser::parse(document, origin, options, _include_context);

@@ -7,8 +7,8 @@
 #include <hocon/path.hpp>
 #include <internal/nodes/config_node_root.hpp>
 #include <internal/nodes/abstract_config_node_value.hpp>
+#include <internal/nodes/config_node_object.hpp>
 #include <memory>
-#include <stack>
 #include <vector>
 #include <string>
 
@@ -23,9 +23,9 @@ namespace hocon { namespace config_parser {
         std::shared_ptr<const config_node_root> _document;
         // void* _includer;
         shared_include_context _include_context;
-        // config_syntax _flavor;
-        shared_origin _base_origin;
-        std::stack<path> _path_stack;
+        config_syntax _flavor;
+        shared_origin _base_origin, _line_origin;
+        std::vector<path> _path_stack;
 
     public:
         parse_context(config_syntax flavor, shared_origin origin, std::shared_ptr<const config_node_root> document,
@@ -36,7 +36,9 @@ namespace hocon { namespace config_parser {
         int array_count;
 
     private:
+        shared_origin line_origin() const;
         shared_value parse_value(shared_node_value n, std::vector<std::string> comments);
+        shared_object parse_object(shared_node_object n);
     };
 
 }}  // namespace hocon::config_parser

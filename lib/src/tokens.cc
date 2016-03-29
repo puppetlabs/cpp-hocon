@@ -225,6 +225,14 @@ namespace hocon {
         return _plus_equals;
     }
 
+    bool tokens::is_newline(shared_token t) {
+        return dynamic_pointer_cast<const line>(t) != nullptr;
+    }
+
+    bool tokens::is_ignored_whitespace(shared_token t) {
+        return dynamic_pointer_cast<const ignored_whitespace>(t) != nullptr;
+    }
+
     /** Static token handler methods */
     shared_value tokens::get_value(shared_token t) {
         if (auto value_token = dynamic_pointer_cast<const value>(t)) {
