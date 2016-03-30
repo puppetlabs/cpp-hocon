@@ -19,6 +19,9 @@ namespace hocon {
     class config_value;
     using shared_value = std::shared_ptr<const config_value>;
 
+    class container;
+    using shared_container = std::shared_ptr<const container>;
+
     class abstract_config_node;
     using shared_node = std::shared_ptr<abstract_config_node>;
     using shared_node_list = std::vector<shared_node>;

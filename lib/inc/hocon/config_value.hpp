@@ -43,6 +43,7 @@ namespace hocon {
         friend class simple_config_object;
         friend class simple_config_list;
         friend class config_concatenation;
+        friend class resolve_context;
     public:
         /**
          * The type of a configuration value (following the <a
