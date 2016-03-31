@@ -29,6 +29,12 @@ namespace hocon {
      */
     class LIBCPP_HOCON_EXPORT config_resolve_options {
     public:
+        /**
+         * Returns the default resolve options. By default the system environment
+         * will be used and unresolved substitutions are not allowed.
+         *
+         * @return the default resolve options
+         */
         config_resolve_options(bool use_system_environment = true, bool allow_unresolved = false);
 
         /**

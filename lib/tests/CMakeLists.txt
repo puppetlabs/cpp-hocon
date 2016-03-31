@@ -11,7 +11,8 @@ set(TEST_CASES
     tokenizer_test.cc
     test_utils.cc
     config_document_tests.cc
-    conf_parser_test.cc)
+    conf_parser_test.cc
+    config_substitution_test.cc)
 
 add_executable(lib${PROJECT_NAME}_test $<TARGET_OBJECTS:libprojectsrc> ${TEST_CASES} main.cc)
 target_link_libraries(lib${PROJECT_NAME}_test

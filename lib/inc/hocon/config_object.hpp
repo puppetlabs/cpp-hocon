@@ -12,6 +12,7 @@ namespace hocon {
         friend class config;
         friend class config_value;
         friend class simple_config_object;
+        friend class resolve_source;
     public:
         /**
          * Converts this object to a {@link Config} instance, enabling you to use

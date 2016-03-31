@@ -200,7 +200,7 @@ namespace hocon { namespace config_parser {
 
     shared_value parse_context::parse_concatenation(shared_ptr<config_node_concatenation> n) {
         if (_flavor == config_syntax::JSON) {
-            throw config_exception("Found a concatenation node in JSON");
+            throw bug_or_broken_exception("Found a concatenation node in JSON");
         }
 
         vector<shared_value> values;

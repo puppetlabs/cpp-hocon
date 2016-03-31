@@ -134,6 +134,10 @@ namespace hocon {
         return make_shared<config_node_comment>(double_slash_comment_token(text));
     }
 
+    shared_ptr<config_int> int_value(int i) {
+        return make_shared<config_int>(fake_origin(), i, "");
+    }
+
     /** Paths */
     path test_path(initializer_list<string> path_strings) {
         return path(vector<string> { path_strings });

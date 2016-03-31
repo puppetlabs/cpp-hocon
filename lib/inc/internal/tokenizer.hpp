@@ -27,6 +27,25 @@ namespace hocon {
         virtual shared_token next() = 0;
     };
 
+    template <typename iter>
+    class iterator_wrapper : public iterator {
+    public:
+        iterator_wrapper(iter begin, iter end)
+            : _cur(begin), _end(end) { }
+
+        bool has_next() override {
+            return _cur != _end;
+        }
+
+        shared_token next() override {
+            return *_cur++;
+        }
+
+    private:
+        iter _cur;
+        iter _end;
+    };
+
     class token_iterator : public iterator {
     public:
         token_iterator(shared_origin origin, std::unique_ptr<std::istream> input, bool allow_comments);

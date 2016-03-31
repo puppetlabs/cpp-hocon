@@ -40,6 +40,7 @@ set(PROJECT_SOURCES
     src/values/config_null.cc
     src/values/config_string.cc
     src/values/config_int.cc
+    src/values/config_reference.cc
     src/path.cc
     src/path_builder.cc
     src/path_parser.cc

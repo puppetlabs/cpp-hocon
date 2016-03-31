@@ -2,22 +2,23 @@
 
 #include <string>
 #include <memory>
+#include <hocon/path.hpp>
 
 namespace hocon {
 
     class substitution_expression : public std::enable_shared_from_this<substitution_expression> {
     public:
-        substitution_expression(std::string path, bool optional);
+        substitution_expression(path the_path, bool optional);
 
-        std::string path() const;
+        path get_path() const;
         bool optional() const;
 
-        std::shared_ptr<substitution_expression> change_path(std::string new_path);
+        std::shared_ptr<substitution_expression> change_path(path new_path);
 
         std::string to_string() const;
 
     private:
-        const std::string _path;
+        const path _path;
         const bool _optional;
     };
 

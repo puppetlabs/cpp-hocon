@@ -50,7 +50,7 @@ namespace hocon {
         auto resolved = resolve_context::resolve(_object, source->_object, move(options));
 
         if (resolved == _object) {
-            return const_pointer_cast<config>(shared_from_this());
+            return shared_from_this();
         } else {
             return make_shared<config>(dynamic_pointer_cast<const config_object>(resolved));
         }

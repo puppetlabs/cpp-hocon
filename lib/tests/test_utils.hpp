@@ -84,6 +84,8 @@ namespace hocon {
 
     std::shared_ptr<config_node_comment> double_slash_comment_node(std::string text);
 
+    std::shared_ptr<config_int> int_value(int i);
+
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
 

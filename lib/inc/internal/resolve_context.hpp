@@ -24,7 +24,7 @@ namespace hocon {
         resolve_context restrict(path restrict_to) const;
         resolve_context unrestricted() const;
 
-         static shared_value resolve(shared_value value, shared_object root, config_resolve_options options);
+        static shared_value resolve(shared_value value, shared_object root, config_resolve_options options);
 
     private:
         config_resolve_options _options;
