@@ -9,6 +9,7 @@
 #include <internal/nodes/config_node_root.hpp>
 #include <internal/nodes/abstract_config_node_value.hpp>
 #include <internal/nodes/config_node_object.hpp>
+#include <internal/nodes/config_node_array.hpp>
 #include <memory>
 #include <vector>
 #include <string>
@@ -40,6 +41,7 @@ namespace hocon { namespace config_parser {
         shared_origin line_origin() const;
         shared_value parse_value(shared_node_value n, std::vector<std::string>& comments);
         shared_object parse_object(shared_node_object n);
+        shared_value parse_array(shared_node_array n);
         shared_value parse_concatenation(shared_node_concatenation n);
     };
 

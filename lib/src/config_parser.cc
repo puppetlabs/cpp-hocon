@@ -12,6 +12,7 @@
 #include <internal/nodes/config_node_include.hpp>
 #include <internal/values/config_concatenation.hpp>
 #include <internal/values/simple_config_object.hpp>
+#include <internal/values/simple_config_list.hpp>
 
 namespace hocon { namespace config_parser {
     using namespace std;
@@ -45,7 +46,7 @@ namespace hocon { namespace config_parser {
             } else if (auto val = dynamic_pointer_cast<const config_node_object>(n)) {
                 return parse_object(val);
             } else if (auto val = dynamic_pointer_cast<const config_node_array>(n)) {
-                throw bug_or_broken_exception("parse_context::parse_array not implemented");
+                return parse_array(val);
             } else if (auto val = dynamic_pointer_cast<const config_node_concatenation>(n)) {
                 return parse_concatenation(val);
             } else {
@@ -196,6 +197,59 @@ namespace hocon { namespace config_parser {
         }
 
         return make_shared<simple_config_object>(object_origin, move(values));
+    }
+
+    static shared_ptr<const simple_config_origin> as_origin(shared_origin o) {
+        auto simple_o = dynamic_pointer_cast<const simple_config_origin>(o);
+        if (!simple_o) {
+            throw bug_or_broken_exception("origin was not a simple_config_origin");
+        }
+        return simple_o;
+    }
+
+    shared_value parse_context::parse_array(shared_node_array n) {
+        ++array_count;
+
+        auto array_origin = line_origin();
+        auto values = vector<shared_value>();
+
+        bool last_was_new_line = false;
+        auto comments = vector<string>();
+
+        shared_value v;
+
+        for (auto node : n->children()) {
+            if (auto comment = dynamic_pointer_cast<const config_node_comment>(node)) {
+                comments.push_back(comment->comment_text());
+                last_was_new_line = false;
+            } else if (auto singletoken = dynamic_pointer_cast<const config_node_single_token>(node)) {
+                if (tokens::is_newline(singletoken->get_token())) {
+                    _line_number++;
+                    if (last_was_new_line && v == nullptr) {
+                        comments.clear();
+                    } else if (v) {
+                        values.push_back(v->with_origin(as_origin(v->origin())->append_comments(move(comments))));
+                        comments.clear();
+                        v = nullptr;
+                    }
+                    last_was_new_line = true;
+                }
+            } else if (auto value = dynamic_pointer_cast<const abstract_config_node_value>(node)) {
+                last_was_new_line = false;
+                if (v) {
+                    values.push_back(v->with_origin(as_origin(v->origin())->append_comments(move(comments))));
+                    comments.clear();
+                }
+                v = parse_value(value, comments);
+            }
+        }
+
+        // There shouldn't be any comments at this point, but add them just in case
+        if (v) {
+            values.push_back(v->with_origin(as_origin(v->origin())->append_comments(move(comments))));
+        }
+        --array_count;
+        return make_shared<simple_config_list>(move(array_origin), move(values));
     }
 
     shared_value parse_context::parse_concatenation(shared_node_concatenation n) {

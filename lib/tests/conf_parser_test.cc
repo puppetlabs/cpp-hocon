@@ -64,3 +64,62 @@ TEST_CASE("duplicate key object number object") {
     REQUIRE(1u == get_size(obj->get_object("a")));
     REQUIRE(2 == obj->get_int("a.c"));
 }
+
+TEST_CASE("implied comma handling") {
+    auto valids = {
+        R"(
+// one line
+{
+  a : y, b : z, c : [ 1, 2, 3 ]
+}
+)",     R"(
+// multiline but with all commas
+{
+  a : y,
+  b : z,
+  c : [
+    1,
+    2,
+    3,
+  ],
+}
+)",     R"(
+// multiline with no commas
+{
+  a : y
+  b : z
+  c : [
+    1
+    2
+    3
+  ]
+}
+)"
+    };
+
+    auto drop_curlies = [](string const&s) {
+        // drop the outside curly braces
+        auto first = s.find('{');
+        auto last = s.rfind('}');
+        return s.substr(0, first) + s.substr(first+1, last-(first+1)) + s.substr(last+1);
+    };
+
+    auto changes = vector<function<string(string const&)>>{
+        [](string const& s) { return s; }
+        //[](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n"); }
+    };
+
+    auto tested = 0;
+    for (auto v : valids) {
+        for (auto change : changes) {
+            ++tested;
+            auto obj = parse_config(change(v));
+            CAPTURE(v);
+            REQUIRE(3u == get_size(obj->root()));
+            REQUIRE("y" == obj->get_string("a"));
+            REQUIRE("z" == obj->get_string("b"));
+        }
+    }
+
+    REQUIRE((valids.size() * changes.size()) == tested);
+}
