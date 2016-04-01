@@ -38,7 +38,7 @@ namespace hocon { namespace config_parser {
 
     private:
         shared_origin line_origin() const;
-        shared_value parse_value(shared_node_value n, std::vector<std::string> comments);
+        shared_value parse_value(shared_node_value n, std::vector<std::string>& comments);
         shared_object parse_object(shared_node_object n);
         shared_value parse_concatenation(shared_node_concatenation n);
     };

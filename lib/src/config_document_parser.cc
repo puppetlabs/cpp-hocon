@@ -154,7 +154,7 @@ namespace hocon { namespace config_document_parser {
         if (value_count < 2) {
             shared_node_value value = nullptr;
             for (auto&& node : values) {
-                if (auto found_value = dynamic_pointer_cast<abstract_config_node_value>(node)) {
+                if (auto found_value = dynamic_pointer_cast<const abstract_config_node_value>(node)) {
                     value = found_value;
                 } else if (!value) {
                     nodes.push_back(node);
@@ -168,7 +168,7 @@ namespace hocon { namespace config_document_parser {
         // Put back any trailing whitespace, as the parent object is responsible for tracking
         // any leading/trailing whitespace
         for (int i = static_cast<int>(values.size() - 1); i >= 0; i--) {
-            if (auto single_token = dynamic_pointer_cast<config_node_single_token>(values[i])) {
+            if (auto single_token = dynamic_pointer_cast<const config_node_single_token>(values[i])) {
                 put_back(single_token->get_token());
                 values.erase(values.begin() + i);
             } else {
@@ -559,7 +559,7 @@ namespace hocon { namespace config_document_parser {
         // Need to pull the children out of the resulting node so we can keep leading
         // and trailing whitespace if this was a no-brace object. Otherwise, we need to add
         // the result into the list of children.
-        auto node_obj = dynamic_pointer_cast<config_node_object>(result);
+        auto node_obj = dynamic_pointer_cast<const config_node_object>(result);
         if (node_obj && missing_curly) {
             children.insert(children.end(), node_obj->children().begin(), node_obj->children().end());
         } else {

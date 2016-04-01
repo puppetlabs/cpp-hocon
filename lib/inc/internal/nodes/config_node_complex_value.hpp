@@ -12,11 +12,11 @@ namespace hocon {
 
         shared_node_list const& children() const;
 
-        std::shared_ptr<config_node_complex_value> indent_text(
-                shared_node indentation);
+        std::shared_ptr<const config_node_complex_value> indent_text(
+                shared_node indentation) const;
 
-        virtual std::shared_ptr<config_node_complex_value> new_node(
-                shared_node_list nodes) = 0;
+        virtual std::shared_ptr<const config_node_complex_value> new_node(
+                shared_node_list nodes) const = 0;
 
     private:
         shared_node_list _children;

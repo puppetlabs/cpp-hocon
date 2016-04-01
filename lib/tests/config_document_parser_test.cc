@@ -48,17 +48,17 @@ void parse_values_test(string original_text, bool simple = true, string final_te
     auto node = parse_value_conf(original_text);
     REQUIRE(expected == node->render());
     if (simple) {
-        REQUIRE(dynamic_pointer_cast<config_node_simple_value>(node));
+        REQUIRE(dynamic_pointer_cast<const config_node_simple_value>(node));
     } else {
-        REQUIRE(dynamic_pointer_cast<config_node_complex_value>(node));
+        REQUIRE(dynamic_pointer_cast<const config_node_complex_value>(node));
     }
 
     auto json_node = parse_value_json(original_text);
     REQUIRE(expected == json_node->render());
     if (simple) {
-        REQUIRE(dynamic_pointer_cast<config_node_simple_value>(node));
+        REQUIRE(dynamic_pointer_cast<const config_node_simple_value>(node));
     } else {
-        REQUIRE(dynamic_pointer_cast<config_node_complex_value>(node));
+        REQUIRE(dynamic_pointer_cast<const config_node_complex_value>(node));
     }
 }
 
@@ -136,11 +136,11 @@ TEST_CASE("invalid JSON parse errors", "[doc-parser]") {
 
 TEST_CASE("parse empty document", "[doc-parser]") {
     auto node = conf_parse("");
-    REQUIRE(dynamic_pointer_cast<config_node_object>(node->value()));
+    REQUIRE(dynamic_pointer_cast<const config_node_object>(node->value()));
     REQUIRE(node->value()->children().empty());
 
     auto node2 = conf_parse("#comment\n#comment\n\n");
-    REQUIRE(dynamic_pointer_cast<config_node_object>(node2->value()));
+    REQUIRE(dynamic_pointer_cast<const config_node_object>(node2->value()));
 }
 
 void parse_test(string original_text) {

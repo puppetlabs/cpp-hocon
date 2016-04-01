@@ -11,30 +11,31 @@ namespace hocon {
     config_node_root::config_node_root(shared_node_list children, shared_origin origin) :
             config_node_complex_value(move(children)), _origin(move(origin)) { }
 
-    shared_ptr<config_node_complex_value> config_node_root::new_node(shared_node_list nodes) {
+    shared_ptr<const config_node_complex_value> config_node_root::new_node(shared_node_list nodes) const {
         throw config_exception("Tried to indent a root node");
     }
 
-    shared_ptr<config_node_complex_value> config_node_root::value() const {
+    shared_ptr<const config_node_complex_value> config_node_root::value() const {
         for (auto&& node : children()) {
-            if (auto complex = dynamic_pointer_cast<config_node_complex_value>(node)) {
+            if (auto complex = dynamic_pointer_cast<const config_node_complex_value>(node)) {
                 return complex;
             }
         }
         throw config_exception("Root node did not contain a value");
     }
 
-    shared_ptr<config_node_root> config_node_root::set_value(std::string desired_path, shared_node_value value,
-                                                             config_syntax flavor) const
+    shared_ptr<const config_node_root> config_node_root::set_value(std::string desired_path,
+                                                                   shared_node_value value,
+                                                                   config_syntax flavor) const
     {
         shared_node_list children_copy = children();
         for (size_t i = 0; i < children_copy.size(); i++) {
             auto node = children_copy[i];
-            if (dynamic_pointer_cast<config_node_complex_value>(node)) {
-                if (dynamic_pointer_cast<config_node_array>(node)) {
+            if (dynamic_pointer_cast<const config_node_complex_value>(node)) {
+                if (dynamic_pointer_cast<const config_node_array>(node)) {
                     throw config_exception(string("The config document had an array at the root level,") +
                                                    string("and values cannot be modified inside an array"));
-                } else if (auto object = dynamic_pointer_cast<config_node_object>(node)) {
+                } else if (auto object = dynamic_pointer_cast<const config_node_object>(node)) {
                     if (value == nullptr) {
                         children_copy[i] = object->remove_value_on_path(desired_path, flavor);
                     } else {
@@ -52,11 +53,11 @@ namespace hocon {
         shared_node_list children_copy = children();
         for (size_t i = 0; i < children_copy.size(); i++) {
             auto node = children_copy[i];
-            if (dynamic_pointer_cast<config_node_complex_value>(node)) {
-                if (dynamic_pointer_cast<config_node_array>(node)) {
+            if (dynamic_pointer_cast<const config_node_complex_value>(node)) {
+                if (dynamic_pointer_cast<const config_node_array>(node)) {
                     throw config_exception(string("The config document had an array at the root level,") +
                                            string("and values cannot be modified inside an array"));
-                } else if (auto object = dynamic_pointer_cast<config_node_object>(node)) {
+                } else if (auto object = dynamic_pointer_cast<const config_node_object>(node)) {
                     return object->has_value(raw_path);
                 }
             }

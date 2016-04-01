@@ -35,18 +35,18 @@ namespace hocon { namespace config_parser {
         return _base_origin->with_line_number(_line_number);
     }
 
-    shared_value parse_context::parse_value(shared_node_value n, vector<string> comments)
+    shared_value parse_context::parse_value(shared_node_value n, vector<string>& comments)
     {
         auto starting_array_count = array_count;
 
         shared_value v = [&]() -> shared_value {
-            if (auto val = dynamic_pointer_cast<config_node_simple_value>(n)) {
+            if (auto val = dynamic_pointer_cast<const config_node_simple_value>(n)) {
                 return val->get_value();
-            } else if (auto val = dynamic_pointer_cast<config_node_object>(n)) {
+            } else if (auto val = dynamic_pointer_cast<const config_node_object>(n)) {
                 return parse_object(val);
-            } else if (auto val = dynamic_pointer_cast<config_node_array>(n)) {
+            } else if (auto val = dynamic_pointer_cast<const config_node_array>(n)) {
                 throw bug_or_broken_exception("parse_context::parse_array not implemented");
-            } else if (auto val = dynamic_pointer_cast<config_node_concatenation>(n)) {
+            } else if (auto val = dynamic_pointer_cast<const config_node_concatenation>(n)) {
                 return parse_concatenation(val);
             } else {
                 auto &deref_n = *n;
@@ -79,10 +79,10 @@ namespace hocon { namespace config_parser {
         vector<string> comments;
         for (size_t i = 0; i < nodes.size(); ++i) {
             auto node = nodes.at(i);
-            if (auto confnode = dynamic_pointer_cast<config_node_comment>(node)) {
+            if (auto comment = dynamic_pointer_cast<const config_node_comment>(node)) {
                 last_was_newline = false;
-                comments.push_back(confnode->comment_text());
-            } else if (auto singletoken = dynamic_pointer_cast<config_node_single_token>(node)) {
+                comments.push_back(comment->comment_text());
+            } else if (auto singletoken = dynamic_pointer_cast<const config_node_single_token>(node)) {
                 if (tokens::is_newline(singletoken->get_token())) {
                     _line_number++;
                     if (last_was_newline) {
@@ -91,13 +91,13 @@ namespace hocon { namespace config_parser {
                     }
                     last_was_newline = true;
                 }
-            } else if (auto include = dynamic_pointer_cast<config_node_include>(node)) {
+            } else if (auto include = dynamic_pointer_cast<const config_node_include>(node)) {
                 if (_flavor != config_syntax::JSON) {
                     throw bug_or_broken_exception("parseInclude not implemented");
                     // parseInclude
                     last_was_newline = false;
                 }
-            } else if (auto field = dynamic_pointer_cast<config_node_field>(node)) {
+            } else if (auto field = dynamic_pointer_cast<const config_node_field>(node)) {
                 last_was_newline = false;
                 auto path = field->path()->get_path();
                 comments.insert(comments.end(), field->comments().begin(), field->comments().end());
@@ -138,14 +138,14 @@ namespace hocon { namespace config_parser {
                 if (i < nodes.size() - 1) {
                     ++i;
                     while (i < nodes.size()) {
-                        if (auto comment = dynamic_pointer_cast<config_node_comment>(nodes.at(i))) {
+                        if (auto comment = dynamic_pointer_cast<const config_node_comment>(nodes.at(i))) {
                             auto old_origin = dynamic_pointer_cast<const simple_config_origin>(new_value->origin());
                             if (!old_origin) {
                                 throw bug_or_broken_exception("expected origin to be simple_config_origin");
                             }
                             new_value = new_value->with_origin(old_origin->append_comments({comment->comment_text()}));
                             break;
-                        } else if (auto curr = dynamic_pointer_cast<config_node_single_token>(nodes.at(i))) {
+                        } else if (auto curr = dynamic_pointer_cast<const config_node_single_token>(nodes.at(i))) {
                             if (curr->get_token() == tokens::comma_token() ||
                                 tokens::is_ignored_whitespace(curr->get_token())) {
                                 // keep searching, as there could still be a comment
@@ -198,15 +198,16 @@ namespace hocon { namespace config_parser {
         return make_shared<simple_config_object>(object_origin, move(values));
     }
 
-    shared_value parse_context::parse_concatenation(shared_ptr<config_node_concatenation> n) {
+    shared_value parse_context::parse_concatenation(shared_node_concatenation n) {
         if (_flavor == config_syntax::JSON) {
             throw bug_or_broken_exception("Found a concatenation node in JSON");
         }
 
         vector<shared_value> values;
         for (auto& node : n->children()) {
-            if (auto value_node = dynamic_pointer_cast<abstract_config_node_value>(node)) {
-                values.push_back(parse_value(value_node, {}));
+            if (auto value_node = dynamic_pointer_cast<const abstract_config_node_value>(node)) {
+                vector<string> comments;
+                values.push_back(parse_value(value_node, comments));
             }
         }
 
@@ -220,10 +221,10 @@ namespace hocon { namespace config_parser {
         bool last_was_newline = false;
 
         for (auto&& node : _document->children()) {
-            if (auto ptr = dynamic_pointer_cast<config_node_comment>(node)) {
+            if (auto ptr = dynamic_pointer_cast<const config_node_comment>(node)) {
                 comments.push_back(ptr->comment_text());
                 last_was_newline = false;
-            } else if (auto ptr = dynamic_pointer_cast<config_node_single_token>(node)) {
+            } else if (auto ptr = dynamic_pointer_cast<const config_node_single_token>(node)) {
                 auto t = ptr->get_token();
                 if (t->get_token_type() == token_type::NEWLINE) {
                     ++_line_number;
@@ -237,8 +238,8 @@ namespace hocon { namespace config_parser {
                     }
                     last_was_newline = true;
                 }
-            } else if (auto ptr = dynamic_pointer_cast<config_node_complex_value>(node)) {
-                result = parse_value(ptr, move(comments));
+            } else if (auto ptr = dynamic_pointer_cast<const config_node_complex_value>(node)) {
+                result = parse_value(ptr, comments);
                 last_was_newline = false;
             }
         }
