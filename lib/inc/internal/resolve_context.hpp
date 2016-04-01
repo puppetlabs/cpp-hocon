@@ -14,6 +14,7 @@ namespace hocon {
     // TODO: Implement this class >_>
     class resolve_context {
     public:
+        resolve_context(config_resolve_options options, path restrict_to_child);
         bool is_restricted_to_child() const;
         config_resolve_options options() const;
 
@@ -22,6 +23,8 @@ namespace hocon {
 
         resolve_context restrict(path restrict_to) const;
         resolve_context unrestricted() const;
+
+        static shared_value resolve(shared_value value, shared_object root, config_resolve_options options);
 
     private:
         config_resolve_options _options;

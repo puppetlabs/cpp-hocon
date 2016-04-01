@@ -3,7 +3,6 @@
 #include <hocon/config_object.hpp>
 #include <internal/tokens.hpp>
 #include <internal/nodes/config_node_comment.hpp>
-#include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_complex_value.hpp>
 #include <internal/nodes/config_node_simple_value.hpp>
 #include <internal/nodes/config_node_object.hpp>
@@ -11,6 +10,7 @@
 #include <internal/nodes/config_node_concatenation.hpp>
 #include <internal/nodes/config_node_field.hpp>
 #include <internal/nodes/config_node_include.hpp>
+#include <internal/values/config_concatenation.hpp>
 #include <internal/values/simple_config_object.hpp>
 
 namespace hocon { namespace config_parser {
@@ -47,7 +47,7 @@ namespace hocon { namespace config_parser {
             } else if (auto val = dynamic_pointer_cast<config_node_array>(n)) {
                 throw bug_or_broken_exception("parse_context::parse_array not implemented");
             } else if (auto val = dynamic_pointer_cast<config_node_concatenation>(n)) {
-                throw bug_or_broken_exception("parse_context::parse_concatenation not implemented");
+                return parse_concatenation(val);
             } else {
                 auto &deref_n = *n;
                 throw parse_exception(*line_origin(),
@@ -196,6 +196,21 @@ namespace hocon { namespace config_parser {
         }
 
         return make_shared<simple_config_object>(object_origin, move(values));
+    }
+
+    shared_value parse_context::parse_concatenation(shared_ptr<config_node_concatenation> n) {
+        if (_flavor == config_syntax::JSON) {
+            throw bug_or_broken_exception("Found a concatenation node in JSON");
+        }
+
+        vector<shared_value> values;
+        for (auto& node : n->children()) {
+            if (auto value_node = dynamic_pointer_cast<abstract_config_node_value>(node)) {
+                values.push_back(parse_value(value_node, {}));
+            }
+        }
+
+        return config_concatenation::concatenate(move(values));
     }
 
     shared_value parse_context::parse()

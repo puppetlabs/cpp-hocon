@@ -7,23 +7,42 @@
 #include <internal/resolve_result.hpp>
 #include <internal/container.hpp>
 
+#include <algorithm>
+
 using namespace std;
 
 namespace hocon {
 
     struct simple_config_object::resolve_modifier : public modifier {
-        // TODO: initialize origin_restrict
-        resolve_modifier(resolve_context c, resolve_source s) : context(move(c)), source(move(s)), origin_restrict("") {}
+        resolve_modifier(resolve_context c, resolve_source s)
+                : context(move(c)), source(move(s)), original_restrict(context.restrict_to_child()) {}
 
         shared_value modify_child_may_throw(string key, shared_value v) override
         {
-            // TODO: implement
-            throw config_exception("simple_config_object::resolve_modifier::modify_child_may_throw not implemented");
+            if (context.is_restricted_to_child()) {
+                if (key == *context.restrict_to_child().first()) {
+                    auto remainder = context.restrict_to_child().remainder();
+
+                    if (remainder.empty()) {
+                        auto result = context.restrict(remainder).resolve(v, source);
+                        context = result.context.unrestricted().restrict(original_restrict);
+                        return result.value;
+                    } else {
+                        return v;
+                    }
+                } else {
+                    return v;
+                }
+            } else {
+                auto result = context.unrestricted().resolve(v, source);
+                context = result.context.unrestricted().restrict(original_restrict);
+                return result.value;
+            }
         }
 
         resolve_context context;
         resolve_source source;
-        string origin_restrict;
+        path original_restrict;
     };
 
     simple_config_object::simple_config_object(shared_origin origin,
@@ -31,6 +50,16 @@ namespace hocon {
                                                resolve_status status, bool ignores_fallbacks) :
         config_object(move(origin)), _value(move(value)), _resolved(status), _ignores_fallbacks(ignores_fallbacks)
     {}
+
+    simple_config_object::simple_config_object(shared_origin origin,
+                                               unordered_map <std::string, shared_value> value)
+         : config_object(move(origin)) {
+        // These are in the body so I can call resolve_from_status
+        // then move the value hash in a well-defined order.
+        _resolved = resolve_status_from_value(value);
+        _value = move(value);
+        _ignores_fallbacks = false;
+    }
 
     shared_value simple_config_object::attempt_peek_with_partial_resolve(std::string const& key) const {
         return _value.at(key);
@@ -86,7 +115,7 @@ namespace hocon {
                 }
             }
             // TODO: the last argument is incorrect, fix when implementing resolve functionality
-            return make_shared<simple_config_object>(origin(), smaller, resolve_status::RESOLVED);
+            return make_shared<simple_config_object>(origin(), smaller);
         }
     }
 
@@ -163,10 +192,68 @@ namespace hocon {
         return modify_may_throw(modifier);
     }
 
-    shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier&) const
+    shared_ptr<simple_config_object> simple_config_object::modify_may_throw(modifier& the_modifier) const
     {
-        // TODO: implement
-        throw config_exception("simple_config_object::modify_may_throw not implemented");
+        unordered_map<string, shared_value> changes;
+
+        for (const auto& pair : _value) {
+            auto& k = pair.first;
+            auto& v = pair.second;
+            auto modified = the_modifier.modify_child_may_throw(k, v);
+
+            if (modified != v) {
+                changes.emplace(k, modified);
+            }
+        }
+
+        if (changes.empty()) {
+            return const_pointer_cast<simple_config_object>(dynamic_pointer_cast<const simple_config_object>(shared_from_this()));
+        } else {
+            unordered_map<string, shared_value> modified;
+            resolve_status status = resolve_status::RESOLVED;
+
+            for (const auto& pair : _value) {
+                auto& k = pair.first;
+                auto& v = pair.second;
+
+                auto iter = changes.find(k);
+                if (iter != changes.end()) {
+                    auto& new_value = iter->second;
+
+                    if (new_value) {
+                        modified.emplace(k, new_value);
+                        if (new_value->get_resolve_status() == resolve_status::UNRESOLVED) {
+                            status = resolve_status::UNRESOLVED;
+                        }
+                    }
+                } else {
+                    modified.emplace(k, v);
+                    if (v->get_resolve_status() == resolve_status::UNRESOLVED) {
+                        status = resolve_status::UNRESOLVED;
+                    }
+                }
+            }
+            return make_shared<simple_config_object>(origin(), move(modified), status, ignores_fallbacks());
+        }
     }
+
+    resolve_status simple_config_object::resolve_status_from_value(const unordered_map<string, shared_value>& value) {
+        using pair = unordered_map<string, shared_value>::value_type;
+        return any_of(value.begin(), value.end(), [](const pair& value) {
+                 return value.second->get_resolve_status() == resolve_status::UNRESOLVED;
+             }) ? resolve_status::UNRESOLVED : resolve_status::RESOLVED;
+    }
+
+    shared_value simple_config_object::replace_child(shared_value const &child, shared_value replacement) const {
+        // TODO: implement
+        throw config_exception("simple_config_object::replace_child not implemented");
+    }
+
+    bool simple_config_object::has_descendant(shared_value const &descendant) const {
+        // TODO: implement
+        throw config_exception("simple_config_object::has_descendant not implemented");
+    }
+
+
 
 }  // namespace hocon

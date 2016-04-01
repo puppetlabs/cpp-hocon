@@ -11,4 +11,6 @@ namespace hocon {
         std::shared_ptr<config_node_complex_value> new_node(shared_node_list nodes) override;
     };
 
+    using shared_node_concatenation = std::shared_ptr<config_node_concatenation>;
+
 }  // namespace hocon

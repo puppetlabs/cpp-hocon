@@ -4,10 +4,10 @@ using namespace std;
 
 namespace hocon {
 
-    substitution_expression::substitution_expression(string path, bool optional) :
-        _path(move(path)), _optional(move(optional)) { }
+    substitution_expression::substitution_expression(path the_path, bool optional) :
+        _path(move(the_path)), _optional(move(optional)) { }
 
-    string substitution_expression::path() const {
+    path substitution_expression::get_path() const {
         return _path;
     }
 
@@ -15,7 +15,7 @@ namespace hocon {
         return _optional;
     }
 
-    shared_ptr<substitution_expression> substitution_expression::change_path(std::string new_path) {
+    shared_ptr<substitution_expression> substitution_expression::change_path(path new_path) {
         if (new_path == _path) {
             return shared_from_this();
         } else {
@@ -24,7 +24,7 @@ namespace hocon {
     }
 
     string substitution_expression::to_string() const {
-        return string("${") + (_optional ? "?" : "") + _path + "}";
+        return string("${") + (_optional ? "?" : "") + _path.to_string() + "}";
     }
 
 }  // namespace hocon

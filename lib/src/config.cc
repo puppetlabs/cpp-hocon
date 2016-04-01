@@ -1,9 +1,10 @@
 #include <hocon/config.hpp>
 #include <hocon/config_parse_options.hpp>
-#include <internal/values/config_null.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/default_transformer.hpp>
+#include <internal/resolve_context.hpp>
 #include <internal/values/config_boolean.hpp>
+#include <internal/values/config_null.hpp>
 #include <internal/values/config_number.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/parseable.hpp>
@@ -38,7 +39,7 @@ namespace hocon {
     }
 
     shared_config config::resolve(config_resolve_options options) const {
-        return resolve_with(shared_from_this(), options);
+        return resolve_with(shared_from_this(), move(options));
     }
 
     shared_config config::resolve_with(shared_config source) const {
@@ -46,9 +47,13 @@ namespace hocon {
     }
 
     shared_config config::resolve_with(shared_config source, config_resolve_options options) const {
-        // TODO: implement all the resolve classes, then this method
-        // until then DO NOT TRY TO PARSE INPUT WITH SUBSTITUTIONS
-        return shared_from_this();
+        auto resolved = resolve_context::resolve(_object, source->_object, move(options));
+
+        if (resolved == _object) {
+            return shared_from_this();
+        } else {
+            return make_shared<config>(dynamic_pointer_cast<const config_object>(resolved));
+        }
     }
 
     shared_value config::has_path_peek(string const& path_expression) const {
