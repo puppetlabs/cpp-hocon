@@ -44,6 +44,8 @@ namespace hocon {
         friend class simple_config_list;
         friend class config_concatenation;
         friend class resolve_context;
+        friend class config_delayed_merge;
+        friend class config_delayed_merge_object;
     public:
         /**
          * The type of a configuration value (following the <a
@@ -222,15 +224,15 @@ namespace hocon {
          * really need to store the boolean, and they may be able to pack it
          * with another boolean to save space.
          */
-        bool ignores_fallbacks() const;
-        shared_value with_fallbacks_ignored() const;
+        virtual bool ignores_fallbacks() const;
+        virtual shared_value with_fallbacks_ignored() const;
 
         shared_value merged_with_the_unmergeable(std::vector<shared_value> stack,
                                                  std::shared_ptr<const unmergeable> fallback) const;
         shared_value merged_with_the_unmergeable(std::shared_ptr<const unmergeable> fallback) const;
 
         shared_value merged_with_object(std::vector<shared_value> stack, shared_object fallback) const;
-        shared_value merged_with_object(shared_object fallback) const;
+        virtual shared_value merged_with_object(shared_object fallback) const;
 
         shared_value merged_with_non_object(std::vector<shared_value> stack, shared_value fallback) const;
         shared_value merged_with_non_object(shared_value fallback) const;

@@ -11,6 +11,8 @@ namespace hocon {
         shared_object with_value(path raw_path, shared_value value) const override;
         shared_object with_value(std::string key, shared_value value) const override;
 
+        resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
+
     protected:
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;
         bool is_empty() const override;
@@ -19,6 +21,7 @@ namespace hocon {
         shared_object with_only_path(path raw_path) const override;
         shared_object with_only_path_or_null(path raw_path) const override;
         shared_value new_copy(shared_origin origin) const override;
+        bool ignores_fallbacks() const override;
 
         bool operator==(config_value const& other) const override;
 

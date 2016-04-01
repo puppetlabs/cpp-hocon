@@ -254,6 +254,77 @@ namespace hocon {
         throw config_exception("simple_config_object::has_descendant not implemented");
     }
 
+    vector<string> simple_config_object::key_set() const {
+        vector<string> keys;
+        for (auto const& kv : _value) {
+            keys.push_back(kv.first);
+        }
+        return keys;
+    }
 
+    shared_value simple_config_object::with_fallbacks_ignored() const {
+        if (_ignores_fallbacks) {
+            return shared_from_this();
+        } else {
+            return make_shared<simple_config_object>(origin(), _value, _resolved, true);
+        }
+    }
+
+    shared_value simple_config_object::merged_with_object(shared_object abstract_fallback) const {
+        auto fallback = dynamic_pointer_cast<const simple_config_object>(abstract_fallback);
+        if (!fallback) {
+            throw bug_or_broken_exception("should not be reached (merging non-simple_config_object)");
+        }
+
+        bool changed = false;
+        auto new_resolve_status = resolve_status::RESOLVED;
+        auto merged = unordered_map<string, shared_value>();
+        auto all_keys = [&]() {
+            auto our_keys = key_set();
+            auto fallback_keys = fallback->key_set();
+            auto all_keys = unordered_set<string>(our_keys.begin(), our_keys.end());
+            all_keys.insert(fallback_keys.begin(), fallback_keys.end());
+            return all_keys;
+        }();
+
+        for (auto const& key : all_keys) {
+            auto first = _value.find(key);
+            auto second = fallback->_value.find(key);
+            auto kept = [&]() {
+                if (first == _value.end()) {
+                    return second->second;
+                } else if (second == fallback->_value.end()) {
+                    return first->second;
+                } else {
+                    auto merge = dynamic_pointer_cast<const config_value>(first->second->with_fallback(second->second));
+                    if (!merge) {
+                        throw bug_or_broken_exception("Expected with_fallback to return same type of object");
+                    }
+                    return merge;
+                }
+            }();
+
+            merged.insert(make_pair(key, kept));
+
+            if (first == _value.end() || first->second != kept) {
+                changed = true;
+            }
+
+            if (kept->get_resolve_status() == resolve_status::UNRESOLVED) {
+                new_resolve_status = resolve_status::UNRESOLVED;
+            }
+        }
+
+        bool new_ignores_fallbacks = fallback->ignores_fallbacks();
+
+        if (changed) {
+            return make_shared<simple_config_object>(merge_origins({shared_from_this(), fallback}),
+                                                     merged, new_resolve_status, new_ignores_fallbacks);
+        } else if (new_resolve_status != get_resolve_status() || new_ignores_fallbacks != ignores_fallbacks()) {
+            return make_shared<simple_config_object>(origin(), _value, new_resolve_status, new_ignores_fallbacks);
+        } else {
+            return shared_from_this();
+        }
+    }
 
 }  // namespace hocon
