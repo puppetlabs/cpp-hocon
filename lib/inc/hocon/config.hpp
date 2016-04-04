@@ -523,14 +523,13 @@ namespace hocon {
         virtual shared_config get_config(std::string const& path) const;
         virtual std::shared_ptr<const config_value> get_value(std::string const& path) const;
 
-        // TODO: Porting these requires config_list to be supported
-//        virtual std::vector<bool> get_bool_list(std::string const& path) const;
-//        virtual std::vector<int> get_int_list(std::string const& path) const;
-//        virtual std::vector<int64_t> get_long_list(std::string const& path) const;
-//        virtual std::vector<double> get_double_list(std::string const& path) const;
-//        virtual std::vector<std::string> get_string_list(std::string const& path) const;
-//        virtual std::vector<std::shared_ptr<const config_object>> get_object_list(std::string const& path) const;
-//        virtual std::vector<shared_config> get_config_list(std::string const& path) const;
+        virtual std::vector<bool> get_bool_list(std::string const& path) const;
+        virtual std::vector<int> get_int_list(std::string const& path) const;
+        virtual std::vector<int64_t> get_long_list(std::string const& path) const;
+        virtual std::vector<double> get_double_list(std::string const& path) const;
+        virtual std::vector<std::string> get_string_list(std::string const& path) const;
+        virtual std::vector<shared_object> get_object_list(std::string const& path) const;
+        virtual std::vector<shared_config> get_config_list(std::string const& path) const;
 
 
         // TODO: memory and duration parsing

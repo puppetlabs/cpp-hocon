@@ -210,14 +210,45 @@ namespace hocon {
         return get_object(path_expression)->to_config();
     }
 
+
+    vector<bool> config::get_bool_list(string const& path) const {
+        throw config_exception("get_bool_list unimplemented");
+    }
+
+    std::vector<int> config::get_int_list(std::string const& path) const {
+        throw config_exception("get_int_list unimplemented");
+    }
+
+    std::vector<int64_t> config::get_long_list(std::string const& path) const {
+        throw config_exception("get_long_list unimplemented");
+    }
+
+    std::vector<double> config::get_double_list(std::string const& path) const {
+        throw config_exception("get_double_list unimplemented");
+    }
+
+    std::vector<std::string> config::get_string_list(std::string const& path) const {
+        throw config_exception("get_string_list unimplemented");
+    }
+
+    std::vector<shared_object> config::get_object_list(std::string const& path) const {
+        throw config_exception("get_object_list unimplemented");
+    }
+
+    std::vector<shared_config> config::get_config_list(std::string const& path) const {
+        throw config_exception("get_config_list unimplemented");
+    }
+
     shared_value config::to_fallback_value() const {
         return _object;
     }
 
     shared_ptr<const config_mergeable> config::with_fallback(shared_ptr<const config_mergeable> other) const {
-        // TODO: this isn't technically the same functionality as the Java, but full
-        // functionality requires having merging working, see AbstractConfigValue#withFallback
-        return dynamic_pointer_cast<const config_mergeable>(shared_from_this());
+        if (auto newobj = dynamic_pointer_cast<const config_object>(_object->with_fallback(other))) {
+            return newobj->to_config();
+        } else {
+            throw bug_or_broken_exception("Creating new object from config_object did not return a config_object");
+        }
     }
 
     bool config::operator==(config const &other) const {

@@ -3,6 +3,7 @@
 #include <internal/container.hpp>
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
+#include <unordered_set>
 
 namespace hocon {
 
@@ -18,6 +19,11 @@ namespace hocon {
         bool is_empty() const override;
         size_t size() const { return _value.size(); }
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
+
+        resolve_status get_resolve_status() const override { return _resolved; }
+        bool ignores_fallbacks() const override { return _ignores_fallbacks; }
+        shared_value with_fallbacks_ignored() const override;
+        shared_value merged_with_object(shared_object fallback) const override;
 
         shared_object with_value(path raw_path, shared_value value) const override;
         shared_object with_value(std::string key, shared_value value) const override;
@@ -45,6 +51,12 @@ namespace hocon {
          * underneath this container.
          */
         bool has_descendant(shared_value const& descendant) const override;
+
+        /**
+         * Construct a list of keys in the _value map.
+         * Use a vector rather than set, because most of the time we just want to iterate over them.
+         */
+        std::vector<std::string> key_set() const;
 
     protected:
         resolve_result<shared_value>

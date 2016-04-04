@@ -13,9 +13,13 @@ namespace hocon {
         config_value::type value_type() const override;
         std::vector<shared_value> unmerged_values() const override;
 
+        resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
+
     protected:
         shared_value new_copy(shared_origin) const override;
         bool operator==(config_value const& other) const override;
+
+        bool ignores_fallbacks() const override;
 
     private:
         std::vector<shared_value> _stack;

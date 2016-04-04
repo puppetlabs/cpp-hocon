@@ -234,7 +234,7 @@ namespace hocon {
     shared_value config_value::merged_with_object(vector<shared_value> stack, shared_object fallback) const {
         require_not_ignoring_fallbacks();
 
-        if (dynamic_pointer_cast<const config_object>(shared_from_this())) {
+        if (dynamic_cast<const config_object*>(this)) {
             throw config_exception("Objects must reimplement merged_with_object");
         }
 
@@ -265,7 +265,7 @@ namespace hocon {
     shared_value config_value::merged_with_object(shared_object fallback) const {
         require_not_ignoring_fallbacks();
 
-        return merged_with_object({ shared_from_this() }, move(fallback));
+        return merged_with_object({shared_from_this()}, move(fallback));
     }
 
     shared_value config_value::to_fallback_value() const {

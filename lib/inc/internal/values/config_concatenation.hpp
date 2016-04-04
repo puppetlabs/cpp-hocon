@@ -40,7 +40,7 @@ namespace hocon {
 
     protected:
         shared_value new_copy(shared_origin origin) const override;
-        bool ignores_fallbacks() const;
+        bool ignores_fallbacks() const override;
         void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
         bool operator==(config_value const& other) const override;
 
