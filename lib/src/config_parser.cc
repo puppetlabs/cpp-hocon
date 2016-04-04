@@ -19,10 +19,10 @@ namespace hocon { namespace config_parser {
 
     shared_value parse(shared_ptr<const config_node_root> document,
             shared_origin origin,
-            shared_parse_options const& options,
+            config_parse_options options,
             shared_include_context include_context)
     {
-        parse_context context {options->get_syntax(), origin, document, nullptr, include_context};
+        parse_context context {options.get_syntax(), origin, document, nullptr, include_context};
         return context.parse();
     }
 

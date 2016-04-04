@@ -17,10 +17,12 @@ namespace hocon { namespace config_document_parser {
     };
 
     std::shared_ptr<config_node_root> parse(token_iterator tokens,
-                                                   shared_origin origin, config_parse_options options);
+                                            shared_origin origin,
+                                            config_parse_options options);
 
     shared_node_value parse_value(token_iterator tokens,
-                                         shared_origin origin, config_parse_options options);
+                                  shared_origin origin,
+                                  config_parse_options options);
 
     class parse_context {
     public:

@@ -18,7 +18,7 @@ namespace hocon { namespace config_parser {
 
     shared_value parse(std::shared_ptr<const config_node_root> document,
             shared_origin origin,
-            shared_parse_options const& options,
+            config_parse_options options,
             shared_include_context include_context);
 
     class parse_context {

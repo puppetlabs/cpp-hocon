@@ -178,7 +178,7 @@ namespace hocon {
          * @param options parse options
          * @return the parsed configuration
          */
-        static shared_config parse_string(std::string s, shared_parse_options options);
+        static shared_config parse_string(std::string s, config_parse_options options);
 
         /**
          * Parses a string (which should be valid HOCON or JSON).

@@ -10,7 +10,7 @@ using namespace std;
 
 namespace hocon {
     simple_config_document::simple_config_document(shared_ptr<const config_node_root> root,
-                                                   shared_parse_options opts)
+                                                   config_parse_options opts)
         : _config_node_tree(move(root)), _parse_options(move(opts)) {}
 
     unique_ptr<config_document> simple_config_document::with_value_text(string path, string new_value) const
@@ -20,11 +20,11 @@ namespace hocon {
         }
 
         shared_origin origin = make_shared<simple_config_origin>("single value parsing");
-        token_iterator tokens {origin, unique_ptr<istream>{new stringstream(new_value)}, _parse_options->get_syntax()};
-        shared_node_value parsed_value = config_document_parser::parse_value(move(tokens), origin, *_parse_options);
+        token_iterator tokens {origin, unique_ptr<istream>{new stringstream(new_value)}, _parse_options.get_syntax()};
+        shared_node_value parsed_value = config_document_parser::parse_value(move(tokens), origin, _parse_options);
 
         return unique_ptr<config_document>{new simple_config_document(
-                _config_node_tree->set_value(path, parsed_value, _parse_options->get_syntax()),
+                _config_node_tree->set_value(path, parsed_value, _parse_options.get_syntax()),
                 _parse_options)};
     }
 
@@ -44,7 +44,7 @@ namespace hocon {
     unique_ptr<config_document> simple_config_document::without_path(string path) const
     {
         return unique_ptr<config_document>{new simple_config_document(
-                _config_node_tree->set_value(path, nullptr, _parse_options->get_syntax()), _parse_options)};
+                _config_node_tree->set_value(path, nullptr, _parse_options.get_syntax()), _parse_options)};
     }
 
     bool simple_config_document::has_path(string const& path) const

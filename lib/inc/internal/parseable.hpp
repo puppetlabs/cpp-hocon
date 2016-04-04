@@ -15,23 +15,23 @@ namespace hocon {
 
     class parseable : public config_parseable, public std::enable_shared_from_this<parseable> {
     public:
-        static parseable_file new_file(std::string input_file_path, shared_parse_options options);
-        static parseable_string new_string(std::string s, shared_parse_options options);
+        static parseable_file new_file(std::string input_file_path, config_parse_options options);
+        static parseable_string new_string(std::string s, config_parse_options options);
         static parseable_not_found new_not_found(std::string what_not_found, std::string message,
-                                                 shared_parse_options options);
+                                                 config_parse_options options);
 
         static config_syntax syntax_from_extension(std::string name);
 
-        void post_construct(shared_parse_options base_options);
+        void post_construct(config_parse_options const& base_options);
 
         std::shared_ptr<config_document> parse_config_document();
-        shared_object parse(shared_parse_options options) const override;
+        shared_object parse(config_parse_options const& options) const override;
         shared_object parse() const;
 
-        shared_parse_options options() const override;
+        config_parse_options const& options() const override;
         std::shared_ptr<const config_origin> origin() const override;
 
-        virtual std::unique_ptr<std::istream> reader(shared_parse_options options) const;
+        virtual std::unique_ptr<std::istream> reader(config_parse_options const& options) const;
         virtual std::unique_ptr<std::istream> reader() const = 0;
         virtual shared_origin create_origin() const = 0;
 
@@ -42,25 +42,27 @@ namespace hocon {
         std::string to_string() const;
 
     private:
-        std::shared_ptr<config_document> parse_document(shared_parse_options base_options) const;
-        std::shared_ptr<config_document> parse_document(shared_origin origin, shared_parse_options final_options) const;
+        std::shared_ptr<config_document> parse_document(config_parse_options const& base_options) const;
+        std::shared_ptr<config_document> parse_document(shared_origin origin,
+                                                        config_parse_options const& final_options) const;
         std::shared_ptr<config_document> raw_parse_document(std::unique_ptr<std::istream> stream, shared_origin origin,
-                                                            shared_parse_options options) const;
+                                                            config_parse_options const& options) const;
         std::shared_ptr<config_document> raw_parse_document(shared_origin origin,
-                                                            shared_parse_options options) const;
+                                                            config_parse_options const& options) const;
 
-        shared_value parse_value(shared_parse_options base_options) const;
-        shared_value parse_value(shared_origin origin, shared_parse_options options) const;
-        shared_value raw_parse_value(std::unique_ptr<std::istream> stream, shared_origin origin,
-                                     shared_parse_options options) const;
-        shared_value raw_parse_value(shared_origin origin, shared_parse_options options) const;
+        shared_value parse_value(config_parse_options const& base_options) const;
+        shared_value parse_value(shared_origin origin, config_parse_options const& options) const;
+        shared_value raw_parse_value(std::unique_ptr<std::istream> stream,
+                                     shared_origin origin,
+                                     config_parse_options const& options) const;
+        shared_value raw_parse_value(shared_origin origin, config_parse_options const& options) const;
 
-        shared_parse_options fixup_options(shared_parse_options base_options) const;
+        config_parse_options fixup_options(config_parse_options const& base_options) const;
 
         std::vector<parseable> _parse_stack;
 
         shared_origin _initial_origin;
-        shared_parse_options _initial_options;
+        config_parse_options _initial_options;
         shared_include_context _include_context;
 
         static const int MAX_INCLUDE_DEPTH;
@@ -68,7 +70,7 @@ namespace hocon {
 
     class parseable_file : public parseable {
     public:
-        parseable_file(std::string input_file_path, shared_parse_options options);
+        parseable_file(std::string input_file_path, config_parse_options options);
         std::unique_ptr<std::istream> reader() const override;
         shared_origin create_origin() const override;
         config_syntax guess_syntax() const override;
@@ -79,7 +81,7 @@ namespace hocon {
 
     class parseable_string : public parseable {
     public:
-        parseable_string(std::string s, shared_parse_options options);
+        parseable_string(std::string s, config_parse_options options);
         std::unique_ptr<std::istream> reader() const override;
         shared_origin create_origin() const override;
 
@@ -96,7 +98,7 @@ namespace hocon {
     // that last resort behavior
     class parseable_resources : public parseable {
     public:
-        parseable_resources(std::string resource, shared_parse_options options);
+        parseable_resources(std::string resource, config_parse_options options);
 
         std::unique_ptr<std::istream> reader() const override;
         shared_origin create_origin() const override;
@@ -109,7 +111,7 @@ namespace hocon {
     // parse it
     class parseable_not_found : public parseable {
     public:
-        parseable_not_found(std::string what, std::string message, shared_parse_options options);
+        parseable_not_found(std::string what, std::string message, config_parse_options options);
 
         std::unique_ptr<std::istream> reader() const override;
         shared_origin create_origin() const override;

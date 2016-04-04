@@ -150,7 +150,7 @@ namespace hocon {
     shared_config parse_config(std::string s) {
         auto options = config_parse_options().
             set_origin_description(make_shared<string>("test string")).set_syntax(config_syntax::CONF);
-        return config::parse_string(move(s), make_shared<config_parse_options>(move(options)));
+        return config::parse_string(move(s), options);
     }
 
 }  // namespace hocon

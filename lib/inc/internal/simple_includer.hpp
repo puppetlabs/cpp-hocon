@@ -16,7 +16,7 @@ namespace hocon {
 
         shared_object include_file(shared_include_context context, std::string what) const override;
 
-        static config_parse_options clear_for_include(shared_parse_options options);
+        static config_parse_options clear_for_include(config_parse_options const& options);
 
     private:
         shared_includer _fallback;
@@ -25,7 +25,7 @@ namespace hocon {
     class name_source {
     public:
         virtual shared_parseable name_to_parseable(std::string name,
-                                                   shared_parse_options parse_options) const = 0;
+                                                   config_parse_options parse_options) const = 0;
     };
 
     class relative_name_source : public name_source {
@@ -33,7 +33,7 @@ namespace hocon {
         relative_name_source(shared_include_context context);
 
         shared_parseable name_to_parseable(std::string name,
-                                           shared_parse_options parse_options) const override;
+                                           config_parse_options parse_options) const override;
     private:
         const shared_include_context _context;
     };

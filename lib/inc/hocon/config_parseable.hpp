@@ -28,7 +28,7 @@ namespace hocon {
          *            {@link config_parseable#options()}
          * @return the parsed object
          */
-        virtual shared_object parse(shared_parse_options options) const = 0;
+        virtual shared_object parse(config_parse_options const& options) const = 0;
 
         /**
          * Returns a config_origin describing the origin of the paresable item.
@@ -41,7 +41,7 @@ namespace hocon {
          * parameters already set up.
          * @return the initial options
          */
-        virtual shared_parse_options options() const = 0;
+        virtual config_parse_options const& options() const = 0;
     };
 
 }  // namespace hocon
