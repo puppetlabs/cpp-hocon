@@ -4,10 +4,53 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <hocon/config.hpp>
+#include <hocon/config_exception.hpp>
+#include <hocon/config_parse_options.hpp>
 #include <internal/values/simple_config_object.hpp>
+#include <internal/parseable.hpp>
+#include <internal/resolve_context.hpp>
 
 using namespace std;
 using namespace hocon;
+using namespace hocon::test_utils;
+
+static shared_value parse_without_resolving(string s) {
+    auto options = config_parse_options()
+        .set_origin_description(make_shared<string>("test conf string"))
+        .set_syntax(config_syntax::CONF);
+    return parseable::new_string(move(s), move(options)).parse_value();
+}
+
+static shared_value parse(string s) {
+    auto tree = parse_without_resolving(move(s));
+    if (auto obj = dynamic_pointer_cast<const config_object>(tree)) {
+        return resolve_context::resolve(tree, obj, config_resolve_options(false));
+    }
+    return tree;
+}
+
+TEST_CASE("invalid conf throws") {
+    for (auto const& invalid : whitespace_variations(invalid_conf(), false)) {
+        CAPTURE(invalid.test);
+        REQUIRE_THROWS_AS(parse(invalid.test), config_exception);
+    }
+}
+
+TEST_CASE("valid conf works") {
+    // all we're checking here unfortunately is that it doesn't throw.
+    // for a more thorough check, use the EquivalentsTest stuff.
+    for (auto const& valid : whitespace_variations(valid_conf(), true)) {
+        CAPTURE(valid.test);
+        REQUIRE_NOTHROW(parse(valid.test));
+        //auto our_ast = parse(valid.test);
+        // TODO: implement rendering
+        // let's also check round-trip rendering
+        //auto rendered = our_ast->render();
+        //CAPTURE(rendered);
+        //auto reparsed = parse(rendered);
+        //REQUIRE(config_value_equal(our_ast, reparsed));
+    }
+}
 
 static size_t get_size(shared_object obj) {
     auto simple_obj = dynamic_pointer_cast<const simple_config_object>(obj);
@@ -105,8 +148,14 @@ TEST_CASE("implied comma handling") {
     };
 
     auto changes = vector<function<string(string const&)>>{
-        [](string const& s) { return s; }
-        //[](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n"); }
+        [](string const& s) { return s; },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n"); },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n\n"); },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n,\n"); },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n\n,\n\n"); },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n "); },
+        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "  \n  \n  ,  \n  \n  "); },
+        [&](string const& s) { return drop_curlies(s); }
     };
 
     auto tested = 0;

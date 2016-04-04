@@ -101,7 +101,8 @@ namespace hocon { namespace config_parser {
             } else if (auto field = dynamic_pointer_cast<const config_node_field>(node)) {
                 last_was_newline = false;
                 auto path = field->path()->get_path();
-                comments.insert(comments.end(), field->comments().begin(), field->comments().end());
+                auto field_comments = field->comments();
+                comments.insert(comments.end(), field_comments.begin(), field_comments.end());
 
                 // path must be on-stack while we parse the value
                 _path_stack.push_back(path);

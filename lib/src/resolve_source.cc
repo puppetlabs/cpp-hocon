@@ -37,7 +37,7 @@ namespace hocon {
     resolve_source::result_with_path resolve_source::lookup_subst(resolve_context context,
                                                                   std::shared_ptr<substitution_expression> subst,
                                                                   int prefix_length) const {
-        auto result = find_in_object(_root, context, subst->get_path());
+        auto result = find_in_object(_root, move(context), subst->get_path());
 
         if (!result.result.value) {
             auto unprefixed = subst->get_path().sub_path(prefix_length);

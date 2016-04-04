@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace hocon;
+using namespace hocon::test_utils;
 
 shared_ptr<config_node_root> conf_parse(string original_text) {
     return config_document_parser::parse(
@@ -93,7 +94,7 @@ TEST_CASE("parse values", "[doc-parser]") {
 void invalid_json_test(string original_text, string message) {
     try {
         json_parse(original_text);
-    } catch (config_document_parser::parse_exception& ex) {
+    } catch (parse_exception& ex) {
         REQUIRE(string(ex.what()).find(message) != string::npos);
     }
 }
@@ -143,59 +144,59 @@ TEST_CASE("parse empty document", "[doc-parser]") {
     REQUIRE(dynamic_pointer_cast<const config_node_object>(node2->value()));
 }
 
-void parse_test(string original_text) {
+void parse_test_string(string original_text) {
     auto node = conf_parse(original_text);
     REQUIRE(original_text == node->render());
 }
 
 TEST_CASE("comprehensive parse test") {
     SECTION("without curly braces") {
-        parse_test("foo:bar");
-        parse_test(" foo : bar ");
-        parse_test("include \"foo.conf\" ");
-        parse_test("   \nfoo:bar\n   ");
-        parse_test("aUnquoted: bar\naString = \"qux\"\naNumb:123\naDouble=123.456\naTrue=true\naFalse=false\n"
-                           "aNull=null\naSub =  ${a.b}\ninclude \"foo.conf\"");
+        parse_test_string("foo:bar");
+        parse_test_string(" foo : bar ");
+        parse_test_string("include \"foo.conf\" ");
+        parse_test_string("   \nfoo:bar\n   ");
+        parse_test_string("aUnquoted: bar\naString = \"qux\"\naNumb:123\naDouble=123.456\naTrue=true\naFalse=false\n"
+                          "aNull=null\naSub =  ${a.b}\ninclude \"foo.conf\"");
     }
 
     SECTION("with curly braces") {
-        parse_test("{}");
-        parse_test("{foo:bar}");
-        parse_test("{  foo  :  bar  }");
-        parse_test("{foo:bar}    ");
-        parse_test("{include \"foo.conf\"}");
-        parse_test("  \n{foo:bar}\n  ");
-        parse_test("{\naUnquoted: bar\naString = \"qux\"\naNumb:123\naDouble=123.456\naTrue=true\naFalse=false\n"
-                           "aNull=null\naSub =  ${a.b}\ninclude \"foo.conf\"\n}");
+        parse_test_string("{}");
+        parse_test_string("{foo:bar}");
+        parse_test_string("{  foo  :  bar  }");
+        parse_test_string("{foo:bar}    ");
+        parse_test_string("{include \"foo.conf\"}");
+        parse_test_string("  \n{foo:bar}\n  ");
+        parse_test_string("{\naUnquoted: bar\naString = \"qux\"\naNumb:123\naDouble=123.456\naTrue=true\naFalse=false\n"
+                          "aNull=null\naSub =  ${a.b}\ninclude \"foo.conf\"\n}");
     }
 
     SECTION("nested maps") {
-        parse_test("\nfoo.bar.baz : {\n\tqux : \"abcdefg\"\n\t\"abc\".def.\"ghi\" : 123\n\tabc = "
-                           "{ food:bar }\n}\nqux = 123.456\n");
+        parse_test_string("\nfoo.bar.baz : {\n\tqux : \"abcdefg\"\n\t\"abc\".def.\"ghi\" : 123\n\tabc = "
+                          "{ food:bar }\n}\nqux = 123.456\n");
     }
 
     SECTION("comments in maps") {
-        parse_test("{\nfoo: bar\n// this is a comment\nbaz:qux // this is another comment\n}");
+        parse_test_string("{\nfoo: bar\n// this is a comment\nbaz:qux // this is another comment\n}");
     }
 
     SECTION("arrays") {
-        parse_test("[]");
-        parse_test("[foo]");
-        parse_test("[foo,]");
-        parse_test("[foo,]   ");
-        parse_test("   \n[]\n   ");
-        parse_test("[foo, bar,\"qux\", 123,123.456, true,false, null, ${a.b}]");
-        parse_test("[foo,   bar,\"qux\"   , 123  123.456, true,false, null,   ${a.b}   ]");
+        parse_test_string("[]");
+        parse_test_string("[foo]");
+        parse_test_string("[foo,]");
+        parse_test_string("[foo,]   ");
+        parse_test_string("   \n[]\n   ");
+        parse_test_string("[foo, bar,\"qux\", 123,123.456, true,false, null, ${a.b}]");
+        parse_test_string("[foo,   bar,\"qux\"   , 123  123.456, true,false, null,   ${a.b}   ]");
     }
 
     SECTION("basic concatenation") {
-        parse_test("[foo bar baz qux]");
-        parse_test("{foo: foo bar baz qux}");
-        parse_test("[abc 123 123.456 null true false [1, 2, 3] {a:b}, 2]");
+        parse_test_string("[foo bar baz qux]");
+        parse_test_string("{foo: foo bar baz qux}");
+        parse_test_string("[abc 123 123.456 null true false [1, 2, 3] {a:b}, 2]");
     }
 
     SECTION("all together now") {
-        parse_test("{\nfoo: bar baz   qux    ernie\n// The above was a concatenation\n\nbaz  =  [ abc 123, {a:12\n"
+        parse_test_string("{\nfoo: bar baz   qux    ernie\n// The above was a concatenation\n\nbaz  =  [ abc 123, {a:12\n"
         "\t\t\t\tb: {\n\t\t\t\t\tc: 13\n\t\t\t\t\td: {\n\t\t\t\t\t\ta: 22\n\t\t\t\t\t\tb: \"abcdefg\" # this is a "
         "comment\n\t\t\t\t\t\tc: [1, 2, 3]\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t}, # this was an object in an array\n"
         "\t\t\t\t//The above value is a map containing a map containing a map, all in an array\n\t\t\t\t22,\n"

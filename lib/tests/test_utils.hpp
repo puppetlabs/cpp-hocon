@@ -12,12 +12,15 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <hocon/path.hpp>
 #include <internal/nodes/config_node_field.hpp>
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 
-namespace hocon {
+namespace hocon { namespace test_utils {
+
+    bool config_value_equal(shared_value a, shared_value b);
 
     shared_origin fake_origin(std::string description = "fake", int line_number = 0);
 
@@ -84,7 +87,12 @@ namespace hocon {
 
     std::shared_ptr<config_node_comment> double_slash_comment_node(std::string text);
 
+    // it's important that these do NOT use the public API to create the
+    // instances, because we may be testing that the public API returns the
+    // right instance by comparing to these, so using public API here would
+    // make the test compare public API to itself.
     std::shared_ptr<config_int> int_value(int i);
+    // TODO: remaining value helpers
 
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
@@ -92,4 +100,23 @@ namespace hocon {
     shared_object parse_object(std::string);
 
     shared_config parse_config(std::string);
-}  // namespace hocon
+
+    struct parse_test {
+        parse_test(std::string t, bool lbe = false, bool wm = false)
+            : test(move(t)), lift_behavior_unexpected(lbe), whitespace_matters(wm) { }
+
+        std::string test;
+        bool lift_behavior_unexpected, whitespace_matters;
+    };
+
+    std::vector<parse_test> const& invalid_json();
+
+    std::vector<parse_test> const& invalid_conf();
+
+    std::vector<parse_test> const& valid_json();
+
+    std::vector<parse_test> const& valid_conf();
+
+    std::vector<parse_test> whitespace_variations(std::vector<parse_test> const& tests, bool valid_in_lift);
+
+}}  // namespace hocon::test_utils

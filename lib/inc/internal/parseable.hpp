@@ -28,6 +28,8 @@ namespace hocon {
         shared_object parse(config_parse_options const& options) const override;
         shared_object parse() const;
 
+        shared_value parse_value() const;
+
         config_parse_options const& options() const override;
         std::shared_ptr<const config_origin> origin() const override;
 

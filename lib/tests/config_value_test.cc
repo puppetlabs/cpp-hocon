@@ -4,6 +4,7 @@
 
 using namespace hocon;
 using namespace std;
+using namespace hocon::test_utils;
 
 TEST_CASE("simple_config_origin equality", "[config_values]") {
     auto org1 = simple_config_origin("foo");

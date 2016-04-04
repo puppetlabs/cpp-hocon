@@ -10,6 +10,7 @@
 
 using namespace std;
 using namespace hocon;
+using namespace hocon::test_utils;
 
 /*  This test implementation of abstract_config_node allows
  *  shallow testing of its basic methods.

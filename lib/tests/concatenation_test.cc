@@ -4,6 +4,7 @@
 #include "test_utils.hpp"
 
 using namespace hocon;
+using namespace hocon::test_utils;
 
 TEST_CASE("concatenation") {
 

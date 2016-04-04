@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace hocon;
+using namespace hocon::test_utils;
 
 TEST_CASE("token equality", "[tokens]") {
 

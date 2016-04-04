@@ -14,6 +14,7 @@
 #include <vector>
 #include <numeric>
 #include <leatherman/util/scope_exit.hpp>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 
@@ -148,6 +149,10 @@ namespace hocon {
         return force_parsed_to_object(parse_value(config_parse_options()));
     }
 
+    shared_value parseable::parse_value() const {
+        return parse_value(options());
+    }
+
     shared_value parseable::parse_value(config_parse_options const& base_options) const {
         auto options = fixup_options(base_options);
 
@@ -161,7 +166,7 @@ namespace hocon {
     shared_value parseable::parse_value(shared_origin origin, config_parse_options const& final_options) const {
         try {
             return raw_parse_value(origin, final_options);
-        } catch (runtime_error& e) {
+        } catch (boost::filesystem::filesystem_error& e) {
             if (final_options.get_allow_missing()) {
                 return make_shared<simple_config_object>(
                         make_shared<simple_config_origin>(origin->description() + " (not found)"),
@@ -214,7 +219,7 @@ namespace hocon {
                                                                config_parse_options const& final_options) const {
         try {
             return raw_parse_document(origin, final_options);
-        } catch (runtime_error& e) {
+        } catch (boost::filesystem::filesystem_error& e) {
             if (final_options.get_allow_missing()) {
                 shared_node_list children;
                 children.push_back(make_shared<config_node_object>(shared_node_list { }));
