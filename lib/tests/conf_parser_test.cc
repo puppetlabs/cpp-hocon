@@ -4,6 +4,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <hocon/config.hpp>
+#include <hocon/config_list.hpp>
 #include <hocon/config_exception.hpp>
 #include <hocon/config_parse_options.hpp>
 #include <internal/values/simple_config_object.hpp>
@@ -48,26 +49,20 @@ TEST_CASE("valid conf works") {
         //auto rendered = our_ast->render();
         //CAPTURE(rendered);
         //auto reparsed = parse(rendered);
-        //REQUIRE(config_value_equal(our_ast, reparsed));
+        //REQUIRE(*our_ast == *reparsed);
     }
-}
-
-static size_t get_size(shared_object obj) {
-    auto simple_obj = dynamic_pointer_cast<const simple_config_object>(obj);
-    REQUIRE(simple_obj);
-    return simple_obj->size();
 }
 
 TEST_CASE("duplicate key last wins") {
     auto obj = parse_config(R"({ "a" : 10, "a" : 11 } )");
-    REQUIRE(1u == get_size(obj->root()));
+    REQUIRE(1u == obj->root()->size());
     REQUIRE(11 == obj->get_int("a"));
 }
 
 TEST_CASE("duplicate key objects merged") {
     auto obj = parse_config(R"({ "a" : { "x" : 1, "y" : 2 }, "a" : { "x" : 42, "z" : 100 } })");
-    REQUIRE(1u == get_size(obj->root()));
-    REQUIRE(3u == get_size(obj->get_object("a")));
+    REQUIRE(1u == obj->root()->size());
+    REQUIRE(3u == obj->get_object("a")->size());
     REQUIRE(42 == obj->get_int("a.x"));
     REQUIRE(2 == obj->get_int("a.y"));
     REQUIRE(100 == obj->get_int("a.z"));
@@ -75,9 +70,9 @@ TEST_CASE("duplicate key objects merged") {
 
 TEST_CASE("duplicate key objects merged recursively") {
     auto obj = parse_config(R"({ "a" : { "b" : { "x" : 1, "y" : 2 } }, "a" : { "b" : { "x" : 42, "z" : 100 } } })");
-    REQUIRE(1u == get_size(obj->root()));
-    REQUIRE(1u == get_size(obj->get_object("a")));
-    REQUIRE(3u == get_size(obj->get_object("a.b")));
+    REQUIRE(1u == obj->root()->size());
+    REQUIRE(1u == obj->get_object("a")->size());
+    REQUIRE(3u == obj->get_object("a.b")->size());
     REQUIRE(42 == obj->get_int("a.b.x"));
     REQUIRE(2 == obj->get_int("a.b.y"));
     REQUIRE(100 == obj->get_int("a.b.z"));
@@ -85,10 +80,10 @@ TEST_CASE("duplicate key objects merged recursively") {
 
 TEST_CASE("duplicate key objects merged recursively deeper") {
     auto obj = parse_config(R"({ "a" : { "b" : { "c" : { "x" : 1, "y" : 2 } } }, "a" : { "b" : { "c" : { "x" : 42, "z" : 100 } } } })");
-    REQUIRE(1u == get_size(obj->root()));
-    REQUIRE(1u == get_size(obj->get_object("a")));
-    REQUIRE(1u == get_size(obj->get_object("a.b")));
-    REQUIRE(3u == get_size(obj->get_object("a.b.c")));
+    REQUIRE(1u == obj->root()->size());
+    REQUIRE(1u == obj->get_object("a")->size());
+    REQUIRE(1u == obj->get_object("a.b")->size());
+    REQUIRE(3u == obj->get_object("a.b.c")->size());
     REQUIRE(42 == obj->get_int("a.b.c.x"));
     REQUIRE(2 == obj->get_int("a.b.c.y"));
     REQUIRE(100 == obj->get_int("a.b.c.z"));
@@ -96,15 +91,15 @@ TEST_CASE("duplicate key objects merged recursively deeper") {
 
 TEST_CASE("duplicate key object null object") {
     auto obj = parse_config(R"({ a : { b : 1 }, a : null, a : { c : 2 } })");
-    REQUIRE(1u == get_size(obj->root()));
-    REQUIRE(1u == get_size(obj->get_object(("a"))));
+    REQUIRE(1u == obj->root()->size());
+    REQUIRE(1u == obj->get_object("a")->size());
     REQUIRE(2 == obj->get_int("a.c"));
 }
 
 TEST_CASE("duplicate key object number object") {
     auto obj = parse_config(R"({ a : { b : 1 }, a : 42, a : { c : 2 } })");
-    REQUIRE(1u == get_size(obj->root()));
-    REQUIRE(1u == get_size(obj->get_object("a")));
+    REQUIRE(1u == obj->root()->size());
+    REQUIRE(1u == obj->get_object("a")->size());
     REQUIRE(2 == obj->get_int("a.c"));
 }
 
@@ -164,7 +159,7 @@ TEST_CASE("implied comma handling") {
             ++tested;
             auto obj = parse_config(change(v));
             CAPTURE(v);
-            REQUIRE(3u == get_size(obj->root()));
+            REQUIRE(3u == obj->root()->size());
             REQUIRE("y" == obj->get_string("a"));
             REQUIRE("z" == obj->get_string("b"));
         }

@@ -8,6 +8,7 @@
 #include <internal/container.hpp>
 
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
@@ -63,10 +64,6 @@ namespace hocon {
 
     shared_value simple_config_object::attempt_peek_with_partial_resolve(std::string const& key) const {
         return _value.at(key);
-    }
-
-    bool simple_config_object::is_empty() const {
-        return _value.empty();
     }
 
     unordered_map<string, shared_value> const& simple_config_object::entry_set() const {

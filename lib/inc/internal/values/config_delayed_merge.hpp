@@ -15,9 +15,10 @@ namespace hocon {
 
         resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
 
+        bool operator==(config_value const& other) const override;
+
     protected:
         shared_value new_copy(shared_origin) const override;
-        bool operator==(config_value const& other) const override;
 
         bool ignores_fallbacks() const override;
 

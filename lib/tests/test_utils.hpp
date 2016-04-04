@@ -20,8 +20,6 @@
 
 namespace hocon { namespace test_utils {
 
-    bool config_value_equal(shared_value a, shared_value b);
-
     shared_origin fake_origin(std::string description = "fake", int line_number = 0);
 
     /** Tokens */

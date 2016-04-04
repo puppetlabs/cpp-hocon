@@ -9,16 +9,6 @@ using namespace std;
 
 namespace hocon { namespace test_utils {
 
-    // Do ugly casting here to avoid making methods public just for testing.
-    struct config_value_public : config_value {
-        using config_value::operator==;
-    };
-
-    bool config_value_equal(shared_value a, shared_value b) {
-        return reinterpret_cast<config_value_public const&>(*a) ==
-               reinterpret_cast<config_value_public const&>(*b);
-    }
-
     shared_origin fake_origin(string description, int line_number) {
         return make_shared<simple_config_origin>(move(description), line_number, line_number, origin_type::GENERIC);
     }

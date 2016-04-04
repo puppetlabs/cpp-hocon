@@ -1,9 +1,8 @@
 #pragma once
 
-#include "config_value.hpp"
-#include "config_origin.hpp"
-#include <vector>
+#include "types.hpp"
 #include "export.h"
+#include <vector>
 
 namespace hocon {
 
@@ -38,5 +37,14 @@ namespace hocon {
     class LIBCPP_HOCON_EXPORT config_list : public config_value {
     public:
         config_list(shared_origin origin) : config_value(move(origin)) {}
+
+        // list interface
+        using iterator = std::vector<shared_value>::const_iterator;
+        virtual bool is_empty() const = 0;
+        virtual size_t size() const = 0;
+        virtual shared_value operator[](size_t index) const = 0;
+        virtual shared_value get(size_t index) const = 0;
+        virtual iterator begin() const = 0;
+        virtual iterator end() const = 0;
     };
 }  // namespace hocon

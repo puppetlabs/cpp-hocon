@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hocon/config_object.hpp>
+#include <hocon/config_exception.hpp>
 
 namespace hocon {
 
@@ -13,9 +14,18 @@ namespace hocon {
 
         resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
 
+        // map interface
+        bool is_empty() const override { throw not_resolved(); }
+        size_t size() const override { throw not_resolved(); }
+        shared_value operator[](std::string const& key) const override { throw not_resolved(); }
+        shared_value get(std::string const& key) const override { throw not_resolved(); }
+        iterator begin() const override { throw not_resolved(); }
+        iterator end() const override { throw not_resolved(); }
+
+        bool operator==(config_value const& other) const override;
+
     protected:
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;
-        bool is_empty() const override;
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
         shared_object without_path(path raw_path) const override;
         shared_object with_only_path(path raw_path) const override;
@@ -23,9 +33,9 @@ namespace hocon {
         shared_value new_copy(shared_origin origin) const override;
         bool ignores_fallbacks() const override;
 
-        bool operator==(config_value const& other) const override;
-
     private:
+        not_resolved_exception not_resolved() const;
+
         const std::vector<shared_value> _stack;
     };
 

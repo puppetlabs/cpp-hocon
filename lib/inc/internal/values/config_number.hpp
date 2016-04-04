@@ -21,6 +21,7 @@ namespace hocon {
 
         bool operator==(const config_number &other) const;
         bool operator!=(const config_number &other) const;
+        bool operator==(config_value const& other) const override;
 
         int int_value_range_checked(std::string const& path) const;
 
@@ -31,8 +32,6 @@ namespace hocon {
                 shared_origin origin, double value, std::string original_text);
 
     protected:
-        bool operator==(config_value const& other) const override;
-
         std::string _original_text;
     };
 

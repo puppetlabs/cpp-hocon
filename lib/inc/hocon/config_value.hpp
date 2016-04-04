@@ -182,6 +182,8 @@ namespace hocon {
 
         std::shared_ptr<const config_mergeable> with_fallback(std::shared_ptr<const config_mergeable> other) const override;
 
+        virtual bool operator==(config_value const& other) const = 0;
+
     protected:
         config_value(shared_origin origin);
 
@@ -195,7 +197,6 @@ namespace hocon {
         shared_config at_path(shared_origin origin, path raw_path) const;
 
         virtual shared_value new_copy(shared_origin origin) const = 0;
-        virtual bool operator==(config_value const& other) const = 0;
 
         virtual resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const;
