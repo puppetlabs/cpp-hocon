@@ -8,8 +8,11 @@
 #include <hocon/config_exception.hpp>
 #include <hocon/config_parse_options.hpp>
 #include <internal/values/simple_config_object.hpp>
+#include <internal/values/config_reference.hpp>
+#include <internal/substitution_expression.hpp>
 #include <internal/parseable.hpp>
 #include <internal/resolve_context.hpp>
+#include <internal/path_parser.hpp>
 
 using namespace std;
 using namespace hocon;
@@ -50,6 +53,71 @@ TEST_CASE("valid conf works") {
         //CAPTURE(rendered);
         //auto reparsed = parse(rendered);
         //REQUIRE(*our_ast == *reparsed);
+    }
+}
+
+static path parse_path(string s) {
+    // parse first by wrapping into a whole document and using the regular parser.
+    shared_value tree;
+    CAPTURE(s);
+    REQUIRE_NOTHROW(tree = parse_without_resolving("[${"+s+"}]"));
+    path result = [&]() {
+        if (auto list = dynamic_pointer_cast<const config_list>(tree)) {
+            if (auto ref = dynamic_pointer_cast<const config_reference>(list->get(0))) {
+                return ref->expression()->get_path();
+            }
+        }
+        return path();
+    }();
+
+    // also parse with the standalone path parser and be sure the
+    // outcome is the same
+    path should_be_same;
+    REQUIRE_NOTHROW(should_be_same = path_parser::parse_path(s));
+    REQUIRE(result == should_be_same);
+
+    return result;
+}
+
+TEST_CASE("path parsing") {
+    REQUIRE(path({"a"}) == parse_path("a"));
+    REQUIRE(path(vector<string>{"a", "b"}) == parse_path("a.b"));
+    REQUIRE(path({"a.b"}) == parse_path("\"a.b\""));
+    REQUIRE(path({"a."}) == parse_path("\"a.\""));
+    REQUIRE(path({".b"}) == parse_path("\".b\""));
+    REQUIRE(path({"true"}) == parse_path("true"));
+    REQUIRE(path({"a"}) == parse_path(" a "));
+    REQUIRE(path(vector<string>{"a ", "b"}) == parse_path(" a .b"));
+    REQUIRE(path(vector<string>{"a ", " b"}) == parse_path(" a . b"));
+    REQUIRE(path({"a  b"}) == parse_path(" a  b"));
+    REQUIRE(path(vector<string>{"a", "b.c", "d"}) == parse_path("a.\"b.c\".d"));
+    REQUIRE(path(vector<string>{"3", "14"}) == parse_path("3.14"));
+    REQUIRE(path(vector<string>{"3", "14", "159"}) == parse_path("3.14.159"));
+    REQUIRE(path(vector<string>{"a3", "14"}) == parse_path("a3.14"));
+    REQUIRE(path({""}) == parse_path("\"\""));
+    REQUIRE(path(vector<string>{"a", "", "b"}) == parse_path("a.\"\".b"));
+    REQUIRE(path(vector<string>{"a", ""}) == parse_path("a.\"\""));
+    REQUIRE(path(vector<string>{"", "b"}) == parse_path("\"\".b"));
+    REQUIRE(path(vector<string>{"", "", ""}) == parse_path(R"( "".""."" )"));
+    REQUIRE(path({"a-c"}) == parse_path("a-c"));
+    REQUIRE(path({"a_c"}) == parse_path("a_c"));
+    REQUIRE(path({"-"}) == parse_path("\"-\""));
+    REQUIRE(path({"-"}) == parse_path("-"));
+    REQUIRE(path({"-foo"}) == parse_path("-foo"));
+    REQUIRE(path({"-10"}) == parse_path("-10"));
+
+    // here 10.0 is part of an unquoted string;
+    REQUIRE(path(vector<string>{"foo10", "0"}) == parse_path("foo10.0"));
+    // here 10.0 is a number that gets value-concatenated;
+    REQUIRE(path(vector<string>{"10", "0foo"}) == parse_path("10.0foo"));
+    // just a number;
+    REQUIRE(path(vector<string>{"10", "0"}) == parse_path("10.0"));
+    // multiple-decimal number;
+    REQUIRE(path(vector<string>{"1", "2", "3", "4"}) == parse_path("1.2.3.4"));
+
+    for (string invalid : {"", " ", "  \n   \n  ", "a.", ".b", "a..b", "a${b}c", "\"\".", ".\"\""}) {
+        REQUIRE_THROWS_AS(parse_without_resolving("[${"+invalid+"}]"), bad_path_exception);
+        REQUIRE_THROWS_AS(path_parser::parse_path(invalid), bad_path_exception);
     }
 }
 
@@ -166,4 +234,7 @@ TEST_CASE("implied comma handling") {
     }
 
     REQUIRE((valids.size() * changes.size()) == tested);
+
+    // with no newline or comma, we do value concatenation
+    auto no_newline_in_array = parse_config(" { c : [ 1 2 3 ] } ");
 }

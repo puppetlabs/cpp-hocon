@@ -20,6 +20,8 @@ namespace hocon {
         std::vector<shared_value> unmerged_values() const override;
         resolve_status get_resolve_status() const override;
 
+        std::shared_ptr<substitution_expression> expression() const;
+
         bool operator==(config_value const& other) const override;
 
     protected:

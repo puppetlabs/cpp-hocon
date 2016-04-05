@@ -25,6 +25,10 @@ namespace hocon {
         return make_shared<config_reference>(origin, _expr, _prefix_length);
     }
 
+    shared_ptr<substitution_expression> config_reference::expression() const {
+        return _expr;
+    }
+
     bool config_reference::operator==(config_value const &other) const {
         return equals<config_reference>(other, [&](config_reference const& o) { return _expr == o._expr; });
     }
