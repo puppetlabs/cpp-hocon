@@ -318,7 +318,6 @@ TEST_CASE("Concatenation pending '+=' implementation", "[!shouldfail]") {
             auto conf = parse_config(R"(a = { x : y }, a += 2)")->resolve();
         } catch (const hocon::config_exception& e) {
             thrown = true;
-            printf(e.what());
             REQUIRE_STRING_CONTAINS(e.what(), "Cannot concatenate");
             REQUIRE_STRING_CONTAINS(e.what(), R"("x":"y")");
             REQUIRE_STRING_CONTAINS(e.what(), "[2]");

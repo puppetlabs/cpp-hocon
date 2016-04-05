@@ -140,6 +140,26 @@ namespace hocon { namespace test_utils {
         return make_shared<config_int>(fake_origin(), i, "");
     }
 
+    shared_ptr<config_boolean> bool_value(bool b) {
+        return make_shared<config_boolean>(fake_origin(), b);
+    }
+
+    shared_ptr<config_null> null_value() {
+        return make_shared<config_null>(fake_origin());
+    }
+
+    shared_ptr<config_string> string_value(string s) {
+        return make_shared<config_string>(fake_origin(), s, config_string_type::QUOTED);
+    }
+
+    shared_ptr<config_double> double_value(double d) {
+        return make_shared<config_double>(fake_origin(), d, "");
+    }
+
+    shared_ptr<config_reference> subst(string ref, bool optional) {
+        return make_shared<config_reference>(fake_origin(), make_shared<substitution_expression>(path::new_path(ref), optional));
+    }
+
     /** Paths */
     path test_path(initializer_list<string> path_strings) {
         return path(vector<string> { path_strings });

@@ -185,10 +185,16 @@ namespace hocon {
     }
 
     /** Characters JSON allows a number to start with */
-    static const string first_number_chars = "0123456789-";
+    static string first_number_chars() {
+        static const string first_number_chars_ = "0123456789-";
+        return first_number_chars_;
+    }
 
     /** Characters allowed in a JSON number */
-    static const string number_chars = "0123456789eE+-.";
+    static string number_chars() {
+        static const string number_chars_ = "0123456789eE+-.";
+        return number_chars_;
+    }
 
     /** Character that stop an unquoted string */
     static const string not_in_unquoted_text = "$\"{}[]:=,+#`^?!@*&\\";
@@ -239,7 +245,7 @@ namespace hocon {
         result += first_char;
         bool contained_decimal_or_E = false;
         char c = next_char_raw();
-        while (c != -1 && number_chars.find(c) != string::npos) {
+        while (c != -1 && number_chars().find(c) != string::npos) {
             if (c == '.' || c == 'e' || c == 'E') {
                 contained_decimal_or_E = true;
             }
@@ -502,7 +508,7 @@ namespace hocon {
                 }
 
                 if (t == nullptr) {
-                    if (first_number_chars.find(c) != string::npos) {
+                    if (first_number_chars().find(c) != string::npos) {
                         t = pull_number(c);
                     } else if (not_in_unquoted_text.find(c) != string::npos) {
                         throw config_exception("Reserved character '" + string(1, c) + "' is not allowed" +
