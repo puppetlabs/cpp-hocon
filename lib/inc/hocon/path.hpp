@@ -13,9 +13,9 @@ namespace hocon {
     class LIBCPP_HOCON_EXPORT path {
     public:
         path();
-        path(std::string first, path const& remainder);
-        path(std::vector<std::string> elements);
-        path(std::vector<path> paths_to_concat);
+        explicit path(std::string first, path const& remainder);
+        explicit path(std::vector<std::string> elements);
+        explicit path(std::vector<path> paths_to_concat);
 
         shared_string first() const;
 

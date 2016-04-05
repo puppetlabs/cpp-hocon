@@ -38,11 +38,12 @@ namespace hocon {
         static shared_value concatenate(std::vector<shared_value> pieces);
         shared_value relativized(std::string prefix) const override;
 
+        bool operator==(config_value const& other) const override;
+
     protected:
         shared_value new_copy(shared_origin origin) const override;
         bool ignores_fallbacks() const override;
         void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
-        bool operator==(config_value const& other) const override;
 
     private:
         std::vector<shared_value> _pieces;

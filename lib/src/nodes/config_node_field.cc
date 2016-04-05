@@ -21,10 +21,10 @@ namespace hocon {
         return tokens;
     }
 
-    shared_ptr<config_node_field> config_node_field::replace_value(shared_node_value new_value) {
+    shared_ptr<const config_node_field> config_node_field::replace_value(shared_node_value new_value) const {
         shared_node_list children_copy = _children;
         for (size_t i = 0; i < children_copy.size(); i++) {
-            if (dynamic_pointer_cast<abstract_config_node_value>(children_copy[i])) {
+            if (dynamic_pointer_cast<const abstract_config_node_value>(children_copy[i])) {
                 children_copy[i] = new_value;
                 return make_shared<config_node_field>(move(children_copy));
             }
@@ -34,16 +34,16 @@ namespace hocon {
 
     shared_node_value config_node_field::get_value() const {
         for (auto&& child : _children) {
-            if (auto value = dynamic_pointer_cast<abstract_config_node_value>(child)) {
+            if (auto value = dynamic_pointer_cast<const abstract_config_node_value>(child)) {
                 return value;
             }
         }
         throw config_exception("Field node doesn't have a value.");
     }
 
-    shared_ptr<config_node_path> config_node_field::path() const {
+    shared_ptr<const config_node_path> config_node_field::path() const {
         for (auto&& node : _children) {
-            if (auto path_node = dynamic_pointer_cast<config_node_path>(node)) {
+            if (auto path_node = dynamic_pointer_cast<const config_node_path>(node)) {
                 return path_node;
             }
         }
@@ -52,7 +52,7 @@ namespace hocon {
 
     shared_token config_node_field::separator() const {
         for (auto&& child : _children) {
-            if (auto single_token = dynamic_pointer_cast<config_node_single_token>(child)) {
+            if (auto single_token = dynamic_pointer_cast<const config_node_single_token>(child)) {
                 shared_token t = single_token->get_token();
                 if (t == tokens::plus_equals_token() || t == tokens::colon_token() || t == tokens::equals_token()) {
                     return t;
@@ -65,7 +65,7 @@ namespace hocon {
     vector<string> config_node_field::comments() const {
         vector<string> comments;
         for (auto&& child : _children) {
-            shared_ptr<config_node_comment> comment = dynamic_pointer_cast<config_node_comment>(child);
+            auto comment = dynamic_pointer_cast<const config_node_comment>(child);
             if (comment) {
                 comments.push_back(comment->comment_text());
             }

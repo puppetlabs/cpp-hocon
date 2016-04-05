@@ -21,9 +21,10 @@ namespace hocon {
         config_value::type value_type() const override;
         std::string transform_to_string() const override;
 
+        bool operator==(config_value const& other) const override;
+
     protected:
         shared_value new_copy(shared_origin) const override;
-        bool operator==(config_value const& other) const override;
     };
 
 }  // namespace hocon

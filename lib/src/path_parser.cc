@@ -60,8 +60,8 @@ namespace hocon {
         vector<element> elements = { element("", false) };
 
         if (!expression.has_next()) {
-            throw config_exception("Invalid path: " + original_text +
-                                           " -- Expecting a field name or path here, but got nothing");
+            throw bad_path_exception(*origin, original_text,
+                                     "Expecting a field name or path here, but got nothing");
         }
 
         while (expression.has_next()) {
@@ -113,10 +113,10 @@ namespace hocon {
                     }
                     text = t->token_text();
                 } else {
-                    throw config_exception("Invalid path: " + original_text +
-                                           " -- Token not allowed in path expression: " +
-                                           t->to_string() +
-                                           " (you can double-quote this token if you really want it here)");
+                    throw bad_path_exception(*origin, original_text,
+                                             "Token not allowed in path expression: " +
+                                             t->to_string() +
+                                             " (you can double-quote this token if you really want it here)");
                 }
 
                 add_path_text(elements, false, text);
@@ -126,9 +126,9 @@ namespace hocon {
         path_builder builder;
         for (element e : elements) {
             if (e._value.length() == 0 && !e._can_be_empty) {
-                throw config_exception("Invalid path: " + original_text +
-                                               " -- path has a leading, trailing, or two adjacent '.'" +
-                " (use quoted \"\" empty string if you want an empty element)");
+                throw bad_path_exception(*origin, original_text,
+                                         "path has a leading, trailing, or two adjacent '.'"
+                                         " (use quoted \"\" empty string if you want an empty element)");
             } else {
                 builder.append_key(e._value);
             }

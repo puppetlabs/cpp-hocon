@@ -20,9 +20,9 @@ namespace hocon {
         throw config_exception("simple_includer::include_file not implemented");
     }
 
-    config_parse_options simple_includer::clear_for_include(shared_parse_options options) {
+    config_parse_options simple_includer::clear_for_include(config_parse_options const& options) {
         // the class loader and includer are inherited, but not this other stuff
-        return options->set_syntax(config_syntax::UNSPECIFIED)
+        return options.set_syntax(config_syntax::UNSPECIFIED)
                 .set_origin_description(make_shared<string>("")).set_allow_missing(true);
     }
 
@@ -31,12 +31,12 @@ namespace hocon {
             _context(move(context)) {}
 
     shared_parseable relative_name_source::name_to_parseable(string name,
-                                                             shared_parse_options parse_options) const {
+                                                             config_parse_options parse_options) const {
         auto p = _context->relative_to(name);
         if (p == nullptr) {
             // avoid returning null
             return make_shared<parseable_not_found>(
-                parseable::new_not_found(name, "include was not found: '" + name + "'", parse_options));
+                parseable::new_not_found(name, "include was not found: '" + name + "'", move(parse_options)));
         } else {
             return p;
         }

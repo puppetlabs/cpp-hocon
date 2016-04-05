@@ -5,6 +5,7 @@
 
 using namespace hocon;
 using namespace std;
+using namespace hocon::test_utils;
 
 TEST_CASE("path equality", "[path]") {
     SECTION("new_key creates a path with one element") {

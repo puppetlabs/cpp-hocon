@@ -14,10 +14,10 @@ namespace hocon {
         std::string transform_to_string() const override;
 
         bool was_quoted() const;
+        bool operator==(config_value const& other) const override;
 
     protected:
         shared_value new_copy(shared_origin) const override;
-        bool operator==(config_value const& other) const override;
 
     private:
         std::string _text;

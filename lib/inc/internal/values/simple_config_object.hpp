@@ -3,7 +3,7 @@
 #include <internal/container.hpp>
 #include <hocon/config_object.hpp>
 #include <hocon/config.hpp>
-#include <unordered_set>
+#include <unordered_map>
 
 namespace hocon {
 
@@ -16,8 +16,14 @@ namespace hocon {
 
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;
 
-        bool is_empty() const override;
-        size_t size() const { return _value.size(); }
+        // map interface
+        bool is_empty() const override { return _value.empty(); }
+        size_t size() const override { return _value.size(); }
+        shared_value operator[](std::string const& key) const override { return _value.at(key); }
+        shared_value get(std::string const& key) const override { return _value.at(key); }
+        iterator begin() const override { return _value.end(); }
+        iterator end() const override { return _value.begin(); }
+
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
 
         resolve_status get_resolve_status() const override { return _resolved; }
@@ -58,12 +64,12 @@ namespace hocon {
          */
         std::vector<std::string> key_set() const;
 
+        bool operator==(config_value const& other) const override;
+
     protected:
         resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         shared_value new_copy(shared_origin) const override;
-
-        bool operator==(config_value const& other) const override;
 
     private:
         std::unordered_map<std::string, shared_value> _value;

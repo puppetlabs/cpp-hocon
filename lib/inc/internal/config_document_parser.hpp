@@ -11,16 +11,13 @@
 
 namespace hocon { namespace config_document_parser {
 
-    class parse_exception : public std::runtime_error {
-    public:
-        parse_exception(std::string const& message) : runtime_error(message) { }
-    };
-
     std::shared_ptr<config_node_root> parse(token_iterator tokens,
-                                                   shared_origin origin, config_parse_options options);
+                                            shared_origin origin,
+                                            config_parse_options options);
 
     shared_node_value parse_value(token_iterator tokens,
-                                         shared_origin origin, config_parse_options options);
+                                  shared_origin origin,
+                                  config_parse_options options);
 
     class parse_context {
     public:
@@ -34,6 +31,8 @@ namespace hocon { namespace config_document_parser {
         shared_node_value parse_single_value();
 
     private:
+        parse_exception parse_error(std::string message);
+
         shared_token pop_token();
         shared_token next_token();
         shared_token next_token_collecting_whitespace(shared_node_list& nodes);

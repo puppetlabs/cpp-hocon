@@ -23,13 +23,12 @@ namespace hocon {
     using shared_container = std::shared_ptr<const container>;
 
     class abstract_config_node;
-    using shared_node = std::shared_ptr<abstract_config_node>;
+    using shared_node = std::shared_ptr<const abstract_config_node>;
     using shared_node_list = std::vector<shared_node>;
 
     using shared_string = std::shared_ptr<const std::string>;
 
     class config_parse_options;
-    using shared_parse_options = std::shared_ptr<const config_parse_options>;
 
     class config_includer;
     using shared_includer = std::shared_ptr<const config_includer>;

@@ -178,7 +178,7 @@ namespace hocon {
          * @param options parse options
          * @return the parsed configuration
          */
-        static shared_config parse_string(std::string s, shared_parse_options options);
+        static shared_config parse_string(std::string s, config_parse_options options);
 
         /**
          * Parses a string (which should be valid HOCON or JSON).
@@ -601,11 +601,11 @@ namespace hocon {
          */
         virtual shared_config with_value(std::string const& path, std::shared_ptr<const config_value> value) const;
 
+        bool operator==(config const& other) const;
+
         config(shared_object object);
 
     protected:
-        bool operator==(config const& other) const;
-
         shared_value find(std::string const& path_expression, config_value::type expected) const;
         shared_value find(path path_expression, config_value::type expected, path original_path) const;
         shared_value find(path path_expression, config_value::type expected) const;

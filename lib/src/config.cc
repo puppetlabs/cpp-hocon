@@ -14,14 +14,14 @@ using namespace std;
 
 namespace hocon {
 
-    shared_config config::parse_string(string s, shared_parse_options options)
+    shared_config config::parse_string(string s, config_parse_options options)
     {
-        return parseable::new_string(move(s), options).parse()->to_config();
+        return parseable::new_string(move(s), move(options)).parse()->to_config();
     }
 
     shared_config config::parse_string(string s)
     {
-        return parse_string(move(s), make_shared<config_parse_options>());
+        return parse_string(move(s), config_parse_options());
     }
 
     config::config(shared_object object) : _object(move(object)) { }

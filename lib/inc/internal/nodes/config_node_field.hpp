@@ -16,11 +16,11 @@ namespace hocon {
 
         token_list get_tokens() const override;
 
-        std::shared_ptr<config_node_field> replace_value(shared_node_value new_value);
+        std::shared_ptr<const config_node_field> replace_value(shared_node_value new_value) const;
         shared_node_value get_value() const;
         shared_token separator() const;
         std::vector<std::string> comments() const;
-        std::shared_ptr<config_node_path> path() const;
+        std::shared_ptr<const config_node_path> path() const;
 
     private:
         shared_node_list _children;

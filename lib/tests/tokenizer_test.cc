@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace hocon;
+using namespace hocon::test_utils;
 
 token_list tokenize_as_list(string const& source) {
     token_iterator iter(fake_origin(), unique_ptr<istringstream>(new istringstream(source)), true);

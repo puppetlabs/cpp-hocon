@@ -9,9 +9,7 @@ using namespace std;
 void replace_test(string original_text, string final_text, string new_value,
                   string replace_path, config_syntax syntax) {
     auto config_doc = config_document_factory::parse_string(original_text,
-                                                            make_shared<config_parse_options>(
-                                                                    config_parse_options().set_syntax(
-                                                                            syntax)));
+                                                            config_parse_options().set_syntax(syntax));
     REQUIRE(original_text == config_doc->render());
     auto new_doc = config_doc->with_value_text(replace_path, new_value);
     REQUIRE(final_text == new_doc->render());

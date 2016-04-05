@@ -30,13 +30,21 @@ namespace hocon {
         virtual shared_object with_value(path raw_path, shared_value value) const = 0;
         virtual shared_object with_value(std::string key, shared_value value) const = 0;
 
+        // map interface
+        using iterator = std::unordered_map<std::string, shared_value>::const_iterator;
+        virtual bool is_empty() const = 0;
+        virtual size_t size() const = 0;
+        virtual shared_value operator[](std::string const& key) const = 0;
+        virtual shared_value get(std::string const& key) const = 0;
+        virtual iterator begin() const = 0;
+        virtual iterator end() const = 0;
+
     protected:
         virtual shared_value attempt_peek_with_partial_resolve(std::string const& key) const = 0;
         shared_value peek_path(path desired_path) const;
         shared_value peek_assuming_resolved(std::string const& key, path original_path) const;
         shared_value construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const override;
 
-        virtual bool is_empty() const = 0;
         virtual std::unordered_map<std::string, shared_value> const& entry_set() const = 0;
         virtual shared_object without_path(path raw_path) const = 0;
         virtual shared_object with_only_path(path raw_path) const = 0;

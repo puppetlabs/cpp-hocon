@@ -24,13 +24,11 @@ namespace hocon {
     }
 
     shared_object config_delayed_merge_object::with_value(path raw_path, shared_value value) const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::with_value not implemented");
+        throw not_resolved();
     }
 
     shared_object config_delayed_merge_object::with_value(string key, shared_value value) const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::with_value not implemented");
+        throw not_resolved();
     }
 
     shared_value config_delayed_merge_object::new_copy(shared_origin origin) const {
@@ -43,29 +41,20 @@ namespace hocon {
         throw config_exception("config_delayed_merge_object::attempt_peek_with_partial_resolve not implemented");
     }
 
-    bool config_delayed_merge_object::is_empty() const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::is_empty not implemented");
-    }
-
     unordered_map<string, shared_value> const& config_delayed_merge_object::entry_set() const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::entry_set not implemented");
+        throw not_resolved();
     }
 
     shared_object config_delayed_merge_object::without_path(path raw_path) const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::without_path not implemented");
+        throw not_resolved();
     }
 
     shared_object config_delayed_merge_object::with_only_path(path raw_path) const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::with_only_path not implemented");
+        throw not_resolved();
     }
 
     shared_object config_delayed_merge_object::with_only_path_or_null(path raw_path) const {
-        // TODO
-        throw config_exception("config_delayed_merge_object::with_only_path_or_null not implemented");
+        throw not_resolved();
     }
 
     bool config_delayed_merge_object::operator==(config_value const& other) const {
@@ -74,6 +63,10 @@ namespace hocon {
 
     bool config_delayed_merge_object::ignores_fallbacks() const {
         return _stack.back()->ignores_fallbacks();
+    }
+
+    not_resolved_exception config_delayed_merge_object::not_resolved() const {
+        return not_resolved_exception("need to config::resolve() before using this object, see the API docs for config::resolve()");
     }
 
 }  // namespace hocon

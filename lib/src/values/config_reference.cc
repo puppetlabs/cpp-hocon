@@ -25,6 +25,10 @@ namespace hocon {
         return make_shared<config_reference>(origin, _expr, _prefix_length);
     }
 
+    shared_ptr<substitution_expression> config_reference::expression() const {
+        return _expr;
+    }
+
     bool config_reference::operator==(config_value const &other) const {
         return equals<config_reference>(other, [&](config_reference const& o) { return _expr == o._expr; });
     }
@@ -42,7 +46,7 @@ namespace hocon {
 
         // TODO: this needs to be wrapped in a try when we have cycle detection
         {
-            auto result_with_path = source.lookup_subst(new_context, _expr, _prefix_length);
+            auto result_with_path = source.lookup_subst(move(new_context), _expr, _prefix_length);
             new_context = result_with_path.result.context;
 
             if (result_with_path.result.value) {
