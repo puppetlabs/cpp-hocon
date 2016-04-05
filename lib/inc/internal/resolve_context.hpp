@@ -4,6 +4,8 @@
 #include <hocon/config_resolve_options.hpp>
 #include <hocon/path.hpp>
 
+#include <unordered_map>
+
 namespace hocon {
 
     class resolve_source;
@@ -27,7 +29,22 @@ namespace hocon {
         static shared_value resolve(shared_value value, shared_object root, config_resolve_options options);
 
     private:
+        struct memo_key {
+            shared_value value;
+            path restrict_to_child;
+            bool operator==(const memo_key& other) const {
+                return value == other.value && restrict_to_child == other.restrict_to_child;
+            }
+        };
+
+        struct memo_key_hash {
+            std::size_t operator()(const memo_key&) const;
+        };
+        using resolve_memos = std::unordered_map<memo_key, shared_value, memo_key_hash>;
         config_resolve_options _options;
         path _restrict_to_child;
+        resolve_memos _memos;
+
+        resolve_context memoize(const memo_key& key, const shared_value& value) const;
     };
 }  // namespace hocon

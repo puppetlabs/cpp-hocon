@@ -23,16 +23,49 @@ namespace hocon {
 
     resolve_result<shared_value> resolve_context::resolve(shared_value original, resolve_source const& source) const
     {
-        auto result = original->resolve_substitutions(*this, source);
-        auto resolved = result.value;
+        memo_key full_key {original, {}};
+        memo_key restricted_key = {nullptr, {}};
 
-        if (!resolved || resolved->get_resolve_status() == resolve_status::RESOLVED) {
-            return result;
-        }  else {
-            throw config_exception("Partial resolves and incomplete resolutions are not yet implemented");
+        shared_value cached;
+        auto cached_iter = _memos.find(full_key);
+        if (cached_iter != _memos.end()) {
+            cached = cached_iter->second;
         }
 
-        return result;
+        if (!cached && is_restricted_to_child()) {
+            restricted_key = {original, restrict_to_child()};
+            auto cached_iter = _memos.find(full_key);
+            if (cached_iter != _memos.end()) {
+                cached = cached_iter->second;
+            }
+        }
+
+        if (cached) {
+            return make_resolve_result(*this, cached);
+        } else {
+            // TODO: cycle detection needs to happen here
+
+            auto result = original->resolve_substitutions(*this, source);
+            auto& resolved = result.value;
+            auto& with_memo = result.context;
+
+            if (!resolved || resolved->get_resolve_status() == resolve_status::RESOLVED) {
+                with_memo = with_memo.memoize(full_key, resolved);
+            }  else {
+                if (is_restricted_to_child()) {
+                    if (restricted_key.value == nullptr && restricted_key.restrict_to_child.empty()) {
+                        throw bug_or_broken_exception("restricted_key should not be empty here");
+                    }
+                    with_memo = with_memo.memoize(restricted_key, resolved);
+                } else if (options().get_allow_unresolved()) {
+                    with_memo = with_memo.memoize(full_key, resolved);
+                } else {
+                    throw bug_or_broken_exception("resolve_substitutions() did not give us a resolved object");
+                }
+            }
+
+            return make_resolve_result(with_memo, resolved);
+        }
     }
 
     path resolve_context::restrict_to_child() const {
@@ -58,4 +91,21 @@ namespace hocon {
         return context.resolve(value, source).value;
     }
 
+    resolve_context resolve_context::memoize(const resolve_context::memo_key& key, const shared_value& value) const {
+        resolve_context result {_options, _restrict_to_child};
+        result._memos = _memos;
+        result._memos.emplace(key, value);
+        return result;
+    }
+
+    std::size_t resolve_context::memo_key_hash::operator()(const hocon::resolve_context::memo_key& k) const {
+        // Treat pointer as our hash value
+        size_t h = reinterpret_cast<size_t>(k.value.get());
+        auto p = k.restrict_to_child;
+        while (!p.empty()) {
+            h += 41 * (41 + hash<string>()(*p.first()));
+            p = p.remainder();
+        }
+        return h;
+    }
 }  // namespace hocon
