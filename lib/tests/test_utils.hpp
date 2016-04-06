@@ -1,6 +1,7 @@
 #pragma once
 
 #include <internal/simple_config_origin.hpp>
+#include <internal/substitution_expression.hpp>
 #include <internal/tokens.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/values/config_boolean.hpp>
@@ -8,6 +9,7 @@
 #include <internal/values/config_long.hpp>
 #include <internal/values/config_int.hpp>
 #include <internal/values/config_null.hpp>
+#include <internal/values/config_reference.hpp>
 #include <internal/nodes/config_node_simple_value.hpp>
 
 #include <string>
@@ -93,6 +95,16 @@ namespace hocon { namespace test_utils {
     // make the test compare public API to itself.
     std::shared_ptr<config_int> int_value(int i);
     // TODO: remaining value helpers
+
+    std::shared_ptr<config_boolean> bool_value(bool b);
+
+    std::shared_ptr<config_null> null_value();
+
+    std::shared_ptr<config_string> string_value(std::string s);
+
+    std::shared_ptr<config_double> double_value(double d);
+
+    std::shared_ptr<config_reference> subst(std::string ref, bool optional = false);
 
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
