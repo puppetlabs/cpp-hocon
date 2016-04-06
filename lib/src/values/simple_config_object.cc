@@ -63,7 +63,12 @@ namespace hocon {
     }
 
     shared_value simple_config_object::attempt_peek_with_partial_resolve(std::string const& key) const {
-        return _value.at(key);
+        auto iter = _value.find(key);
+        if (iter != _value.end()) {
+            return iter->second;
+        } else {
+            return nullptr;
+        }
     }
 
     unordered_map<string, shared_value> const& simple_config_object::entry_set() const {
