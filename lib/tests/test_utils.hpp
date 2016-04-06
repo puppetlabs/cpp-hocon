@@ -18,6 +18,8 @@
 #include <internal/nodes/config_node_single_token.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 
+#define REQUIRE_STRING_CONTAINS(str, match) REQUIRE(std::string(str).find(match) != std::string::npos)
+
 namespace hocon { namespace test_utils {
 
     shared_origin fake_origin(std::string description = "fake", int line_number = 0);
