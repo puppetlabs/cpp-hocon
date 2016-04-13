@@ -178,7 +178,7 @@ TEST_CASE("implied comma handling") {
 {
   a : y, b : z, c : [ 1, 2, 3 ]
 }
-)",     R"(
+)", R"(
 // multiline but with all commas
 {
   a : y,
@@ -189,7 +189,7 @@ TEST_CASE("implied comma handling") {
     3,
   ],
 }
-)",     R"(
+)", R"(
 // multiline with no commas
 {
   a : y
@@ -203,22 +203,22 @@ TEST_CASE("implied comma handling") {
 )"
     };
 
-    auto drop_curlies = [](string const&s) {
+    auto drop_curlies = [](string const &s) {
         // drop the outside curly braces
         auto first = s.find('{');
         auto last = s.rfind('}');
-        return s.substr(0, first) + s.substr(first+1, last-(first+1)) + s.substr(last+1);
+        return s.substr(0, first) + s.substr(first + 1, last - (first + 1)) + s.substr(last + 1);
     };
 
-    auto changes = vector<function<string(string const&)>>{
-        [](string const& s) { return s; },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n"); },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n\n"); },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n,\n"); },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n\n,\n\n"); },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, "\n", "\n "); },
-        [](string const& s) { return boost::algorithm::replace_all_copy(s, ",\n", "  \n  \n  ,  \n  \n  "); },
-        [&](string const& s) { return drop_curlies(s); }
+    auto changes = vector<function<string(string const &)>>{
+        [](string const &s) { return s; },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n"); },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, "\n", "\n\n\n"); },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n,\n"); },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, ",\n", "\n\n,\n\n"); },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, "\n", "\n "); },
+        [](string const &s) { return boost::algorithm::replace_all_copy(s, ",\n", "  \n  \n  ,  \n  \n  "); },
+        [&](string const &s) { return drop_curlies(s); }
     };
 
     auto tested = 0;
@@ -235,6 +235,422 @@ TEST_CASE("implied comma handling") {
 
     REQUIRE((valids.size() * changes.size()) == tested);
 
+    // TODO: move implied comma handling (pending) tests here once they pass
+
+    auto no_newline_in_object = parse_config(" { a : b c } ");
+    REQUIRE("b c" == no_newline_in_object->get_string("a"));
+
+    auto no_newline_at_end = parse_config("a : b");
+    REQUIRE("b" == no_newline_at_end->get_string("a"));
+
+    REQUIRE_THROWS_AS(parse_config("{ a : y b : z }"), config_exception);
+
+    REQUIRE_THROWS_AS(parse_config(R"({ "a" : "y" "b" : "z" })"), config_exception);
+}
+
+TEST_CASE("implied comma handling (pending)", "[!shouldfail]") {
+    // TODO: remaining tests require list accessors
+
     // with no newline or comma, we do value concatenation
     auto no_newline_in_array = parse_config(" { c : [ 1 2 3 ] } ");
+    REQUIRE(vector<string>{"1 2 3"} == no_newline_in_array->get_string_list("c"));
+
+    auto no_newline_in_array_with_quoted = parse_config(R"( { c : [ "4" "5" "6" ] } )");
+    REQUIRE(vector<string>{"4 5 6"} == no_newline_in_array_with_quoted->get_string_list("c"));
+}
+
+TEST_CASE("keys with slash") {
+    auto obj = parse_config(R"(/a/b/c=42, x/y/z : 32)");
+    REQUIRE(42 == obj->get_int("/a/b/c"));
+    REQUIRE(32 == obj->get_int("x/y/z"));
+}
+
+static void line_number_test(int num, string text) {
+    try {
+        parse_config(text);
+    } catch(config_exception &e) {
+        cout << e.what() << endl;
+        REQUIRE_STRING_CONTAINS(e.what(), to_string(num)+":");
+    }
+}
+
+TEST_CASE("line numbers in errors", "[!shouldfail]") {
+    // error is at the last char
+    line_number_test(1, "}");
+    line_number_test(2, "\n}");
+    line_number_test(3, "\n\n}");
+
+    // error is before a final newline
+    line_number_test(1, "}\n");
+    line_number_test(2, "\n}\n");
+    line_number_test(3, "\n\n}\n");
+
+    // with unquoted string
+    line_number_test(1, "foo");
+    line_number_test(2, "\nfoo");
+    line_number_test(3, "\n\nfoo");
+
+    // with quoted string
+    line_number_test(1, "\"foo\"");
+    line_number_test(2, "\n\"foo\"");
+    line_number_test(3, "\n\n\"foo\"");
+
+    // newlines in triple-quoted string should not hose up the numbering
+    line_number_test(1, "a : \"\"\"foo\"\"\"}");
+    line_number_test(2, "a : \"\"\"foo\n\"\"\"}");
+    line_number_test(3, "a : \"\"\"foo\nbar\nbaz\"\"\"}");
+    //   newlines after the triple quoted string
+    line_number_test(5, "a : \"\"\"foo\nbar\nbaz\"\"\"\n\n}");
+    //   triple quoted string ends in a newline
+    line_number_test(6, "a : \"\"\"foo\nbar\nbaz\n\"\"\"\n\n}");
+    //   end in the middle of triple-quoted string
+    line_number_test(5, "a : \"\"\"foo\n\n\nbar\n");
+}
+
+TEST_CASE("to string for parseables") {
+    // just be sure the to_string don't throw, to get test coverage
+    auto options = config_parse_options();
+    parseable::new_file("foo", options).to_string();
+    // TODO: are other APIs needed?
+}
+
+static void assert_comments(vector<string> comments, shared_config conf) {
+    REQUIRE(comments == conf->root()->origin()->comments());
+}
+
+static void assert_comments(vector<string> comments, shared_config conf, string path) {
+    REQUIRE(comments == conf->get_value(path)->origin()->comments());
+}
+
+static void assert_comments(vector<string> comments, shared_config conf, string path, int index) {
+    // TODO:
+    // auto v = conf->get_list(path)->get(index);
+    // REQUIRE(comments == v->origin()->comments());
+}
+
+TEST_CASE("track comments for single field") {
+    // no comments
+    auto conf0 = parse_config(R"(
+            {
+            foo=10 }
+            )");
+    assert_comments({}, conf0, "foo");
+
+    // comment in front of a field is used
+    auto conf1 = parse_config(R"(
+            { # Before
+            foo=10 }
+            )");
+    assert_comments({" Before"}, conf1, "foo");
+
+    // comment with a blank line after is dropped
+    auto conf2 = parse_config(R"(
+            { # BlankAfter
+
+            foo=10 }
+            )");
+    assert_comments({}, conf2, "foo");
+
+    // comment in front of a field is used with no root {}
+    auto conf3 = parse_config(R"(
+            # BeforeNoBraces
+            foo=10
+            )");
+    assert_comments({" BeforeNoBraces"}, conf3, "foo");
+
+    // comment with a blank line after is dropped with no root {}
+    auto conf4 = parse_config(R"(
+            # BlankAfterNoBraces
+
+            foo=10
+            )");
+    assert_comments({}, conf4, "foo");
+
+    // comment same line after field is used
+    auto conf5 = parse_config(R"(
+            {
+            foo=10 # SameLine
+            }
+            )");
+    assert_comments({" SameLine"}, conf5, "foo");
+
+    // comment before field separator is used
+    auto conf6 = parse_config(R"(
+            {
+            foo # BeforeSep
+            =10
+            }
+            )");
+    assert_comments({" BeforeSep"}, conf6, "foo");
+
+    // comment after field separator is used
+    auto conf7 = parse_config(R"(
+            {
+            foo= # AfterSep
+            10
+            }
+            )");
+    assert_comments({" AfterSep"}, conf7, "foo");
+
+    // comment on next line is NOT used
+    auto conf8 = parse_config(R"(
+            {
+            foo=10
+            # NextLine
+            }
+            )");
+    assert_comments({}, conf8, "foo");
+
+    // comment before field separator on new line
+    auto conf9 = parse_config(R"(
+            {
+            foo
+            # BeforeSepOwnLine
+            =10
+            }
+            )");
+    assert_comments({" BeforeSepOwnLine"}, conf9, "foo");
+
+    // comment after field separator on its own line
+    auto conf10 = parse_config(R"(
+            {
+            foo=
+            # AfterSepOwnLine
+            10
+            }
+            )");
+    assert_comments({" AfterSepOwnLine"}, conf10, "foo");
+
+    // comments comments everywhere
+    auto conf11 = parse_config(R"(
+            {# Before
+            foo
+            # BeforeSep
+            = # AfterSepSameLine
+            # AfterSepNextLine
+            10 # AfterValue
+            # AfterValueNewLine (should NOT be used)
+            }
+            )");
+    assert_comments({" Before", " BeforeSep", " AfterSepSameLine", " AfterSepNextLine", " AfterValue"}, conf11, "foo");
+
+    // empty object
+    auto conf12 = parse_config(R"(# BeforeEmpty
+            {} #AfterEmpty
+            # NewLine
+            )");
+    assert_comments({" BeforeEmpty", "AfterEmpty"}, conf12);
+
+    // empty array
+    auto conf13 = parse_config(R"(
+            foo=
+            # BeforeEmptyArray
+            [] #AfterEmptyArray
+            # NewLine
+            )");
+    assert_comments({" BeforeEmptyArray", "AfterEmptyArray"}, conf13, "foo");
+
+    // array element
+    auto conf14 = parse_config(R"(
+            foo=[
+            # BeforeElement
+            10 # AfterElement
+            ]
+            )");
+    assert_comments({" BeforeElement", " AfterElement"}, conf14, "foo", 0);
+
+    // field with comma after it
+    auto conf15 = parse_config(R"(
+            foo=10, # AfterCommaField
+            )");
+    assert_comments({" AfterCommaField"}, conf15, "foo");
+
+    // element with comma after it
+    auto conf16 = parse_config(R"(
+            foo=[10, # AfterCommaElement
+            ]
+            )");
+    assert_comments({" AfterCommaElement"}, conf16, "foo", 0);
+
+    // field with comma after it but comment isn't on the field's line, so not used
+    auto conf17 = parse_config(R"(
+            foo=10
+            , # AfterCommaFieldNotUsed
+            )");
+    assert_comments({}, conf17, "foo");
+
+    // element with comma after it but comment isn't on the field's line, so not used
+    auto conf18 = parse_config(R"(
+            foo=[10
+            , # AfterCommaElementNotUsed
+            ]
+            )");
+    assert_comments({}, conf18, "foo", 0);
+
+    // comment on new line, before comma, should not be used
+    auto conf19 = parse_config(R"(
+            foo=10
+            # BeforeCommaFieldNotUsed
+            ,
+            )");
+    assert_comments({}, conf19, "foo");
+
+    // comment on new line, before comma, should not be used
+    auto conf20 = parse_config(R"(
+            foo=[10
+            # BeforeCommaElementNotUsed
+            ,
+            ]
+            )");
+    assert_comments({}, conf20, "foo", 0);
+
+    // comment on same line before comma
+    auto conf21 = parse_config(R"(
+            foo=10 # BeforeCommaFieldSameLine
+            ,
+            )");
+    assert_comments({" BeforeCommaFieldSameLine"}, conf21, "foo");
+
+    // comment on same line before comma
+    auto conf22 = parse_config(R"(
+            foo=[10 # BeforeCommaElementSameLine
+            ,
+            ]
+            )");
+    assert_comments({" BeforeCommaElementSameLine"}, conf22, "foo", 0);
+
+    // comment with a line containing only whitespace after is dropped
+    auto conf23 = parse_config(R"(
+            { # BlankAfter
+
+            foo=10 }
+            )");
+    assert_comments({}, conf23, "foo");
+}
+
+TEST_CASE("track comments for multiple fields") {
+    // nested objects
+    auto conf5 = parse_config(R"(
+            # Outside
+            bar {
+                # Ignore me
+
+                # Middle
+                # two lines
+                baz {
+                    # Inner
+                    foo=10 # AfterInner
+                    # This should be ignored
+                } # AfterMiddle
+                # ignored
+            } # AfterOutside
+            # ignored!
+            )");
+    assert_comments({" Inner", " AfterInner"}, conf5, "bar.baz.foo");
+    assert_comments({" Middle", " two lines", " AfterMiddle"}, conf5, "bar.baz");
+    assert_comments({" Outside", " AfterOutside"}, conf5, "bar");
+
+    // multiple fields
+    auto conf6 = parse_config(R"({
+            # this is not with a field
+
+            # this is field A
+            a : 10,
+            # this is field B
+            b : 12 # goes with field B which has no comma
+            # this is field C
+            c : 14, # goes with field C after comma
+            # not used
+            # this is not used
+            # nor is this
+            # multi-line block
+
+            # this is with field D
+            # this is with field D also
+            d : 16
+
+            # this is after the fields
+            })");
+    assert_comments({" this is field A"}, conf6, "a");
+    assert_comments({" this is field B", " goes with field B which has no comma"}, conf6, "b");
+    assert_comments({" this is field C", " goes with field C after comma"}, conf6, "c");
+    assert_comments({" this is with field D", " this is with field D also"}, conf6, "d");
+
+    // array
+    auto conf7 = parse_config(R"(
+            # before entire array
+            array = [
+            # goes with 0
+            0,
+            # goes with 1
+            1, # with 1 after comma
+            # goes with 2
+            2 # no comma after 2
+            # not with anything
+            ] # after entire array
+            )");
+    assert_comments({" goes with 0"}, conf7, "array", 0);
+    assert_comments({" goes with 1", " with 1 after comma"}, conf7, "array", 1);
+    assert_comments({" goes with 2", " no comma after 2"}, conf7, "array", 2);
+    assert_comments({" before entire array", " after entire array"}, conf7, "array");
+}
+
+TEST_CASE("track comments for multiple fields (pending)", "[!shouldfail]") {
+    // TODO: implement createValueUnderPath
+    // properties-like syntax
+    auto conf8 = parse_config(R"(
+            # ignored comment
+
+            # x.y comment
+            x.y = 10
+            # x.z comment
+            x.z = 11
+            # x.a comment
+            x.a = 12
+            # a.b comment
+            a.b = 14
+            a.c = 15
+            a.d = 16 # a.d comment
+            # ignored comment
+            )");
+
+    assert_comments({" x.y comment"}, conf8, "x.y");
+    assert_comments({" x.z comment"}, conf8, "x.z");
+    assert_comments({" x.a comment"}, conf8, "x.a");
+    assert_comments({" a.b comment"}, conf8, "a.b");
+    assert_comments({}, conf8, "a.c");
+    assert_comments({" a.d comment"}, conf8, "a.d");
+    // here we're concerned that comments apply only to leaf
+    // nodes, not to parent objects.
+    assert_comments({}, conf8, "x");
+    assert_comments({}, conf8, "a");
+}
+
+// TODO: require includer
+// include file
+// include file with extension
+// include file whitespace inside parens
+// include file no whitespace outside parens
+// include file not quoted
+// include file not quoted and special char
+// include file unclosed parens
+// include url basename
+// include url with extension
+// include url invalid
+// include resources?
+// include url heuristically
+// include url basename heuristically
+// TODO: unicode support
+// accept bom starting file
+// accept bom start of string config
+// accept bom in string value
+// accept bom whitespace
+
+TEST_CASE("accept multi period numeric path", "[!shouldfail]") {
+    auto conf1 = config::parse_string("0.1.2.3=foobar1");
+    REQUIRE("foobar1" == conf1->get_string("0.1.2.3"));
+    auto conf2 = config::parse_string("0.1.2.3.ABC=foobar2");
+    REQUIRE("foobar2" == conf2->get_string("0.1.2.3.ABC"));
+    auto conf3 = config::parse_string("ABC.0.1.2.3=foobar3");
+    REQUIRE("foobar3" == conf3->get_string("ABC.0.1.2.3"));
 }
