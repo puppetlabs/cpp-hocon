@@ -66,6 +66,10 @@ namespace hocon {
 
         bool operator==(config_value const& other) const override;
 
+        static std::shared_ptr<simple_config_object> empty();
+        static std::shared_ptr<simple_config_object> empty(shared_origin origin);
+        static std::shared_ptr<simple_config_object> empty_instance();
+
     protected:
         resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
