@@ -12,6 +12,10 @@ namespace hocon {
 
     config_parse_options::config_parse_options(): config_parse_options(nullptr, true, nullptr, config_syntax::CONF) {}
 
+    config_parse_options config_parse_options::defaults() {
+        return config_parse_options{nullptr, true, nullptr, config_syntax::UNSPECIFIED };
+    }
+
     config_parse_options config_parse_options::set_syntax(config_syntax syntax) const
     {
         return config_parse_options{_origin_description, _allow_missing, _includer, syntax};

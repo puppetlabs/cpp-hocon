@@ -33,6 +33,14 @@ namespace hocon {
         config_parse_options();
 
         /**
+         * Gets an instance of <code>ConfigParseOptions</code> with all fields
+         * set to the default values. Start with this instance and make any
+         * changes you need.
+         * @return the default parse options
+         */
+        static config_parse_options defaults();
+
+        /**
          * Set the file format. If set to null, try to guess from any available
          * filename extension; if guessing fails, assume {@link config_syntax#CONF}.
          *
