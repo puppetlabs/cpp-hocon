@@ -131,4 +131,5 @@ namespace hocon { namespace test_utils {
 
     std::vector<parse_test> whitespace_variations(std::vector<parse_test> const& tests, bool valid_in_lift);
 
+    std::string fixture_path(std::string fixture_name);
 }}  // namespace hocon::test_utils

@@ -2,6 +2,7 @@
 #include <hocon/config.hpp>
 #include <hocon/config_parse_options.hpp>
 #include "test_utils.hpp"
+#include "fixtures.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -337,14 +338,13 @@ namespace hocon { namespace test_utils {
         parse_test("[ truex ]"),
         parse_test("[ 10x ]"), // number token with trailing junk
         parse_test("[ / ]"), // unquoted string "slash"
-        // TODO: include not implemented
-        // parse_test("{ include \"foo\" }"), // valid include
-        // parse_test("{ include\n\"foo\" }"), // include with just a newline separating from string
-        // parse_test("{ include\"foo\" }"), // include with no whitespace after it
-        // parse_test("[ include ]"), // include can be a string value in an array
-        // parse_test("{ foo : include }"), // include can be a field value also
-        // parse_test("{ include \"foo\", \"a\" : \"b\" }"), // valid include followed by comma and field
-        // parse_test("{ foo include : 42 }"), // valid to have a key not starting with include
+        parse_test("{ include \"foo\" }"), // valid include
+        parse_test("{ include\n\"foo\" }"), // include with just a newline separating from string
+        parse_test("{ include\"foo\" }"), // include with no whitespace after it
+        parse_test("[ include ]"), // include can be a string value in an array
+        parse_test("{ foo : include }"), // include can be a field value also
+        parse_test("{ include \"foo\", \"a\" : \"b\" }"), // valid include followed by comma and field
+        parse_test("{ foo include : 42 }"), // valid to have a key not starting with include
         parse_test("[ ${foo} ]"),
         parse_test("[ ${?foo} ]"),
         parse_test("[ ${\"foo\"} ]"),
@@ -444,4 +444,7 @@ namespace hocon { namespace test_utils {
         return new_tests;
     }
 
+    std::string fixture_path(std::string fixture_name) {
+        return string(TEST_FILE_DIR) + "/fixtures/" + fixture_name;
+    }
 }}  // namespace hocon::test_utils
