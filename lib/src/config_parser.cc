@@ -2,6 +2,7 @@
 #include <hocon/config_exception.hpp>
 #include <hocon/config_object.hpp>
 #include <internal/tokens.hpp>
+#include <internal/simple_includer.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 #include <internal/nodes/config_node_complex_value.hpp>
 #include <internal/nodes/config_node_simple_value.hpp>
@@ -22,18 +23,28 @@ namespace hocon { namespace config_parser {
             config_parse_options options,
             shared_include_context include_context)
     {
-        parse_context context {options.get_syntax(), origin, document, nullptr, include_context};
+        parse_context context {options.get_syntax(), origin, document,
+                               simple_includer::make_full(options.get_includer()), include_context};
         return context.parse();
     }
 
     parse_context::parse_context(config_syntax flavor, shared_origin origin, shared_ptr<const config_node_root> document,
-            void* includer, shared_include_context include_context) :
-        _line_number(1), _document(document), /*_includer(includer),*/ _include_context(include_context),
+            shared_ptr<const full_includer> includer, shared_include_context include_context) :
+        _line_number(1), _document(document), _includer(includer), _include_context(include_context),
         _flavor(flavor), _base_origin(origin), array_count(0)
     {}
 
     shared_origin parse_context::line_origin() const {
         return _base_origin->with_line_number(_line_number);
+    }
+
+    path parse_context::full_current_path() const {
+        // pathStack has top of stack at front
+        if (_path_stack.empty()) {
+            throw bug_or_broken_exception("Bug in parser; tried to get current path when at root");
+        } else {
+            return path {_path_stack.front()};
+        }
     }
 
     shared_value parse_context::parse_value(shared_node_value n, vector<string>& comments)
@@ -70,6 +81,52 @@ namespace hocon { namespace config_parser {
         return v;
     }
 
+    void parse_context::parse_include(unordered_map<string, shared_value> & values,
+                                      shared_ptr<const config_node_include> n) {
+        shared_object obj;
+        switch (n->kind()) {
+            case config_include_kind::FILE:
+                obj = dynamic_pointer_cast<const config_object>(_includer->include_file(_include_context, n->name()));
+                break;
+            case config_include_kind::CLASSPATH:
+                // TODO: implement include_resource (?)
+                throw config_exception("full_includer::include_resource not implemented");
+                break;
+            case config_include_kind::HEURISTIC:
+                obj = dynamic_pointer_cast<const config_object>(_includer->include(_include_context, n->name()));
+                break;
+            default:
+                throw config_exception("should not be reached");
+                break;
+        }
+
+        // we really should make this work, but for now throwing an
+        // exception is better than producing an incorrect result.
+        // See https://github.com/typesafehub/config/issues/160
+        if (array_count > 0 && obj->get_resolve_status() != resolve_status::RESOLVED) {
+            throw config_exception("Due to current limitations of the config parser, when an include statement is nested inside a list value,\n"
+                                           "${} substitutions inside the included file cannot be resolved correctly. Either move the include outside of the list value or\n"
+                                           "remove the ${} statements from the included file.");
+        }
+
+        if (!_path_stack.empty()) {
+            auto prefix = full_current_path();
+            obj = dynamic_pointer_cast<const config_object>(obj->relativized(prefix.to_string()));
+        }
+
+        for (auto &pair : *obj) {
+            auto &key = pair.first;
+            auto &v = pair.second;
+            auto iter = values.find(key);
+            if (iter != values.end()) {
+                auto existing = values[key];
+                values[key] = dynamic_pointer_cast<const config_value>(v->with_fallback(existing));
+            } else {
+                values.emplace(key, v);
+            }
+        }
+    }
+
     shared_object parse_context::parse_object(shared_node_object n)
     {
         unordered_map<string, shared_value> values;
@@ -94,8 +151,7 @@ namespace hocon { namespace config_parser {
                 }
             } else if (auto include = dynamic_pointer_cast<const config_node_include>(node)) {
                 if (_flavor != config_syntax::JSON) {
-                    throw bug_or_broken_exception("parseInclude not implemented");
-                    // parseInclude
+                    parse_include(values, include);
                     last_was_newline = false;
                 }
             } else if (auto field = dynamic_pointer_cast<const config_node_field>(node)) {

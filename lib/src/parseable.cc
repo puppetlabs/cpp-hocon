@@ -7,6 +7,7 @@
 #include <internal/values/simple_config_object.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/tokenizer.hpp>
+#include <internal/simple_includer.hpp>
 #include <internal/config_document_parser.hpp>
 #include <internal/simple_include_context.hpp>
 #include <internal/config_parser.hpp>
@@ -75,7 +76,11 @@ namespace hocon {
         }
         config_parse_options modified = base_options.set_syntax(syntax);
 
-        // TODO: add include stuff
+        // make sure the app-provided includer falls back to default
+        modified = modified.append_includer(config::default_includer());
+        // make sure the app-provided includer is complete
+        modified = modified.set_includer(simple_includer::make_full(modified.get_includer()));
+
         return modified;
     }
 

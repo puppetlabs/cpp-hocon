@@ -14,6 +14,15 @@ using namespace std;
 
 namespace hocon {
 
+    shared_config config::parse_file_any_syntax(std::string file_basename, config_parse_options options) {
+        auto source = make_shared<file_name_source>();
+        return simple_includer::from_basename(move(source), move(file_basename), move(options))->to_config();
+    }
+
+    shared_config config::parse_file_any_syntax(std::string file_basename) {
+        return parse_file_any_syntax(move(file_basename), config_parse_options::defaults());
+    }
+
     shared_config config::parse_string(string s, config_parse_options options)
     {
         return parseable::new_string(move(s), move(options)).parse()->to_config();
@@ -294,7 +303,7 @@ namespace hocon {
         return root()->at_path(path);
     }
 
-    shared_includer config::default_includer() const {
+    shared_includer config::default_includer() {
         static auto _default_includer = make_shared<simple_includer>(nullptr);
         return _default_includer;
     }
