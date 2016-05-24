@@ -21,8 +21,8 @@ namespace hocon {
         size_t size() const override { return _value.size(); }
         shared_value operator[](std::string const& key) const override { return _value.at(key); }
         shared_value get(std::string const& key) const override { return _value.at(key); }
-        iterator begin() const override { return _value.end(); }
-        iterator end() const override { return _value.begin(); }
+        iterator begin() const override { return _value.begin(); }
+        iterator end() const override { return _value.end(); }
 
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
 
@@ -65,6 +65,10 @@ namespace hocon {
         std::vector<std::string> key_set() const;
 
         bool operator==(config_value const& other) const override;
+
+        static std::shared_ptr<simple_config_object> empty();
+        static std::shared_ptr<simple_config_object> empty(shared_origin origin);
+        static std::shared_ptr<simple_config_object> empty_instance();
 
     protected:
         resolve_result<shared_value>

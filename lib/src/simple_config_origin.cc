@@ -12,22 +12,12 @@ namespace hocon {
     simple_config_origin::simple_config_origin(string description, int line_number, int end_line_number,
                                                origin_type org_type, string resource, vector<string> comments) :
         _description(move(description)), _line_number(line_number), _end_line_number(end_line_number),
-        _origin_type(org_type), _resource_or_null(move(resource)), _comments_or_null(move(comments))
-    {
-        if (_description.empty()) {
-            throw runtime_error("description may not be null");
-        }
-    }
+        _origin_type(org_type), _resource_or_null(move(resource)), _comments_or_null(move(comments)) { }
 
     simple_config_origin::simple_config_origin(string description, int line_number, int end_line_number,
                                                origin_type org_type) :
         _description(move(description)), _line_number(line_number), _end_line_number(end_line_number),
-        _origin_type(org_type)
-    {
-        if (_description.empty()) {
-            throw runtime_error("description may not be null");
-        }
-    }
+        _origin_type(org_type) { }
 
     int simple_config_origin::line_number() const {
         return _line_number;

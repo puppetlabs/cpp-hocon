@@ -13,6 +13,7 @@
 #include <internal/parseable.hpp>
 #include <internal/resolve_context.hpp>
 #include <internal/path_parser.hpp>
+#include "test_utils.hpp"
 
 using namespace std;
 using namespace hocon;
@@ -626,14 +627,77 @@ TEST_CASE("track comments for multiple fields (pending)", "[!shouldfail]") {
     assert_comments({}, conf8, "a");
 }
 
-// TODO: require includer
-// include file
-// include file with extension
-// include file whitespace inside parens
-// include file no whitespace outside parens
-// include file not quoted
-// include file not quoted and special char
-// include file unclosed parens
+TEST_CASE("include file") {
+    //LIBFACTER_TESTS_DIRECTORY "/fixtures/facts/external/yaml/invalid.yaml"
+    //auto conf = config::parse_string("include file(\"/Users/whopper/Coding/cpp-hocon/lib/tests/fixtures/test01\")");
+    auto conf = config::parse_string("include file(\"" + fixture_path("test01") + "\")");
+
+    // should have loaded conf, json
+    REQUIRE(42u == conf->get_int("ints.fortyTwo"));
+    REQUIRE(1u == conf->get_int("fromJson1"));
+}
+
+TEST_CASE("include file with extension") {
+    auto conf = config::parse_string("include file(\"" + fixture_path("test01.conf") + "\")");
+
+    REQUIRE(42u == conf->get_int("ints.fortyTwo"));
+    REQUIRE_THROWS_AS(conf->get_int("fromJson1"), config_exception);
+}
+
+TEST_CASE("include file whitespace inside parens") {
+    auto conf = config::parse_string("include file(  \n  \"" + fixture_path("test01") + "\"  \n  )");
+
+
+    // should have loaded conf, json
+    REQUIRE(42u == conf->get_int("ints.fortyTwo"));
+    REQUIRE(1u == conf->get_int("fromJson1"));
+}
+
+TEST_CASE("include file no whitespace outside parens") {
+    bool thrown = false;
+    try {
+        auto conf = config::parse_string("include file (\"" + fixture_path("test01") + "\")");
+    } catch (const hocon::config_exception& e) {
+        thrown = true;
+        REQUIRE_STRING_CONTAINS(e.what(), "expecting include parameter");
+    }
+    REQUIRE(thrown);
+}
+
+TEST_CASE("include file not quoted") {
+    bool thrown = false;
+    try {
+        auto conf = config::parse_string("include file(" + fixture_path("test01") + ")");
+    } catch (const hocon::config_exception& e) {
+        thrown = true;
+        REQUIRE_STRING_CONTAINS(e.what(), "expecting include parameter");
+    }
+    REQUIRE(thrown);
+}
+
+TEST_CASE("include file not quoted and special char") {
+    bool thrown = false;
+    try {
+        auto conf = config::parse_string("include file(:" + fixture_path("test01") + ")");
+    } catch (const hocon::config_exception& e) {
+        thrown = true;
+        REQUIRE_STRING_CONTAINS(e.what(), "expecting a quoted string");
+    }
+    REQUIRE(thrown);
+}
+
+TEST_CASE("include file unclosed parens") {
+    bool thrown = false;
+    try {
+        auto conf = config::parse_string("include file(" + fixture_path("test01"));
+    } catch (const hocon::config_exception& e) {
+        thrown = true;
+        REQUIRE_STRING_CONTAINS(e.what(), "expecting include parameter");
+    }
+    REQUIRE(thrown);
+}
+
+// TODO: require URL support
 // include url basename
 // include url with extension
 // include url invalid
