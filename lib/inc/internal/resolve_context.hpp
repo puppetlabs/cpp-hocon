@@ -13,9 +13,9 @@ namespace hocon {
     template<typename T>
     struct resolve_result;
 
-    // TODO: Implement this class >_>
     class resolve_context {
     public:
+        resolve_context(config_resolve_options options, path restrict_to_child, std::vector<shared_value> cycle_markers);
         resolve_context(config_resolve_options options, path restrict_to_child);
         bool is_restricted_to_child() const;
         config_resolve_options options() const;
@@ -23,6 +23,8 @@ namespace hocon {
         resolve_result<shared_value> resolve(shared_value original, resolve_source const& source) const;
         path restrict_to_child() const;
 
+        resolve_context add_cycle_marker(shared_value value) const;
+        resolve_context remove_cycle_marker(shared_value value);
         resolve_context restrict(path restrict_to) const;
         resolve_context unrestricted() const;
 
@@ -44,6 +46,7 @@ namespace hocon {
         config_resolve_options _options;
         path _restrict_to_child;
         resolve_memos _memos;
+        std::vector<shared_value> _cycle_markers;
 
         resolve_context memoize(const memo_key& key, const shared_value& value) const;
     };

@@ -229,8 +229,7 @@ namespace hocon { namespace test_utils {
         parse_test("[${ ?foo}]", false, true), // space before ? not allowed
         parse_test(R"({ "a" : [1,2], "b" : y${a}z })"), // trying to interpolate an array in a string
         parse_test(R"({ "a" : { "c" : 2 }, "b" : y${a}z })"), // trying to interpolate an object in a string
-        // TODO: cycles not detected
-        // parse_test(R"({ "a" : ${a} })"), // simple cycle
+        parse_test(R"({ "a" : ${a} })"), // simple cycle
         parse_test(R"([ { "a" : 2, "b" : ${${a}} } ])"), // nested substitution
         parse_test("[ = ]"), // = is not a valid token in unquoted text
         parse_test("[ + ]"),

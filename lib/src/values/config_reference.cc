@@ -38,14 +38,10 @@ namespace hocon {
     }
 
     resolve_result<shared_value> config_reference::resolve_substitutions(resolve_context const &context, resolve_source const &source) const {
-        // TODO: cycle detection, including exceptions
-        // ResolveContext newContext = context.addCycleMarker(this);
+        resolve_context new_context = context.add_cycle_marker(shared_from_this());
         shared_value v;
-        resolve_context new_context = context;
 
-
-        // TODO: this needs to be wrapped in a try when we have cycle detection
-        {
+        try {
             auto result_with_path = source.lookup_subst(move(new_context), _expr, _prefix_length);
             new_context = result_with_path.result.context;
 
@@ -54,17 +50,25 @@ namespace hocon {
                 auto result = new_context.resolve(result_with_path.result.value, recursive_resolve_source);
                 v = result.value;
                 new_context = result.context;
+            } else {
+                v = nullptr;
+            }
+        } catch (not_possible_to_resolve_exception& ex) {
+            if (_expr->optional()) {
+                v = nullptr;
+            } else {
+                throw config_exception(_expr->to_string() + " was part of a cycle of substitutions.");
             }
         }
 
         if (!v && !_expr->optional()) {
             if (new_context.options().get_allow_unresolved()) {
-                return make_resolve_result(new_context, shared_from_this());
+                return make_resolve_result(new_context.remove_cycle_marker(shared_from_this()), shared_from_this());
             } else {
                 throw unresolved_substitution_exception(*origin(), _expr->to_string());
             }
         } else {
-            return make_resolve_result(new_context, v);
+            return make_resolve_result(new_context.remove_cycle_marker(shared_from_this()), v);
         }
     }
 }
