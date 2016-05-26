@@ -123,6 +123,10 @@ namespace hocon {
         not_resolved_exception(std::string const& message) : bug_or_broken_exception(message) { }
     };
 
+    struct not_possible_to_resolve_exception : public bug_or_broken_exception {
+        not_possible_to_resolve_exception(std::string const& message) : bug_or_broken_exception(message) { }
+    };
+
     /**
      * Information about a problem that occurred in {@link config#check_valid}. A
      * {@link validation_failed_exception} thrown from
