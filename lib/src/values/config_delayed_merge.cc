@@ -19,6 +19,31 @@ namespace hocon {
         }
     }
 
+    shared_value config_delayed_merge::make_replacement(resolve_context const &context, int skipping) const {
+        return config_delayed_merge::make_replacement(move(context), _stack, move(skipping));
+    }
+
+    shared_value config_delayed_merge::make_replacement(resolve_context const &context,
+                                                        std::vector<shared_value> stack,
+                                                        int skipping) {
+        vector<shared_value> sub_stack(stack.begin() + skipping, stack.end());
+
+        if (sub_stack.empty()) {
+            return nullptr;
+        } else {
+            // generate a new merge stack from only the remaining items
+            shared_value merged = nullptr;
+            for (auto&& v : sub_stack) {
+                if (merged == nullptr) {
+                    merged = v;
+                } else {
+                    merged = dynamic_pointer_cast<const config_value>(merged->with_fallback(v));
+                }
+            }
+            return merged;
+        }
+    }
+
     config_value::type config_delayed_merge::value_type() const {
         throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
     }

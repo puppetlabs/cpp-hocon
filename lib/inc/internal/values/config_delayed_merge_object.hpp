@@ -2,12 +2,15 @@
 
 #include <hocon/config_object.hpp>
 #include <hocon/config_exception.hpp>
+#include <internal/replaceable_merge_stack.hpp>
 
 namespace hocon {
 
-    class config_delayed_merge_object : public config_object {
+    class config_delayed_merge_object : public config_object, public replaceable_merge_stack {
     public:
         config_delayed_merge_object(shared_origin origin, std::vector<shared_value> const& stack);
+
+        shared_value make_replacement(resolve_context const& context, int skipping) const override;
 
         shared_object with_value(path raw_path, shared_value value) const override;
         shared_object with_value(std::string key, shared_value value) const override;
