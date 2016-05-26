@@ -23,6 +23,10 @@ namespace hocon {
         }
     }
 
+    shared_value config_delayed_merge_object::make_replacement(resolve_context const &context, int skipping) const {
+        return config_delayed_merge::make_replacement(move(context), _stack, move(skipping));
+    }
+
     shared_object config_delayed_merge_object::with_value(path raw_path, shared_value value) const {
         throw not_resolved();
     }
