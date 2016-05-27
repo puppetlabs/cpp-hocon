@@ -105,10 +105,10 @@ namespace hocon {
         if (object && !next.empty()) {
             auto value = object->without_path(next);
             unordered_map<string, shared_value> updated { make_pair(key, value) };
-            // TODO: the last argument is incorrect, fix when implementing resolve functionality
-
-
-            return make_shared<simple_config_object>(origin(), updated, resolve_status::RESOLVED, _ignores_fallbacks);
+            return make_shared<simple_config_object>(origin(),
+                                                     updated,
+                                                     resolve_status_from_values(value_set(updated)),
+                                                     _ignores_fallbacks);
         } else if (!next.empty() || v == _value.end()) {
             return dynamic_pointer_cast<const config_object>(shared_from_this());
         } else {
@@ -118,8 +118,10 @@ namespace hocon {
                     smaller.emplace(old);
                 }
             }
-            // TODO: the last argument is incorrect, fix when implementing resolve functionality
-            return make_shared<simple_config_object>(origin(), smaller);
+            return make_shared<simple_config_object>(origin(),
+                                                     smaller,
+                                                     resolve_status_from_values(value_set(smaller)),
+                                                     _ignores_fallbacks);
         }
     }
 
