@@ -3,6 +3,7 @@
 #include <hocon/config_object.hpp>
 #include <internal/tokens.hpp>
 #include <internal/simple_includer.hpp>
+#include <internal/substitution_expression.hpp>
 #include <internal/nodes/config_node_comment.hpp>
 #include <internal/nodes/config_node_complex_value.hpp>
 #include <internal/nodes/config_node_simple_value.hpp>
@@ -12,6 +13,7 @@
 #include <internal/nodes/config_node_field.hpp>
 #include <internal/nodes/config_node_include.hpp>
 #include <internal/values/config_concatenation.hpp>
+#include <internal/values/config_reference.hpp>
 #include <internal/values/simple_config_object.hpp>
 #include <internal/values/simple_config_list.hpp>
 
@@ -188,8 +190,12 @@ namespace hocon { namespace config_parser {
                     array_count -= 1;
 
                     vector<shared_value> concat;
-                    // TODO: add config_reference and do concatenation
-                    throw bug_or_broken_exception("portion of parse_object is unimplemented");
+                    concat.reserve(2);
+                    auto previous_ref = make_shared<config_reference>(new_value->origin(), make_shared<substitution_expression>(full_current_path(), true));
+                    auto list = make_shared<simple_config_list>(new_value->origin(), vector<shared_value>({new_value}));
+                    concat.push_back(previous_ref);
+                    concat.push_back(list);
+                    new_value = config_concatenation::concatenate(concat);
                 }
 
                 // Grab any trailing comments on the same line
