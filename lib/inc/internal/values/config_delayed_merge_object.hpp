@@ -27,6 +27,11 @@ namespace hocon {
 
         bool operator==(config_value const& other) const override;
 
+        // container interface
+        shared_value replace_child(shared_value const& child, shared_value replacement) const override;
+        bool has_descendant(shared_value const& descendant) const override;
+
+
     protected:
         shared_value attempt_peek_with_partial_resolve(std::string const& key) const override;
         std::unordered_map<std::string, shared_value> const& entry_set() const override;

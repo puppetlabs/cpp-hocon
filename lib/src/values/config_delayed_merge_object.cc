@@ -73,4 +73,19 @@ namespace hocon {
         return not_resolved_exception("need to config::resolve() before using this object, see the API docs for config::resolve()");
     }
 
+    shared_value config_delayed_merge_object::replace_child(shared_value const& child, shared_value replacement) const
+    {
+        auto new_stack = replace_child_in_list(_stack, child, move(replacement));
+        if (new_stack.empty()) {
+             return nullptr;
+        } else {
+            return make_shared<config_delayed_merge>(origin(), new_stack);
+        }
+    }
+
+    bool config_delayed_merge_object::has_descendant(shared_value const& descendant) const
+    {
+        return has_descendant_in_list(_stack, descendant);
+    }
+
 }  // namespace hocon

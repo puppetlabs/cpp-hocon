@@ -381,11 +381,10 @@ namespace hocon { namespace test_utils {
         parse_test(R"([ ${"foo""bar"} ])"), // multiple strings in substitution
         parse_test(R"([ ${foo  "bar"  baz} ])"), // multiple strings and whitespace in substitution
         parse_test("[${true}]"), // substitution with unquoted true token
-        // TODO: portion of parse_object is unimplemented
-        // parse_test("a = [], a += b"), // += operator with previous init
-        // parse_test("{ a = [], a += 10 }"), // += in braces object with previous init
-        // parse_test("a += b"), // += operator without previous init
-        // parse_test("{ a += 10 }"), // += in braces object without previous init
+        parse_test("a = [], a += b"), // += operator with previous init
+        parse_test("{ a = [], a += 10 }"), // += in braces object with previous init
+        parse_test("a += b"), // += operator without previous init
+        parse_test("{ a += 10 }"), // += in braces object without previous init
         parse_test("[ 10e3e3 ]"), // two exponents. this should parse to a number plus string "e3"
         parse_test("[ 1-e3 ]"), // malformed number should end up as a string instead
         parse_test("[ 1.0.0 ]"), // two decimals, should end up as a string

@@ -3,6 +3,7 @@
 #include <internal/substitution_expression.hpp>
 #include <hocon/config_value.hpp>
 #include <hocon/config_object.hpp>
+#include <internal/values/simple_config_object.hpp>
 #include <internal/container.hpp>
 
 namespace hocon {
@@ -31,6 +32,53 @@ namespace hocon {
             auto new_path_from_root = _path_from_root;
             new_path_from_root.push_front(parent);
             return resolve_source(_root, new_path_from_root);
+        }
+    }
+
+    resolve_source resolve_source::replace_current_parent(shared_ptr<const container> old, shared_ptr<const container> replacement) const
+    {
+        if (old == replacement) {
+             return *this;
+        } else if (! _path_from_root.empty()) {
+            auto new_path = replace(_path_from_root, old, dynamic_pointer_cast<const config_value>(replacement));
+            if (!new_path.empty()) {
+                return resolve_source(dynamic_pointer_cast<const config_object>(new_path.back()), new_path);
+            } else {
+                return resolve_source(simple_config_object::empty());
+            }
+        } else {
+            if (old == dynamic_pointer_cast<const container>(_root)) {
+                return resolve_source(root_must_be_obj(replacement));
+            } else {
+                throw bug_or_broken_exception("attempt to replace root with invalid value");
+            }
+        }
+    }
+
+    resolve_source resolve_source::replace_within_current_parent(shared_value old, shared_value replacement) const
+    {
+        if (old == replacement) {
+             return *this;
+        } else if (!_path_from_root.empty()) {
+            auto parent = _path_from_root.front();
+            auto new_parent = parent->replace_child(old, replacement);
+            return replace_current_parent(parent, dynamic_pointer_cast<const container>(new_parent));
+        } else {
+            auto replacement_as_container = dynamic_pointer_cast<const container>(replacement);
+            if (old == _root && replacement_as_container) {
+                return resolve_source(root_must_be_obj(replacement_as_container));
+            } else {
+                throw bug_or_broken_exception("replace in parent not possible");
+            }
+        }
+    }
+
+    resolve_source resolve_source::reset_parents() const
+    {
+        if (_path_from_root.empty()) {
+            return *this;
+        } else {
+            return resolve_source(_root);
         }
     }
 
@@ -90,6 +138,57 @@ namespace hocon {
                 return find_in_object(value, next, parents);
             } else {
                 return {nullptr, parents};
+            }
+        }
+    }
+
+    shared_object resolve_source::root_must_be_obj(shared_ptr<const container> value) const {
+        auto value_as_obj = dynamic_pointer_cast<const config_object>(value);
+        if (value_as_obj) {
+            return value_as_obj;
+        } else {
+            return simple_config_object::empty();
+        }
+    }
+
+    resolve_source::node resolve_source::replace(const resolve_source::node& list, shared_ptr<const container> old, shared_value replacement)
+    {
+        auto child = list.front();
+        if (child != old) {
+            throw bug_or_broken_exception("Can only replace() the top node we're resolving");
+        }
+
+        shared_ptr<const container> parent;
+        if (list.size() > 1) {
+            node copy(list);
+            copy.pop_front();
+            parent = copy.front();
+        }
+
+        auto replacement_as_container = dynamic_pointer_cast<const container>(replacement);
+        if (!replacement || !replacement_as_container) {
+            if (!parent) {
+                return {};
+            } else {
+                auto new_parent = parent->replace_child(dynamic_pointer_cast<const config_value>(old), nullptr);
+                node copy(list);
+                copy.pop_front();
+                return replace(copy, parent, new_parent);
+            }
+        } else {
+            if (!parent) {
+                return {replacement_as_container};
+            } else {
+                auto new_parent = parent->replace_child(dynamic_pointer_cast<const config_value>(old), replacement);
+                node copy(list);
+                copy.pop_front();
+                auto new_tail = replace(copy, parent, new_parent);
+                if (!new_tail.empty()) {
+                    new_tail.push_front(replacement_as_container);
+                    return new_tail;
+                } else {
+                    return {replacement_as_container};
+                }
             }
         }
     }

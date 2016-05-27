@@ -278,7 +278,8 @@ namespace hocon {
         // if we contain a substitution, resolving it may need to look
         // back to the fallback.
         stack.push_back(move(fallback));
-        return construct_delayed_merge(config_object::merge_origins(stack), move(stack));
+        auto merged = config_object::merge_origins(stack);
+        return construct_delayed_merge(merged, move(stack));
     }
 
 }  // namespace hocon
