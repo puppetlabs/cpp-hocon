@@ -64,6 +64,12 @@ namespace hocon {
          */
         std::vector<std::string> key_set() const;
 
+        /**
+         * Construct a list of the values from the provided map.
+         * Equivalent to Java's Collection.values() method.
+         */
+        std::vector<shared_value> value_set(std::unordered_map<std::string, shared_value> m) const;
+
         bool operator==(config_value const& other) const override;
 
         static std::shared_ptr<simple_config_object> empty();
