@@ -106,6 +106,8 @@ namespace hocon {
             auto value = object->without_path(next);
             unordered_map<string, shared_value> updated { make_pair(key, value) };
             // TODO: the last argument is incorrect, fix when implementing resolve functionality
+
+
             return make_shared<simple_config_object>(origin(), updated, resolve_status::RESOLVED, _ignores_fallbacks);
         } else if (!next.empty() || v == _value.end()) {
             return dynamic_pointer_cast<const config_object>(shared_from_this());
@@ -247,13 +249,42 @@ namespace hocon {
     }
 
     shared_value simple_config_object::replace_child(shared_value const &child, shared_value replacement) const {
-        // TODO: implement
-        throw config_exception("simple_config_object::replace_child not implemented");
+        unordered_map<string, shared_value> new_children(_value);
+
+        for (auto&& old : new_children) {
+            if (old.second == child) {
+                if (replacement) {
+                    old.second = replacement;
+                } else {
+                    new_children.erase(old.first);
+                }
+
+                auto value_list = value_set(new_children);
+                return make_shared<simple_config_object>(origin(),
+                                                         move(new_children),
+                                                         resolve_status_from_values(value_list),
+                                                         ignores_fallbacks());
+            }
+        }
+        throw bug_or_broken_exception("simple_config_object::replace_child did not find " + child->render());
     }
 
     bool simple_config_object::has_descendant(shared_value const &descendant) const {
-        // TODO: implement
-        throw config_exception("simple_config_object::has_descendant not implemented");
+        auto value_list = value_set(_value);
+        for (auto&& child : value_list) {
+            if (child == descendant) {
+                return true;
+            }
+        }
+        // now do the expensive search
+        for (auto&& child : value_list) {
+            if (auto c = dynamic_pointer_cast<const container>(child)) {
+                if (c->has_descendant(descendant)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     vector<string> simple_config_object::key_set() const {
@@ -262,6 +293,14 @@ namespace hocon {
             keys.push_back(kv.first);
         }
         return keys;
+    }
+
+    vector<shared_value> simple_config_object::value_set(unordered_map<string, shared_value> m) const {
+        vector<shared_value> values;
+        for (auto const& kv : m) {
+            values.push_back(kv.second);
+        }
+        return values;
     }
 
     shared_ptr<simple_config_object> simple_config_object::empty() {
