@@ -47,6 +47,8 @@ namespace hocon {
 
             shared_object include_file(shared_include_context context, std::string what) const;
 
+            static std::shared_ptr<const full_includer> make_full(shared_includer includer);
+
         private:
             std::shared_ptr<const config_includer> _delegate;
         };

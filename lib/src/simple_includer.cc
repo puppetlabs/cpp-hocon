@@ -173,4 +173,12 @@ namespace hocon {
         }
     }
 
+    shared_ptr<const full_includer> simple_includer::proxy::make_full(shared_includer includer) {
+        if (auto i = dynamic_pointer_cast<const full_includer>(includer)) {
+            return i;
+        } else {
+            return make_shared<proxy>(move(includer));
+        }
+    }
+
 }  // namespace hocon
