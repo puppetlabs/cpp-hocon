@@ -242,13 +242,6 @@ TEST_CASE("concatenation") {
         );
     }
 
-}
-
-TEST_CASE("Concatenation pending system environment lookup implementation", "[!shouldfail]") {
-    // We expect a lookup to fail and fall through in these tests.
-    // Unfortunately, because system environment lookup is not yet
-    // implemented, we fall through to that code path and then explode
-    // with an exception.
     SECTION("string concatenation with undefined substitution") {
         auto conf = parse_config("a = foo${?bar}")->resolve();
         REQUIRE(conf->get_string("a") == "foo");

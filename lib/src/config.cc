@@ -7,8 +7,11 @@
 #include <internal/values/config_null.hpp>
 #include <internal/values/config_number.hpp>
 #include <internal/values/config_string.hpp>
+#include <internal/values/simple_config_object.hpp>
 #include <internal/parseable.hpp>
 #include <internal/simple_includer.hpp>
+
+#include <leatherman/util/environment.hpp>
 
 using namespace std;
 
@@ -324,6 +327,17 @@ namespace hocon {
 
     shared_value config::find(path path_expression, config_value::type expected, path original_path) const {
         return throw_if_null(find_or_null(_object, path_expression, expected, original_path), expected, original_path);
+    }
+
+    shared_object config::env_variables_as_config_object() {
+        unordered_map<string, shared_value> values;
+        leatherman::util::environment::each([&](string& k, string& v) {
+            auto origin = make_shared<simple_config_origin>("env var " + k);
+            values.emplace(k, make_shared<config_string>(origin, v, config_string_type::QUOTED));
+            return true;
+        });
+        auto origin = make_shared<simple_config_origin>("env variables");
+        return make_shared<simple_config_object>(origin, move(values), resolve_status::RESOLVED, false);
     }
 
 }  // namespace hocon

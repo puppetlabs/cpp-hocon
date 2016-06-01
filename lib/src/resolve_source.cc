@@ -95,8 +95,7 @@ namespace hocon {
             }
 
             if (!result.result.value && result.result.context.options().get_use_system_environment()) {
-                // TODO: implement this o:
-                throw config_exception("lookup in system environment is not implemented");
+                result = find_in_object(config::env_variables_as_config_object(), context, unprefixed);
             }
         }
 
