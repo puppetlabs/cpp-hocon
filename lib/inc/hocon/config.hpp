@@ -650,6 +650,8 @@ namespace hocon {
 
         config(shared_object object);
 
+        static shared_object env_variables_as_config_object();
+
     protected:
         shared_value find(std::string const& path_expression, config_value::type expected) const;
         shared_value find(path path_expression, config_value::type expected, path original_path) const;
