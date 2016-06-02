@@ -24,7 +24,11 @@ namespace hocon {
     }
 
     string substitution_expression::to_string() const {
-        return string("${") + (_optional ? "?" : "") + _path.to_string() + "}";
+        return string("${") + (_optional ? "?" : "") + _path.render() + "}";
+    }
+
+    bool substitution_expression::operator==(substitution_expression const &other) const {
+        return (_path == other._path) && (_optional == other._optional);
     }
 
 }  // namespace hocon

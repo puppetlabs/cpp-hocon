@@ -3,6 +3,7 @@
 #include <hocon/config_object.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/replaceable_merge_stack.hpp>
+#include <internal/values/config_delayed_merge.hpp>
 
 namespace hocon {
 
@@ -40,6 +41,8 @@ namespace hocon {
         shared_object with_only_path_or_null(path raw_path) const override;
         shared_object new_copy(resolve_status const& status, shared_origin origin) const override;
         bool ignores_fallbacks() const override;
+        virtual void render(std::string& result, int indent, bool at_root, std::string const& at_key, config_render_options options) const override;
+        virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
 
     private:
         not_resolved_exception not_resolved() const;

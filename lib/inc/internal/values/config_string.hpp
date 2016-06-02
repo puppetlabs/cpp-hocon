@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hocon/config_value.hpp>
+#include <internal/config_util.hpp>
 
 namespace hocon {
 
@@ -18,6 +19,8 @@ namespace hocon {
 
     protected:
         shared_value new_copy(shared_origin) const override;
+
+        void render(std::string& s, int indent, bool at_root, config_render_options options) const override;
 
     private:
         std::string _text;

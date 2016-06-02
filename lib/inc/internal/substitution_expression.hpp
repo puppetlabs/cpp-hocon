@@ -17,6 +17,8 @@ namespace hocon {
 
         std::string to_string() const;
 
+        bool operator==(substitution_expression const& other) const;
+
     private:
         const path _path;
         const bool _optional;

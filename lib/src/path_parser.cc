@@ -78,7 +78,7 @@ namespace hocon {
             if (tokens::is_value_with_type(t, config_value::type::STRING)) {
                 auto value = tokens::get_value(t);
                 // this is a quoted string, so any periods in here don't count as path separators
-                string s = value->render();
+                string s = value->transform_to_string();
                 add_path_text(elements, true, s);
             } else if (t == tokens::end_token()) {
                 // ignore this; when parsing a file, it should not happen

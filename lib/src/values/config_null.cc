@@ -23,4 +23,8 @@ namespace hocon {
         return dynamic_cast<config_null const*>(&other);
     }
 
+    void config_null::render(string& result, int indent, bool at_root, config_render_options options) const {
+        result += "null";
+    }
+
 }  // namespace hocon

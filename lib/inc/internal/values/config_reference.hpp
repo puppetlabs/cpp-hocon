@@ -28,6 +28,7 @@ namespace hocon {
         shared_value new_copy(shared_origin origin) const override;
         resolve_result<shared_value> resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         bool ignores_fallbacks() const override { return false; }
+        void render(std::string& s, int indent, bool at_root, config_render_options options) const override;
 
     private:
         std::shared_ptr<substitution_expression> _expr;
