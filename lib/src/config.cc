@@ -340,4 +340,14 @@ namespace hocon {
         return make_shared<simple_config_object>(origin, move(values), resolve_status::RESOLVED, false);
     }
 
+    not_resolved_exception config::improve_not_resolved(path what, not_resolved_exception const& original) {
+        string new_message = what.render() + " has not been resolved, you need to call config::resolve()"
+                                           + " see API docs for config::resolve()";
+        if (new_message == original.what()) {
+            return original;
+        } else {
+            return not_resolved_exception(new_message);
+        }
+    }
+
 }  // namespace hocon

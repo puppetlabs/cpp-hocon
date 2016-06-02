@@ -6,6 +6,7 @@
 #include "config_object.hpp"
 #include "config_resolve_options.hpp"
 #include "config_value.hpp"
+#include "config_exception.hpp"
 #include "path.hpp"
 #include <vector>
 #include <string>
@@ -651,6 +652,7 @@ namespace hocon {
         config(shared_object object);
 
         static shared_object env_variables_as_config_object();
+        static not_resolved_exception improve_not_resolved(path what, not_resolved_exception const& original);
 
     protected:
         shared_value find(std::string const& path_expression, config_value::type expected) const;
