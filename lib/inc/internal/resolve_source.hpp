@@ -18,6 +18,8 @@ namespace hocon {
         struct result_with_path {
             resolve_result<shared_value> result;
             node path_from_root;
+
+            result_with_path(resolve_result<shared_value> result_value, node path_from_root_value);
         };
 
         resolve_source(shared_object root);
@@ -33,14 +35,16 @@ namespace hocon {
         struct value_with_path {
             shared_value value;
             node path_from_root;
+
+            value_with_path(shared_value v, node path_from_root_value);
         };
 
         shared_object _root;
         node _path_from_root;
 
-        value_with_path find_in_object(shared_object obj, path the_path) const;
-        result_with_path find_in_object(shared_object obj, resolve_context context, path the_path) const;
-        value_with_path find_in_object(shared_object obj, path the_path, node parents) const;
+        static value_with_path find_in_object(shared_object obj, path the_path);
+        static result_with_path find_in_object(shared_object obj, resolve_context context, path the_path);
+        static value_with_path find_in_object(shared_object obj, path the_path, node parents);
 
         shared_object root_must_be_obj(std::shared_ptr<const container> value) const;
 

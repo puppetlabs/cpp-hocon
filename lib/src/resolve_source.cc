@@ -103,7 +103,7 @@ namespace hocon {
     }
 
     resolve_source::result_with_path resolve_source::find_in_object(shared_object obj, resolve_context context,
-                                                                    path the_path) const {
+                                                                    path the_path) {
         auto restriction = context.restrict_to_child();
         auto partially_resolved = context.restrict(the_path).resolve(dynamic_pointer_cast<const config_value>(obj), {obj});
         auto new_context = partially_resolved.context.restrict(restriction);
@@ -117,12 +117,15 @@ namespace hocon {
         }
     }
 
-    resolve_source::value_with_path resolve_source::find_in_object(shared_object obj, path the_path) const {
-        // TODO: implement improve_not_resolved
-        return find_in_object(obj, the_path, {});
+    resolve_source::value_with_path resolve_source::find_in_object(shared_object obj, path the_path) {
+        try {
+            return find_in_object(obj, the_path, {});
+        } catch (const not_resolved_exception &e) {
+            throw config::improve_not_resolved(move(the_path), e);
+        }
     }
 
-    resolve_source::value_with_path resolve_source::find_in_object(shared_object obj, path the_path, node parents) const {
+    resolve_source::value_with_path resolve_source::find_in_object(shared_object obj, path the_path, node parents) {
         auto key = the_path.first();
         auto next = the_path.remainder();
 
@@ -191,4 +194,10 @@ namespace hocon {
             }
         }
     }
+
+    resolve_source::value_with_path::value_with_path(shared_value v, node path_from_root_value)
+        : value(move(v)), path_from_root(move(path_from_root_value)) { }
+
+    resolve_source::result_with_path::result_with_path(resolve_result<shared_value> result_value, node path_from_root_value)
+        : result(move(result_value)), path_from_root(move(path_from_root_value)) { }
 }  // namespace hocon
