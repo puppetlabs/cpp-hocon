@@ -76,6 +76,23 @@ namespace hocon {
          *         none
          */
         LIBCPP_HOCON_EXPORT virtual std::vector<std::string> const& comments() const = 0;
+
+        /**
+         * Returns a {@code config_origin} based on this one, but with the given
+         * comments. Does not modify this instance or any {@code config_value}s with
+         * this origin (since they are immutable).  To set the returned origin to a
+         * {@code config_value}, use {@link config_value#with_origin}.
+         *
+         * <p>
+         * Note that when the given comments are equal to the comments on this object,
+         * a new instance may not be created and {@code this} is returned directly.
+         *
+         * @since 1.3.0
+         *
+         * @param comments the comments used on the returned origin
+         * @return the config_origin with the given comments
+         */
+        LIBCPP_HOCON_EXPORT virtual shared_origin with_comments(std::vector<std::string> comments) const = 0;
     };
 
 }  // namespace hocon
