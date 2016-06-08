@@ -54,7 +54,7 @@ namespace hocon {
     }
 
     shared_object simple_includer::include_file_without_fallback(shared_include_context context, std::string what) {
-        return config::parse_file_any_syntax(move(what), move(context->parse_options()))->root();
+        return config::parse_file_any_syntax(move(what), context->parse_options())->root();
     }
 
     config_parse_options simple_includer::clear_for_include(config_parse_options const& options) {
