@@ -40,6 +40,15 @@ namespace hocon {
         }
     }
 
+    shared_origin simple_config_origin::with_comments(std::vector<std::string> comments) const {
+        if (comments == _comments_or_null || comments.empty()) {
+            return shared_from_this();
+        } else {
+            return make_shared<simple_config_origin>(_description, _line_number, _end_line_number, _origin_type,
+                                                     _resource_or_null, move(comments));
+        }
+    }
+
     shared_ptr<const simple_config_origin> simple_config_origin::append_comments(vector<string> comments) const {
         if (comments == _comments_or_null || comments.empty()) {
             return shared_from_this();

@@ -30,6 +30,7 @@ namespace hocon {
          */
         shared_origin with_line_number(int line_number) const override;
 
+        shared_origin with_comments(std::vector<std::string> comments) const override;
         std::shared_ptr<const simple_config_origin> append_comments(std::vector<std::string> comments) const;
         std::shared_ptr<const simple_config_origin> prepend_comments(std::vector<std::string> comments) const;
 
