@@ -86,6 +86,7 @@ namespace hocon {
         resolve_status _resolved;
         bool _ignores_fallbacks;
 
+        shared_object new_copy(resolve_status const& new_status, shared_origin new_origin) const override;
         std::shared_ptr<simple_config_object> modify(no_exceptions_modifier& modifier) const;
         std::shared_ptr<simple_config_object> modify_may_throw(modifier& modifier) const;
 

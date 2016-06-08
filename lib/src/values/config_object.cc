@@ -44,6 +44,10 @@ namespace hocon {
         }
     }
 
+    shared_value config_object::new_copy(shared_origin origin) const {
+        return new_copy(get_resolve_status(), origin);
+    }
+
     shared_value config_object::construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const {
         return make_shared<config_delayed_merge_object>(move(origin), move(stack));
     }

@@ -13,6 +13,7 @@ namespace hocon {
         friend class config_value;
         friend class simple_config_object;
         friend class resolve_source;
+        friend class config_delayed_merge_object;
     public:
         /**
          * Converts this object to a {@link Config} instance, enabling you to use
@@ -43,6 +44,10 @@ namespace hocon {
         virtual shared_value attempt_peek_with_partial_resolve(std::string const& key) const = 0;
         shared_value peek_path(path desired_path) const;
         shared_value peek_assuming_resolved(std::string const& key, path original_path) const;
+
+        virtual shared_object new_copy(resolve_status const& status, shared_origin origin) const = 0;
+        shared_value new_copy(shared_origin origin) const override;
+
         shared_value construct_delayed_merge(shared_origin origin, std::vector<shared_value> stack) const override;
 
         virtual std::unordered_map<std::string, shared_value> const& entry_set() const = 0;
