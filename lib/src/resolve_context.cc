@@ -13,7 +13,7 @@ namespace hocon {
          : _options(move(options)), _restrict_to_child(move(restrict_to_child)), _cycle_markers(move(cycle_markers)) { }
 
     resolve_context::resolve_context(config_resolve_options options, path restrict_to_child)
-         : resolve_context(move(options), move(restrict_to_child), move(vector<shared_value> {})) { }
+         : resolve_context(move(options), move(restrict_to_child), vector<shared_value> {}) { }
 
     bool resolve_context::is_restricted_to_child() const
     {
