@@ -161,6 +161,11 @@ namespace hocon { namespace test_utils {
         return make_shared<config_reference>(fake_origin(), make_shared<substitution_expression>(path::new_path(ref), optional));
     }
 
+    shared_ptr<config_concatenation> subst_in_string(string ref, bool optional) {
+        auto pieces = vector<shared_value> {string_value("start<"), subst(ref, optional), string_value(">end")};
+        return make_shared<config_concatenation>(fake_origin(), pieces);
+    }
+
     /** Paths */
     path test_path(initializer_list<string> path_strings) {
         return path(vector<string> { path_strings });

@@ -10,6 +10,7 @@
 #include <internal/values/config_int.hpp>
 #include <internal/values/config_null.hpp>
 #include <internal/values/config_reference.hpp>
+#include <internal/values/config_concatenation.hpp>
 #include <internal/nodes/config_node_simple_value.hpp>
 
 #include <string>
@@ -21,6 +22,7 @@
 #include <internal/nodes/config_node_comment.hpp>
 
 #define REQUIRE_STRING_CONTAINS(str, match) REQUIRE(std::string(str).find(match) != std::string::npos)
+#define REQUIRE_STRING_NOT_CONTAINS(str, match) REQUIRE(std::string(str).find(match) == std::string::npos)
 
 namespace hocon { namespace test_utils {
 
@@ -105,6 +107,8 @@ namespace hocon { namespace test_utils {
     std::shared_ptr<config_double> double_value(double d);
 
     std::shared_ptr<config_reference> subst(std::string ref, bool optional = false);
+
+    std::shared_ptr<config_concatenation> subst_in_string(std::string ref, bool optional = false);
 
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
