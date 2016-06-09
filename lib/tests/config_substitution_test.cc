@@ -9,6 +9,7 @@
 #include <internal/resolve_context.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/values/config_delayed_merge_object.hpp>
+#include <internal/values/config_delayed_merge.hpp>
 #include <leatherman/util/environment.hpp>
 #include <unordered_map>
 
@@ -319,19 +320,257 @@ TEST_CASE("ignore hidden circular subst") {
     REQUIRE(42u == resolved->get_int("a"));
 }
 
-/* TODO: add tests after createValueUnderPath is implemented: HC-66
- * avoidDelayedMergeObjectResolveProblem1
- * avoidDelayedMergeObjectResolveProblem2
- * avoidDelayedMergeObjectResolveProblem3
- * avoidDelayedMergeObjectResolveProblem4
- * avoidDelayedMergeObjectResolveProblem5
- * avoidDelayedMergeObjectResolveProblem6
- * fetchKnownValueFromDelayedMergeObject
- * delayedMergeObjectNeedsFullResolve
- * failToFetchFromDelayedMergeObjectNeedsFullResolve
- * resolveDelayedMergeObjectEmbrace
- * resolvePlainObectEmbrace
- */
+// TODO: the following tests dealing with delayed merge objects do not pass, see HC-78
+
+TEST_CASE("(pending HC-78) avoid delayed merge object problem 1", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+    defaults {
+            a = 1
+            b = 2
+    }
+    // make item1 into a ConfigDelayedMergeObject
+    item1 = ${defaults}
+    // note that we'll resolve to a non-object value
+    // so item1.b will ignoreFallbacks and not depend on
+    // ${defaults}
+    item1.b = 3
+    // be sure we can resolve a substitution to a value in
+    // a delayed-merge object.
+    item2.b = ${item1.b}
+      )");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(3 == resolved->get_int("item1.b"));
+    REQUIRE(3 == resolved->get_int("item2.b"));
+}
+
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 2", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+defaults {
+    a = 1
+    b = 2
+  }
+  // make item1 into a ConfigDelayedMergeObject
+  item1 = ${defaults}
+  // note that we'll resolve to an object value
+  // so item1.b will depend on also looking up ${defaults}
+  item1.b = { c : 43 }
+  // be sure we can resolve a substitution to a value in
+  // a delayed-merge object.
+  item2.b = ${item1.b}
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(43 == resolved->get_int("item1.b.c"));
+    REQUIRE(43 == resolved->get_int("item2.b.c"));
+
+}
+
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 3", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+item1.b.c = 100
+  defaults {
+    // we depend on item1.b.c
+    a = ${item1.b.c}
+    b = 2
+  }
+  // make item1 into a ConfigDelayedMergeObject
+  item1 = ${defaults}
+  // the ${item1.b.c} above in ${defaults} should ignore
+  // this because it only looks back
+  item1.b = { c : 43 }
+  // be sure we can resolve a substitution to a value in
+  // a delayed-merge object.
+  item2.b = ${item1.b}
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(43 == resolved->get_int("item1.b.c"));
+    REQUIRE(43 == resolved->get_int("item2.b.c"));
+    REQUIRE(100 == resolved->get_int("defaults.a"));
+}
+
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 4", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+defaults {
+    a = 1
+    b = 2
+  }
+
+  item1.b = 7
+  // make item1 into a ConfigDelayedMerge
+  item1 = ${defaults}
+  // be sure we can resolve a substitution to a value in
+  // a delayed-merge object.
+  item2.b = ${item1.b}
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(2 == resolved->get_int("item1.b"));
+    REQUIRE(2 == resolved->get_int("item2.b"));
+}
+
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 5", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+defaults {
+    a = ${item1.b} // tricky cycle - we won't see ${defaults}
+                   // as we resolve this
+    b = 2
+  }
+
+  item1.b = 7
+  // make item1 into a ConfigDelayedMerge
+  item1 = ${defaults}
+  // be sure we can resolve a substitution to a value in
+  // a delayed-merge object.
+  item2.b = ${item1.b}
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(2 == resolved->get_int("item1.b"));
+    REQUIRE(2 == resolved->get_int("item2.b"));
+    REQUIRE(7 == resolved->get_int("defauls.a"));
+}
+
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 6", "[!shouldfail]") {
+    auto problem = parse_object(R"(
+z = 15
+  defaults-defaults-defaults {
+    m = ${z}
+    n.o.p = ${z}
+  }
+  defaults-defaults {
+    x = 10
+    y = 11
+    asdf = ${z}
+  }
+  defaults {
+    a = 1
+    b = 2
+  }
+  defaults-alias = ${defaults}
+  // make item1 into a ConfigDelayedMergeObject several layers deep
+  // that will NOT become resolved just because we resolve one path
+  // through it.
+  item1 = 345
+  item1 = ${?NONEXISTENT}
+  item1 = ${defaults-defaults-defaults}
+  item1 = {}
+  item1 = ${defaults-defaults}
+  item1 = ${defaults-alias}
+  item1 = ${defaults}
+  item1.b = { c : 43 }
+  item1.xyz = 101
+  // be sure we can resolve a substitution to a value in
+  // a delayed-merge object.
+  item2.b = ${item1.b}
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
+
+    // TODO: Java uses unwrapped() to pull the value out of this object. Do we have a way to do this?
+    // REQUIRE(101 == problem->to_config()->get_object("item1")->attempt_peek_with_partial_resolve("xyz"));
+
+    auto resolved = resolve_without_fallbacks(problem);
+    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(43 == resolved->get_int("item1.b.c"));
+    REQUIRE(43 == resolved->get_int("item2.b.c"));
+    REQUIRE(15 == resolved->get_int("item1.n.o.p"));
+}
+
+TEST_CASE("(pending HC-78) fetch known value from delayed merge object", "[!shouldfail]") {
+    auto obj = parse_object(R"(
+defaults {
+    a = 1
+    b = 2
+  }
+  // make item1 into a ConfigDelayedMergeObject
+  item1 = ${defaults}
+  // note that we'll resolve to a non-object value
+  // so item1.b will ignoreFallbacks and not depend on
+  // ${defaults}
+  item1.b = 3
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(obj->attempt_peek_with_partial_resolve("item1")));
+    REQUIRE(3 == obj->to_config()->get_config("item1")->get_int("b"));
+}
+
+TEST_CASE("(peding HC-78) fail to fetch from delayed merge object needs full resolve", "[!shouldfail]") {
+    auto obj = parse_object(R"(
+  defaults {
+    a = 1
+    b = { c : 31 }
+  }
+  item1 = ${defaults}
+  // because b is an object, fetching it requires resolving ${defaults} above
+  // to see if there are more keys to merge with b.
+  item1.b = { c : 41 })");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(obj->attempt_peek_with_partial_resolve("item1")));
+    REQUIRE_THROWS(obj->to_config()->get_object("item1.b"));
+}
+
+TEST_CASE("(pending HC-78) resolve delayed merge object embrace", "[!shouldfail]") {
+    auto obj = parse_object(R"(
+  defaults {
+    a = 1
+    b = 2
+  }
+
+  item1 = ${defaults}
+  // item1.c refers to a field in item2 that refers to item1
+  item1.c = ${item2.d}
+  // item1.x refers to a field in item2 that doesn't go back to item1
+  item1.x = ${item2.y}
+
+  item2 = ${defaults}
+  // item2.d refers to a field in item1
+  item2.d = ${item1.a}
+  item2.y = 15
+)");
+
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(obj->attempt_peek_with_partial_resolve("item1")));
+    REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(obj->attempt_peek_with_partial_resolve("item2")));
+
+    auto resolved = obj->to_config()->resolve();
+    REQUIRE(1 == resolved->get_int("item1.c"));
+    REQUIRE(1 == resolved->get_int("item2.d"));
+    REQUIRE(15 == resolved->get_int("item1.x"));
+}
+
+TEST_CASE("resolve plain object embrace") {
+    auto obj = parse_object(R"(
+  item1.a = 10
+  item1.b = ${item2.d}
+  item2.c = 12
+  item2.d = 14
+  item2.e = ${item1.a}
+  item2.f = ${item1.b}   // item1.b goes back to item2
+  item2.g = ${item2.f}   // goes back to ourselves
+)");
+
+    REQUIRE(dynamic_pointer_cast<const simple_config_object>(obj->attempt_peek_with_partial_resolve("item1")));
+    REQUIRE(dynamic_pointer_cast<const simple_config_object>(obj->attempt_peek_with_partial_resolve("item2")));
+
+    auto resolved = obj->to_config()->resolve();
+    REQUIRE(14 == resolved->get_int("item1.b"));
+    REQUIRE(10 == resolved->get_int("item2.e"));
+    REQUIRE(14 == resolved->get_int("item2.f"));
+    REQUIRE(14 == resolved->get_int("item2.g"));
+}
 
 // TODO: this test legitimately fails: HC-72
 TEST_CASE("pending HC-72: use relative to same file when relativized (pending)", "[!shouldfail]") {
@@ -468,14 +707,13 @@ TEST_CASE("subst self references (pending)", "[!shouldfail]") {
         REQUIRE(0u == resolved->root()->size());
     }
 
-    // TODO: these two should pass when createValuePath is implemented: HC-66
-    SECTION("pending HC-66: subst self reference along path", "[!shouldfail]") {
+    SECTION("subst self reference along path") {
         auto obj = parse_object("a.b=1, a.b=${a.b}");
         auto resolved = resolve(obj);
         REQUIRE(1u == resolved->get_int("a.b"));
     }
 
-    SECTION("pending HC-66: subst self reference along longer path", "[!shouldfail]") {
+    SECTION("subst self reference along longer path") {
         auto obj = parse_object("a.b.c=1, a.b.c=${a.b.c}");
         auto resolved = resolve(obj);
         REQUIRE(1u == resolved->get_int("a.b.c"));
@@ -614,8 +852,7 @@ TEST_CASE("subst self references (pending)", "[!shouldfail]") {
         REQUIRE(42u == resolved->get_int("bar.foo"));
     }
 
-    // TODO: should pass when createValuePath is implemented: HC-66
-    SECTION("pending HC-66: mutually referring not a self reference", "[!shouldfail]") {
+    SECTION("mutually referring not a self reference") {
         auto obj = parse_object(R"(
             // bar.a should end up as 4
             bar : { a : ${foo.d}, b : 1 }
