@@ -193,6 +193,10 @@ namespace hocon {
         return resolve_result<shared_value>(modifier.context, value);
     }
 
+    shared_object simple_config_object::new_copy(resolve_status const &new_status, shared_origin new_origin) const {
+        return make_shared<simple_config_object>(move(new_origin), _value, move(new_status), ignores_fallbacks());
+    }
+
     shared_ptr<simple_config_object> simple_config_object::modify(no_exceptions_modifier& modifier) const
     {
         return modify_may_throw(modifier);
