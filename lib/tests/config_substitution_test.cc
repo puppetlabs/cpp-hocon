@@ -334,7 +334,7 @@ TEST_CASE("ignore hidden circular subst") {
  */
 
 // TODO: this test legitimately fails: HC-72
-TEST_CASE("pending HC-72: use relative to same file when relativized", "[!shouldfail]") {
+TEST_CASE("pending HC-72: use relative to same file when relativized (pending)", "[!shouldfail]") {
     auto child = parse_object("foo=in child,bar=${foo}");
     auto values = unordered_map<string, shared_value> {};
 
@@ -360,7 +360,7 @@ TEST_CASE("use relative to root when relativized") {
 }
 
 // TODO: this test legitimately fails: HC-73
-TEST_CASE("pending HC-73: complex resolve", "[!shouldfail]") {
+TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
     auto resolved = resolve_without_fallbacks(subst_complex_object());
 
     REQUIRE(57u == resolved->get_int("foo"));
@@ -372,7 +372,7 @@ TEST_CASE("pending HC-73: complex resolve", "[!shouldfail]") {
 
 
 // TODO: env variable fallback legitimately fails: HC-74
-TEST_CASE("pending HC-74: fallback to env", "[!shouldfail]") {
+TEST_CASE("pending HC-74: fallback to env (pending)", "[!shouldfail]") {
     auto resolved = resolve(subst_env_var_object());
     int existed = 0;
     auto list = dynamic_pointer_cast<const simple_config_object>(resolved->root());
@@ -435,14 +435,14 @@ TEST_CASE("optional override of object provided") {
 }
 
 // TODO: Uncomment this test and write optionalUsedInArray when config::get_*_list are implemented: HC-75
-TEST_CASE("pending HC-75: optional vanishes from array", "[!shouldfail]") {
+TEST_CASE("pending HC-75: optional vanishes from array (pending)", "[!shouldfail]") {
     auto obj = parse_object("{ a : [ 1, 2, 3, ${?NOT_HERE} ] }");
     auto resolved = resolve(obj);
     auto list = vector<int> {1,2,3};
     REQUIRE(list == resolved->get_int_list("a"));
 }
 
-TEST_CASE("subst self references", "[!shouldfail]") {
+TEST_CASE("subst self references (pending)", "[!shouldfail]") {
     SECTION("subst self reference") {
         auto obj = parse_object("a=1, a=${a}");
         auto resolved = resolve(obj);
