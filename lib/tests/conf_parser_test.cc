@@ -275,7 +275,7 @@ static void line_number_test(int num, string text) {
     }
 }
 
-TEST_CASE("line numbers in errors", "[!shouldfail]") {
+TEST_CASE("line numbers in errors (pending)", "[!shouldfail]") {
     // error is at the last char
     line_number_test(1, "}");
     line_number_test(2, "\n}");
@@ -710,7 +710,7 @@ TEST_CASE("include file unclosed parens") {
 // accept bom in string value
 // accept bom whitespace
 
-TEST_CASE("accept multi period numeric path", "[!shouldfail]") {
+TEST_CASE("accept multi period numeric path (pending)", "[!shouldfail]") {
     auto conf1 = config::parse_string("0.1.2.3=foobar1");
     REQUIRE("foobar1" == conf1->get_string("0.1.2.3"));
     auto conf2 = config::parse_string("0.1.2.3.ABC=foobar2");
