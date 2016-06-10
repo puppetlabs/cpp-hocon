@@ -83,6 +83,37 @@ namespace hocon { namespace config_parser {
         return v;
     }
 
+    shared_object parse_context::create_value_under_path(path p, shared_value value) {
+        // for path foo.bar, we are creating { "foo" : { "bar" : value } }
+        vector<shared_string> keys;
+
+        shared_string key = p.first();
+        path remaining = p.remainder();
+        while (key != nullptr) {
+            keys.push_back(key);
+            if (remaining.empty()) {
+                break;
+            } else {
+                key = remaining.first();
+                remaining = remaining.remainder();
+            }
+        }
+
+        auto current = keys.end();
+        current--;
+        auto new_value = unordered_map<string, shared_value>({ {**current, value} });
+        shared_object obj = make_shared<simple_config_object>(value->origin()->with_comments(vector<string>{}),
+                                                              new_value);
+
+        while (current != keys.begin()) {
+            current--;
+            new_value = unordered_map<string, shared_value>({ {**current, obj} });
+            obj = make_shared<simple_config_object>(value->origin()->with_comments(vector<string>{}), new_value);
+        }
+
+        return obj;
+    }
+
     void parse_context::parse_include(unordered_map<string, shared_value> & values,
                                       shared_ptr<const config_node_include> n) {
         shared_object obj;
@@ -244,17 +275,21 @@ namespace hocon { namespace config_parser {
                         } else {
                             new_value = dynamic_pointer_cast<const config_value>(new_value->with_fallback(existing->second));
                             assert(new_value);
-                            existing->second = new_value;
                         }
-                    } else {
-                        values.insert(make_pair(*key, new_value));
                     }
+                    values[*key] = new_value;
                 } else {
                     if (_flavor == config_syntax::JSON) {
                         throw new bug_or_broken_exception("somehow got multi-element path in JSON mode");
                     }
 
-                    throw bug_or_broken_exception("createValueUnderPath not implemented");
+                    shared_object obj = create_value_under_path(remaining, new_value);
+                    auto existing = values.find(*key);
+                    if (existing != values.end()) {
+                        obj = dynamic_pointer_cast<const config_object>(obj->with_fallback(existing->second));
+                        assert(obj);
+                    }
+                    values[*key] = obj;
                 }
             }
         }

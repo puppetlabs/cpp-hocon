@@ -32,6 +32,7 @@ namespace hocon { namespace config_parser {
         config_syntax _flavor;
         shared_origin _base_origin, _line_origin;
         std::vector<path> _path_stack;
+
     public:
         parse_context(config_syntax flavor, shared_origin origin, std::shared_ptr<const config_node_root> document,
                 std::shared_ptr<const full_includer> includer, shared_include_context include_context);
@@ -41,6 +42,7 @@ namespace hocon { namespace config_parser {
         int array_count;
 
     private:
+        static shared_object create_value_under_path(path p, shared_value value);
         shared_origin line_origin() const;
         path full_current_path() const;
         shared_value parse_value(shared_node_value n, std::vector<std::string>& comments);

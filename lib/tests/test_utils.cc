@@ -313,10 +313,9 @@ namespace hocon { namespace test_utils {
         parse_test(R"({ "foo" : null bar 42 baz true 3.14 "hi" })"), // bunch of values to concat into a string
         parse_test("{ foo : \"bar\" }"), // no quotes on key
         parse_test("{ foo : bar }"), // no quotes on key or value
-        // TODO: createValueUnderPath unimplemented
-        // parse_test("{ foo.bar : bar }"), // path expression in key
-        // parse_test("{ foo.\"hello world\".baz : bar }"), // partly-quoted path expression in key
-        // parse_test("{ foo.bar \n : bar }"), // newline after path expression in key
+        parse_test("{ foo.bar : bar }"), // path expression in key
+        parse_test("{ foo.\"hello world\".baz : bar }"), // partly-quoted path expression in key
+        parse_test("{ foo.bar \n : bar }"), // newline after path expression in key
         parse_test("{ foo  bar : bar }"), // whitespace in the key
         parse_test("{ true : bar }"), // key is a non-string token
         parse_test(R"({ "foo" : "bar", "foo" : "bar2" })", true), // dup keys - lift just returns both

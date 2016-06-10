@@ -596,8 +596,8 @@ TEST_CASE("track comments for multiple fields") {
     assert_comments({" before entire array", " after entire array"}, conf7, "array");
 }
 
+// TODO: this test used to fail due to an unimplemented method. Now it seems to reveal a bug in comment handling.
 TEST_CASE("track comments for multiple fields (pending)", "[!shouldfail]") {
-    // TODO: implement createValueUnderPath
     // properties-like syntax
     auto conf8 = parse_config(R"(
             # ignored comment
@@ -623,6 +623,8 @@ TEST_CASE("track comments for multiple fields (pending)", "[!shouldfail]") {
     assert_comments({" a.d comment"}, conf8, "a.d");
     // here we're concerned that comments apply only to leaf
     // nodes, not to parent objects.
+
+    // TODO: comments are currently being applied to the root as well. Why?
     assert_comments({}, conf8, "x");
     assert_comments({}, conf8, "a");
 }

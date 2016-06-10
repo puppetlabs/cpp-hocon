@@ -31,6 +31,20 @@ namespace hocon {
         virtual shared_object with_value(path raw_path, shared_value value) const = 0;
         virtual shared_object with_value(std::string key, shared_value value) const = 0;
 
+        /**
+         * Look up the key on an only-partially-resolved object, with no
+         * transformation or type conversion of any kind; if 'this' is not resolved
+         * then try to look up the key anyway if possible.
+         *
+         * @param key
+         *            key to look up
+         * @return the value of the key, or null if known not to exist
+         * @throws config_exception
+         *             if can't figure out key's value (or existence) without more
+         *             resolving
+         */
+        virtual shared_value attempt_peek_with_partial_resolve(std::string const& key) const = 0;
+
         // map interface
         using iterator = std::unordered_map<std::string, shared_value>::const_iterator;
         virtual bool is_empty() const = 0;
@@ -41,7 +55,6 @@ namespace hocon {
         virtual iterator end() const = 0;
 
     protected:
-        virtual shared_value attempt_peek_with_partial_resolve(std::string const& key) const = 0;
         shared_value peek_path(path desired_path) const;
         shared_value peek_assuming_resolved(std::string const& key, path original_path) const;
 
