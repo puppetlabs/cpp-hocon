@@ -3,6 +3,7 @@
 #include <hocon/config_value.hpp>
 #include <hocon/config_list.hpp>
 #include <hocon/config_render_options.hpp>
+#include <hocon/config_exception.hpp>
 #include <internal/container.hpp>
 #include <algorithm>
 #include <memory>
@@ -17,7 +18,6 @@ namespace hocon {
         simple_config_list(shared_origin origin, std::vector<shared_value> value, resolve_status status);
 
         config_value::type value_type() const override { return config_value::type::LIST; }
-        // unwrapped()
         resolve_status get_resolve_status() const override { return _resolved; }
 
         shared_value replace_child(shared_value const& child, shared_value replacement) const override;
@@ -46,6 +46,8 @@ namespace hocon {
         iterator end() const override { return _value.end(); }
 
         std::shared_ptr<const simple_config_list> concatenate(std::shared_ptr<const simple_config_list> other) const;
+
+        unwrapped_value unwrapped() const override;
 
         bool operator==(config_value const& other) const override;
 

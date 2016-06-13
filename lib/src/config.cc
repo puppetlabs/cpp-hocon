@@ -1,5 +1,6 @@
 #include <hocon/config.hpp>
 #include <hocon/config_parse_options.hpp>
+#include <hocon/config_list.hpp>
 #include <hocon/config_exception.hpp>
 #include <internal/default_transformer.hpp>
 #include <internal/resolve_context.hpp>
@@ -222,6 +223,9 @@ namespace hocon {
         return get_object(path_expression)->to_config();
     }
 
+    shared_list config::get_list(string const& path_expression) const {
+        return dynamic_pointer_cast<const config_list>(find(path_expression, config_value::type::LIST));
+    }
 
     vector<bool> config::get_bool_list(string const& path) const {
         throw config_exception("get_bool_list unimplemented");

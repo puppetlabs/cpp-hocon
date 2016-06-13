@@ -569,6 +569,7 @@ namespace hocon {
         virtual shared_config get_config(std::string const& path) const;
         virtual std::shared_ptr<const config_value> get_value(std::string const& path) const;
 
+        virtual shared_list get_list(std::string const& path) const;
         virtual std::vector<bool> get_bool_list(std::string const& path) const;
         virtual std::vector<int> get_int_list(std::string const& path) const;
         virtual std::vector<int64_t> get_long_list(std::string const& path) const;

@@ -19,6 +19,10 @@ namespace hocon {
         return _value;
     }
 
+    unwrapped_value config_boolean::unwrapped() const {
+        return _value;
+    }
+
     shared_value config_boolean::new_copy(shared_origin origin) const {
         return make_shared<config_boolean>(move(origin), _value);
     }

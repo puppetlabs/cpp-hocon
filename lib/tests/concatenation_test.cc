@@ -1,8 +1,8 @@
 #include <catch.hpp>
 
 #include <hocon/config.hpp>
-#include <hocon/config_exception.hpp>
 #include "test_utils.hpp"
+#include <hocon/config_list.hpp>
 
 using namespace hocon;
 using namespace hocon::test_utils;
@@ -107,12 +107,37 @@ TEST_CASE("concatenation") {
         REQUIRE(thrown);
     }
 
-    // TODO: noSubstitutionsListConcat
-    // TODO: listConcatWithSubstatutions
-    // TODO: listConcatSelfReferential
-    // TODO: listConcatCanSpanLinesInsideBrackets
-    // We really need to flesh out our data access story before it's
-    // worth writing these, as the API could change dramatically
+    SECTION("list concatenation with no substitutions") {
+        auto conf = parse_config(" a :  [1,2] [3,4]  ");
+        std::vector<unwrapped_value> expected { 1,2,3,4 };
+        unwrapped_value v(expected);
+        bool test = v == conf->get_list("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("list concatenation with substitutions") {
+        auto conf = parse_config(" a :  ${x} [3,4] ${y}, x : [1,2], y : [5,6]  ")->resolve();
+        std::vector<unwrapped_value> expected {1,2,3,4,5,6};
+        unwrapped_value v(expected);
+        bool test = v == conf->get_list("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("list concatenation with self-references") {
+        auto conf = parse_config(" a : [1, 2], a : ${a} [3,4], a : ${a} [5,6]  ")->resolve();
+        std::vector<unwrapped_value> expected {1,2,3,4,5,6};
+        unwrapped_value v(expected);
+        bool test = v == conf->get_list("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("list concat can span lines inside brackets") {
+        auto conf = parse_config(" a :  [1,2\n] [3,4]  ");
+        std::vector<unwrapped_value> v {1,2,3,4};
+        unwrapped_value expected(v);
+        bool test = expected == conf->get_list("a")->unwrapped();
+        REQUIRE(test);
+    }
 
     SECTION("list concatenation cannot span lines") {
         bool thrown = false;
@@ -127,14 +152,50 @@ TEST_CASE("concatenation") {
         REQUIRE(thrown);
     }
 
-    // TODO: noSubstitutionsObjectConcat
-    // TODO: objectConcatMergeOrder
-    // TODO: objectConcatWithSubstitutions
-    // TODO: objectConcatSelfReferential
-    // TODO: objectConcatSelfReferentialOverride
-    // TODO: objectConcatCanSpanLinesInsideBraces
-    // As above, I don't want to write these until we know how we're
-    // getting structured data out of HOCON
+    SECTION("object concatenation without substitutions") {
+        auto conf = parse_config(" a : { b : c } { x : y }  ");
+        std::unordered_map<std::string, unwrapped_value> m {{"b", std::string("c")}, {"x", std::string("y")}};
+        unwrapped_value expected(m);
+        bool test = expected == conf->get_object("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("object concatenation should preserve merge order") {
+        auto conf = parse_config(" a : { b : 1 } { b : 2 } { b : 3 } { b : 4 } ");
+        REQUIRE(4 == conf->get_int("a.b"));
+    }
+
+    SECTION("object concatenation with substitutions") {
+        auto conf = parse_config(" a : ${x} { b : 1 } ${y}, x : { a : 0 }, y : { c : 2 } ")->resolve();
+        std::unordered_map<std::string, unwrapped_value> m {{"a", 0}, {"b", 1}, {"c", 2}};
+        unwrapped_value expected(m);
+        bool test = expected == conf->get_object("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("object concatenation with self-references") {
+        auto conf = parse_config(" a : { a : 0 }, a : ${a} { b : 1 }, a : ${a} { c : 2 } ")->resolve();
+        std::unordered_map<std::string, unwrapped_value> m {{"a", 0}, {"b", 1}, {"c", 2}};
+        unwrapped_value expected(m);
+        bool test = expected == conf->get_object("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("object concatenation self-reference override") {
+        auto conf = parse_config(" a : { b : 3 }, a : { b : 2 } ${a} ")->resolve();
+        std::unordered_map<std::string, unwrapped_value> m {{"b", 3}};
+        unwrapped_value expected(m);
+        bool test = expected == conf->get_object("a")->unwrapped();
+        REQUIRE(test);
+    }
+
+    SECTION("object concatenation can span lines inside braces") {
+        auto conf = parse_config(" a :  { b : c\n } { x : y }  ");
+        std::unordered_map<std::string, unwrapped_value> m {{"b", std::string("c")}, {"x", std::string("y")}};
+        unwrapped_value expected(m);
+        bool test = expected == conf->get_object("a")->unwrapped();
+        REQUIRE(test);
+    }
 
     SECTION("object concatenation cannot span lines") {
         bool thrown = false;
@@ -151,10 +212,19 @@ TEST_CASE("concatenation") {
 
     // TODO: stringConcatInsideArrayValue
     // TODO: stringNonConcatInsideArrayValue
-    // TOOD: objectConcatInsideArrayValue
+    // TODO: objectConcatInsideArrayValue
     // TODO: objectNonConcatInsideArrayValue
-    // TOOD: listConcatInsideArrayValue
-    // TOOD: listNonConcatInsideArrayValue
+
+    SECTION("list concatenation inside an array") {
+        auto conf = parse_config(" a : [ [1, 2] [3, 4] ] ");
+        std::vector<unwrapped_value> inner {1,2,3,4};
+        std::vector<unwrapped_value> outer;
+        outer.emplace_back(inner);
+        unwrapped_value expected(outer);
+        bool test = expected == conf->get_list("a")->unwrapped();
+        REQUIRE(test);
+    };
+    // TODO: listNonConcatInsideArrayValue
     // These all require we have the data access methods fleshed out
 
     SECTION("string concatenations can be keys") {

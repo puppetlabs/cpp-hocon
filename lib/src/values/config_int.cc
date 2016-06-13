@@ -16,6 +16,10 @@ namespace hocon {
         }
     }
 
+    unwrapped_value config_int::unwrapped() const {
+        return _value;
+    }
+
     int64_t config_int::long_value() const {
         return _value;
     }

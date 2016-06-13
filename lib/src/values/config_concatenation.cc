@@ -170,6 +170,10 @@ namespace hocon {
         return make_shared<config_concatenation>(move(origin), _pieces);
     }
 
+    unwrapped_value config_concatenation::unwrapped() const {
+        throw config_exception("Not resolved, call config::resolve() before attempting to unwrap. See API docs.");
+    }
+
     bool config_concatenation::ignores_fallbacks() const {
         // we can never ignore fallbacks because if a child ConfigReference
         // is self-referential we have to look lower in the merge stack

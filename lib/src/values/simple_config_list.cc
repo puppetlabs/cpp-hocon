@@ -160,6 +160,15 @@ namespace hocon {
         }
     }
 
+
+    unwrapped_value simple_config_list::unwrapped() const {
+        vector<unwrapped_value> values;
+        for (auto it = _value.begin(), endIt = _value.end(); it != endIt; ++it) {
+            values.emplace_back((*it)->unwrapped());
+        }
+        return values;
+    }
+
     std::shared_ptr<const simple_config_list>
     simple_config_list::modify(no_exceptions_modifier& modifier,
                                boost::optional<resolve_status> new_resolve_status) const
@@ -201,5 +210,6 @@ namespace hocon {
             return dynamic_pointer_cast<const simple_config_list>(shared_from_this());
         }
     }
+
 
 }  // namespace hocon

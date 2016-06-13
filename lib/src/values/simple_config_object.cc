@@ -175,6 +175,15 @@ namespace hocon {
         return make_shared<simple_config_object>(move(origin), _value, _resolved, _ignores_fallbacks);
     }
 
+    unwrapped_value simple_config_object::unwrapped() const {
+        unordered_map<string, unwrapped_value> contents;
+        for (auto pair : _value) {
+            unwrapped_value v = pair.second->unwrapped();
+            contents[pair.first] = pair.second->unwrapped();
+        }
+        return contents;
+    }
+
     bool simple_config_object::operator==(config_value const& other) const {
         return equals<simple_config_object>(other, [&](simple_config_object const& o) { return _value == o._value; });
     }

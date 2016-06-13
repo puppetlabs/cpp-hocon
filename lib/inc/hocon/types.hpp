@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include "boost/variant.hpp"
 
 namespace hocon {
 
@@ -18,6 +20,13 @@ namespace hocon {
 
     class config_value;
     using shared_value = std::shared_ptr<const config_value>;
+
+    class config_list;
+    using shared_list = std::shared_ptr<const config_list>;
+
+    typedef boost::make_recursive_variant<boost::blank, std::string, int64_t, double, int, bool,
+            std::vector<boost::recursive_variant_>, std::unordered_map<std::string,
+                    boost::recursive_variant_>>::type unwrapped_value;
 
     class container;
     using shared_container = std::shared_ptr<const container>;

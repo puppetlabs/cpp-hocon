@@ -24,6 +24,7 @@ namespace hocon {
         shared_value get(std::string const& key) const override { throw not_resolved(); }
         iterator begin() const override { throw not_resolved(); }
         iterator end() const override { throw not_resolved(); }
+        unwrapped_value unwrapped() const override;
 
         bool operator==(config_value const& other) const override;
 

@@ -22,6 +22,8 @@ namespace hocon {
 
         std::vector<shared_value> unmerged_values() const override;
 
+        unwrapped_value unwrapped() const override;
+
         resolve_result<shared_value> resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         static resolve_result<shared_value> resolve_substitutions(std::shared_ptr<const replaceable_merge_stack> replaceable, const std::vector<shared_value>& _stack, resolve_context const& context, resolve_source const& source);
         resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
