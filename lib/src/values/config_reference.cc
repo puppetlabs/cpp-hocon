@@ -30,7 +30,7 @@ namespace hocon {
     }
 
     bool config_reference::operator==(config_value const &other) const {
-        return equals<config_reference>(other, [&](config_reference const& o) { return _expr == o._expr; });
+        return equals<config_reference>(other, [&](config_reference const& o) { return *_expr == *o._expr; });
     }
 
     resolve_status config_reference::get_resolve_status() const {
@@ -70,5 +70,9 @@ namespace hocon {
         } else {
             return make_resolve_result(new_context.remove_cycle_marker(shared_from_this()), v);
         }
+    }
+
+    void config_reference::render(std::string& s, int indent, bool at_root, config_render_options options) const {
+        s += _expr->to_string();
     }
 }

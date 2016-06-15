@@ -163,7 +163,14 @@ namespace hocon {
 
     bool config_concatenation::operator==(config_value const& other) const {
         // note that "origin" is deliberately NOT part of equality
-        return equals<config_concatenation>(other, [&](config_concatenation const& o) { return _pieces == o._pieces; });
+        return equals<config_concatenation>(other, [&](config_concatenation const& o) {
+            if (_pieces.size() != o._pieces.size()) { return false; }
+            bool result = true;
+            for (unsigned long i = 0; i < _pieces.size(); i++) {
+                result = *_pieces[i] == *o._pieces[i];
+            }
+            return result;
+        });
     }
 
     shared_value config_concatenation::new_copy(shared_origin origin) const {

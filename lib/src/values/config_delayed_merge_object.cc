@@ -165,4 +165,11 @@ namespace hocon {
         return has_descendant_in_list(_stack, descendant);
     }
 
+    void config_delayed_merge_object::render(string& s, int indent, bool at_root, string const& at_key, config_render_options options) const {
+        config_delayed_merge::render(_stack, s, indent, at_root, at_key, options);
+    }
+
+    void config_delayed_merge_object::render(string& s, int indent, bool at_root, config_render_options options) const {
+        render(s, indent, at_root, "", options);
+    }
 }  // namespace hocon

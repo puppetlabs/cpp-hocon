@@ -47,8 +47,7 @@ namespace hocon {
         return resolve_status::RESOLVED;
     }
 
-    void config_value::render(std::string &result, int indent, bool at_root, std::string at_key,
-                                         config_render_options options) const {
+    void config_value::render(std::string &result, int indent, bool at_root, std::string const& at_key, config_render_options options) const {
         if (!at_key.empty()) {
             string rendered_key;
             if (options.get_json()) {
@@ -61,7 +60,7 @@ namespace hocon {
             if (options.get_json()) {
                 result += options.get_formatted() ? " : " : ":";
             } else {
-                // in non-JSON we can omit the color or equals before an object
+                // in non-JSON we can omit the colon or equals before an object
                 if (dynamic_cast<const config_object*>(this)) {
                     if (options.get_formatted()) {
                         result += " ";
@@ -81,7 +80,7 @@ namespace hocon {
 
     void config_value::indent(std::string &result, int indent, config_render_options const& options) {
         if (options.get_formatted()) {
-            result.append(' ', indent*4);
+            result.append(indent*4, ' ');
         }
     }
 

@@ -1,4 +1,5 @@
 #include <hocon/config_value.hpp>
+#include <internal/config_util.hpp>
 #include <internal/unmergeable.hpp>
 #include <internal/replaceable_merge_stack.hpp>
 #include <vector>
@@ -31,10 +32,16 @@ namespace hocon {
         shared_value replace_child(shared_value const& child, shared_value replacement) const override;
         bool has_descendant(shared_value const& descendant) const override;
 
+        static void render(std::vector<shared_value> const& stack, std::string& s, int indent_value, bool at_root, std::string const& at_key, config_render_options options);
+
+
     protected:
         shared_value new_copy(shared_origin) const override;
 
         bool ignores_fallbacks() const override;
+
+        virtual void render(std::string& result, int indent, bool at_root, std::string const& at_key, config_render_options options) const override;
+        virtual void render(std::string& result, int indent, bool at_root, config_render_options options) const override;
 
     private:
         std::vector<shared_value> _stack;

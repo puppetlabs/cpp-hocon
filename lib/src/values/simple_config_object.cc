@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <boost/algorithm/string.hpp>
+#include <internal/tokens.hpp>
 
 using namespace std;
 
@@ -176,7 +178,15 @@ namespace hocon {
     }
 
     bool simple_config_object::operator==(config_value const& other) const {
-        return equals<simple_config_object>(other, [&](simple_config_object const& o) { return _value == o._value; });
+        return equals<simple_config_object>(other, [&](simple_config_object const& o) {
+            if (_value.size() != o._value.size()) { return false; }
+
+            bool still_equal = true;
+            for (auto pair : _value) {
+                still_equal = *(o._value.at(pair.first)) == *(_value.at(pair.first));
+            }
+            return still_equal;
+        });
     }
 
     resolve_result<shared_value>
@@ -390,4 +400,104 @@ namespace hocon {
         }
     }
 
+    bool compare(const string &a, const string &b) {
+        bool a_digits = std::all_of(a.begin(), a.end(), ::isdigit);
+        bool b_digits = std::all_of(b.begin(), b.end(), ::isdigit);
+
+        if (a_digits && b_digits) {
+            return a >= b;
+        } else if (a_digits) {
+            return true;
+        } else if (b_digits) {
+            return false;
+        } else {
+            return a < b;
+        }
+    }
+
+    void simple_config_object::render(string& s, int indent, bool at_root, config_render_options options) const {
+        if (is_empty()) {
+            s += "{}";
+        } else {
+            bool outer_braces = options.get_json() || !at_root;
+
+            int inner_indent;
+            if (outer_braces) {
+                inner_indent = indent + 1;
+                s += "{";
+
+                if (options.get_formatted()) {
+                    s += "\n";
+                }
+             } else {
+                inner_indent = indent;
+            }
+
+            int seperator_count = 0;
+            vector<string> keys = key_set();
+            sort(keys.begin(), keys.end(), compare);
+            for (string const& k : keys) {
+                shared_value v;
+                v = _value.at(k);
+
+                if (options.get_origin_comments()) {
+                    // split the string into a vector of keys
+                    string description = v->origin()->description();
+                    vector<string> lines;
+                    boost::split(lines, description, boost::is_any_of("\n"));
+
+                    for (string const& l : lines) {
+                        config_value::indent(s, indent + 1, options);
+                        s += "#";
+                        if (!l.empty()) {
+                           s += " ";
+                        }
+                        s += l;
+                        s += "\n";
+                    }
+                }
+                if (options.get_comments()) {
+                    for (string comment : v->origin()->comments()) {
+                        config_value::indent(s, inner_indent, options);
+                        s += "#";
+                        if (!boost::starts_with(comment, " ")) {
+                            s += " ";
+                        }
+                        s += comment;
+                        s += "\n";
+                    }
+                }
+                config_value::indent(s, inner_indent, options);
+                v->render(s, inner_indent, false /* at_root */, k, options);
+
+                if (options.get_formatted()) {
+                    if (options.get_json()) {
+                        s += ",";
+                        seperator_count = 2;
+                    } else {
+                        seperator_count = 1;
+                    }
+                    s += "\n";
+                } else {
+                    s += ",";
+                    seperator_count = 1;
+                }
+            }
+            // chop last commas/newlines
+            s = s.substr(0, s.size() - seperator_count);
+
+            if (outer_braces) {
+                if (options.get_formatted()) {
+                    s += "\n";
+                    if (outer_braces) {
+                        config_value::indent(s, indent, options);
+                    }
+                }
+                s += "}";
+            }
+        }
+        if (at_root && options.get_formatted()){
+            s += "\n";
+        }
+    }
 }  // namespace hocon

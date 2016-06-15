@@ -47,13 +47,12 @@ TEST_CASE("valid conf works") {
     for (auto const& valid : whitespace_variations(valid_conf(), true)) {
         CAPTURE(valid.test);
         REQUIRE_NOTHROW(parse(valid.test));
-        //auto our_ast = parse(valid.test);
-        // TODO: implement rendering
+        auto our_ast = parse(valid.test);
         // let's also check round-trip rendering
-        //auto rendered = our_ast->render();
-        //CAPTURE(rendered);
-        //auto reparsed = parse(rendered);
-        //REQUIRE(*our_ast == *reparsed);
+        auto rendered = our_ast->render();
+        CAPTURE(rendered);
+        auto reparsed = parse(rendered);
+        REQUIRE(*our_ast == *reparsed);
     }
 }
 
@@ -630,8 +629,6 @@ TEST_CASE("track comments for multiple fields (pending)", "[!shouldfail]") {
 }
 
 TEST_CASE("include file") {
-    //LIBFACTER_TESTS_DIRECTORY "/fixtures/facts/external/yaml/invalid.yaml"
-    //auto conf = config::parse_string("include file(\"/Users/whopper/Coding/cpp-hocon/lib/tests/fixtures/test01\")");
     auto conf = config::parse_string("include file(\"" + fixture_path("test01") + "\")");
 
     // should have loaded conf, json

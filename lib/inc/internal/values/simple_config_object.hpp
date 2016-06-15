@@ -2,6 +2,7 @@
 
 #include <internal/container.hpp>
 #include <hocon/config_object.hpp>
+#include <hocon/config_value.hpp>
 #include <hocon/config.hpp>
 #include <unordered_map>
 
@@ -80,6 +81,7 @@ namespace hocon {
         resolve_result<shared_value>
             resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
         shared_value new_copy(shared_origin) const override;
+        void render(std::string& s, int indent, bool at_root, config_render_options options) const override;
 
     private:
         std::unordered_map<std::string, shared_value> _value;

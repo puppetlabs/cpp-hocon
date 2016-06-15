@@ -6,6 +6,8 @@
 #include <internal/resolve_result.hpp>
 #include <internal/resolve_source.hpp>
 
+#include <algorithm>
+
 using namespace std;
 
 namespace hocon {
@@ -136,4 +138,77 @@ namespace hocon {
         return _stack.back()->ignores_fallbacks();
     }
 
+    void config_delayed_merge::render(string& s, int indent, bool at_root, string const& at_key, config_render_options options) const {
+        render(_stack, s, indent, at_root, at_key, options);
+    }
+
+    void config_delayed_merge::render(string& s, int indent, bool at_root, config_render_options options) const {
+        render(s, indent, at_root, "", options);
+    }
+
+    // static method also used by config_delayed_merge_object
+    void config_delayed_merge::render(vector<shared_value> const& stack, string& s, int indent_value, bool at_root, string const& at_key, config_render_options options) {
+        bool comment_merge = options.get_comments();
+
+        if (comment_merge) {
+            s += "# unresolved merge of " + to_string(stack.size()) + " values follows (\n";
+            if (at_key == "") {
+                indent(s, indent_value, options);
+                s += "# this unresolved merge will not be parasable because it's at the root of the object =\n";
+                indent(s, indent_value, options);
+                s += "# the HOCON format has no way to list multiple root objects in a single file \n";
+            }
+        }
+
+        vector<shared_value> reversed;
+        reversed.insert(reversed.end(), stack.begin(), stack.end());
+        reverse(reversed.begin(), reversed.end());
+
+        int i = 0;
+        for (auto const& v : reversed) {
+            if (comment_merge) {
+                indent(s, indent_value, options);
+                if (at_key == "") {
+                    s += "#     unmerged value " + to_string(i) + " for key " + hocon::render_json_string(at_key) + " from ";
+                } else {
+                    s += "#     unmerged value " + to_string(i) + " from ";
+                }
+                i++;
+                s += v->origin()->description();
+                s += "\n";
+
+                for (string const& comment : v->origin()->comments()) {
+                    indent(s, indent_value, options);
+                    s += "# ";
+                    s += comment;
+                    s += "\n";
+                }
+            }
+            indent(s, indent_value, options);
+
+            if (at_key != "") {
+                s += hocon::render_json_string(at_key);
+                if (options.get_formatted()) {
+                    s += " : ";
+                } else {
+                    s += ":";
+                }
+            }
+            v->render(s, indent_value, at_root, options);
+            s += ",";
+            if (options.get_formatted()) {
+                s += "\n";
+            }
+        }
+        // chomp comma or newline
+        s = s.substr(0, s.size() - 1);
+        if (options.get_formatted()) {
+            s = s.substr(0, s.size() - 1);  // also chomp comma
+            s += "\n";
+        }
+        if (comment_merge) {
+            indent(s, indent_value, options);
+            s += "# ) end of unresolved merge\n";
+        }
+    }
 }  // namespace hocon::config_delayed_merge
