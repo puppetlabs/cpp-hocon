@@ -1,4 +1,5 @@
 #include <internal/values/config_null.hpp>
+#include <boost/blank.hpp>
 
 using namespace std;
 
@@ -17,6 +18,10 @@ namespace hocon {
 
     shared_value config_null::new_copy(shared_origin origin) const {
         return make_shared<config_null>(move(origin));
+    }
+
+    unwrapped_value config_null::unwrapped() const {
+        return boost::blank();
     }
 
     bool config_null::operator==(config_value const& other) const {

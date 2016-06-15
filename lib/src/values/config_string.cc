@@ -19,6 +19,10 @@ namespace hocon {
         return make_shared<config_string>(move(origin), _text, _quoted);
     }
 
+    unwrapped_value config_string::unwrapped() const {
+        return _text;
+    }
+
     bool config_string::was_quoted() const {
         return _quoted == config_string_type::QUOTED;
     }

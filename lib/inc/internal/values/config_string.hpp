@@ -14,6 +14,8 @@ namespace hocon {
         config_value::type value_type() const override;
         std::string transform_to_string() const override;
 
+        unwrapped_value unwrapped() const override;
+
         bool was_quoted() const;
         bool operator==(config_value const& other) const override;
 

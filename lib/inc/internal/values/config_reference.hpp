@@ -19,6 +19,7 @@ namespace hocon {
         type value_type() const override;
         std::vector<shared_value> unmerged_values() const override;
         resolve_status get_resolve_status() const override;
+        unwrapped_value unwrapped() const override;
 
         std::shared_ptr<substitution_expression> expression() const;
 

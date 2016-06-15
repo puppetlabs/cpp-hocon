@@ -21,6 +21,10 @@ namespace hocon {
         return {shared_from_this()};
     }
 
+    unwrapped_value config_reference::unwrapped() const {
+        throw not_resolved_exception("Can't unwrap a config reference.");
+    }
+
     shared_value config_reference::new_copy(shared_origin origin) const {
         return make_shared<config_reference>(origin, _expr, _prefix_length);
     }

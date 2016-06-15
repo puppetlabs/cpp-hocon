@@ -10,6 +10,8 @@ namespace hocon {
 
         std::string transform_to_string() const override;
 
+        unwrapped_value unwrapped() const override;
+
         int64_t long_value() const override;
         double double_value() const override;
 

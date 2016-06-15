@@ -221,7 +221,8 @@ namespace hocon {
 
         auto unmerged_values = fallback->unmerged_values();
         stack.insert(stack.end(), make_move_iterator(unmerged_values.begin()), make_move_iterator(unmerged_values.end()));
-        return construct_delayed_merge(config_object::merge_origins(stack), move(stack));
+        auto merged = config_object::merge_origins(stack);
+        return construct_delayed_merge(merged, move(stack));
     }
 
     shared_value config_value::merged_with_the_unmergeable(std::shared_ptr<const unmergeable> fallback) const {

@@ -91,6 +91,8 @@ namespace hocon {
             return type_name(value_type());
         }
 
+        virtual unwrapped_value unwrapped() const = 0;
+
         /**
          * Renders the config value as a HOCON string. This method is primarily
          * intended for debugging, so it tries to add helpful comments and

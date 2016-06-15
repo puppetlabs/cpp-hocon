@@ -480,8 +480,9 @@ z = 15
 
     REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
 
-    // TODO: Java uses unwrapped() to pull the value out of this object. Do we have a way to do this?
-    // REQUIRE(101 == problem->to_config()->get_object("item1")->attempt_peek_with_partial_resolve("xyz"));
+    unwrapped_value expected(10);
+    bool test = expected == problem->to_config()->get_object("item1")->attempt_peek_with_partial_resolve("xyz")->unwrapped();
+    REQUIRE(test);
 
     auto resolved = resolve_without_fallbacks(problem);
     REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));

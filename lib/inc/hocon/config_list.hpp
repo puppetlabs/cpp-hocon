@@ -46,5 +46,6 @@ namespace hocon {
         virtual shared_value get(size_t index) const = 0;
         virtual iterator begin() const = 0;
         virtual iterator end() const = 0;
+        virtual unwrapped_value unwrapped() const = 0;
     };
 }  // namespace hocon

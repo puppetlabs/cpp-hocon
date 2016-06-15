@@ -51,7 +51,11 @@ namespace hocon {
     }
 
     config_value::type config_delayed_merge::value_type() const {
-        throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs");
+        throw config_exception("called value_type() on value with unresolved substitutions, need to config#resolve() first, see API docs.");
+    }
+
+    unwrapped_value config_delayed_merge::unwrapped() const {
+        throw config_exception("called unwrapped() on value with unresolved substitutions, need to config::resolve() first, see API docs.");
     }
 
     vector<shared_value> config_delayed_merge::unmerged_values() const {

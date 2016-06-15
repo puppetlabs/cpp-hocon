@@ -1,5 +1,8 @@
 #include <catch.hpp>
 
+#include <internal/values/simple_config_object.hpp>
+#include <internal/values/simple_config_list.hpp>
+
 #include "test_utils.hpp"
 
 using namespace hocon;
@@ -82,3 +85,27 @@ TEST_CASE("config numbers ints vs longs vs doubles", "[tokenizer]") {
         REQUIRE_FALSE(dynamic_pointer_cast<config_int>(num));
     }
 }
+
+TEST_CASE("config object unwraps") {
+    auto value1 = config_int::new_number(fake_origin(), int64_t(1), "1");
+    auto value2 = config_int::new_number(fake_origin(), int64_t(2), "2");
+    auto value3 = config_int::new_number(fake_origin(), int64_t(3), "3");
+    unordered_map<string, shared_value> org {{"a", value1}, {"b", value2}, {"c", value3}};
+    auto obj = make_shared<const simple_config_object>(fake_origin(), org);
+    unordered_map<string, unwrapped_value> map {{"a", 1}, {"b", 2}, {"c", 3}};
+    unwrapped_value expected(map);
+    bool test = expected == obj->unwrapped();
+    REQUIRE(test);
+}
+
+TEST_CASE("config list unwraps") {
+    auto value1 = config_int::new_number(fake_origin(), int64_t(1), "1");
+    auto value2 = config_int::new_number(fake_origin(), int64_t(2), "2");
+    auto value3 = config_int::new_number(fake_origin(), int64_t(3), "3");
+    vector<shared_value> data { value1, value2, value3 };
+    auto list = make_shared<const simple_config_list>(fake_origin(), data);
+    vector<unwrapped_value> v { 1,2,3 };
+    unwrapped_value expected(v);
+    bool test = expected == list->unwrapped();
+    REQUIRE(test);
+};

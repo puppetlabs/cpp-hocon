@@ -43,6 +43,10 @@ namespace hocon {
         return make_shared<config_delayed_merge_object>(move(origin), _stack);
     }
 
+    unwrapped_value config_delayed_merge_object::unwrapped() const {
+        throw config_exception("need to config::resolve before using this object, see the API docs.");
+    }
+
     shared_value config_delayed_merge_object::attempt_peek_with_partial_resolve(string const& key) const {
         /* a partial resolve of a ConfigDelayedMergeObject always results in a
          * SimpleConfigObject because all the substitutions in the stack get
