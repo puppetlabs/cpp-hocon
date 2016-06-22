@@ -219,6 +219,10 @@ namespace hocon {
         return dynamic_pointer_cast<const config_object>(find(path_expression, config_value::type::OBJECT));
     }
 
+    unwrapped_value config::get_any_ref(string const& path_expression) const {
+        return find(path_expression, config_value::type::UNSPECIFIED)->unwrapped();
+    }
+
     shared_config config::get_config(string const& path_expression) const {
         return get_object(path_expression)->to_config();
     }
