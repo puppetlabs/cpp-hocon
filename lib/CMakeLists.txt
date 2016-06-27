@@ -68,7 +68,7 @@ set(PROJECT_SOURCES
     src/resolve_context.cc
     src/resolve_source.cc
     src/values/config_concatenation.cc
-    )
+    src/config_value_factory.cc)
 
 
 ## An object target is generated that can be used by both the library and test executable targets.
