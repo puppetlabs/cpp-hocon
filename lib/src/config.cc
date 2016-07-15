@@ -232,31 +232,68 @@ namespace hocon {
     }
 
     vector<bool> config::get_bool_list(string const& path) const {
-        throw config_exception("get_bool_list unimplemented");
+        return get_homogeneous_unwrapped_list<bool>(path);
     }
 
     std::vector<int> config::get_int_list(std::string const& path) const {
-        throw config_exception("get_int_list unimplemented");
+        return get_homogeneous_unwrapped_list<int>(path);
     }
 
     std::vector<int64_t> config::get_long_list(std::string const& path) const {
-        throw config_exception("get_long_list unimplemented");
+        return get_homogeneous_unwrapped_list<int64_t>(path);
     }
 
     std::vector<double> config::get_double_list(std::string const& path) const {
-        throw config_exception("get_double_list unimplemented");
+        return get_homogeneous_unwrapped_list<double>(path);
     }
 
     std::vector<std::string> config::get_string_list(std::string const& path) const {
-        throw config_exception("get_string_list unimplemented");
+        return get_homogeneous_unwrapped_list<string>(path);
     }
 
     std::vector<shared_object> config::get_object_list(std::string const& path) const {
-        throw config_exception("get_object_list unimplemented");
+        auto list = get_list(path);
+        vector<shared_object> object_list;
+        for (auto item : *list) {
+            shared_object obj = dynamic_pointer_cast<const config_object>(item);
+            if (obj == nullptr) {
+                throw new config_exception("List does not contain only config_objects.");
+            }
+            object_list.push_back(obj);
+        }
+        return object_list;
     }
 
     std::vector<shared_config> config::get_config_list(std::string const& path) const {
-        throw config_exception("get_config_list unimplemented");
+        auto list = get_list(path);
+        vector<shared_config> object_list;
+        for (auto item : *list) {
+            shared_config obj = dynamic_pointer_cast<const config>(item);
+            if (obj == nullptr) {
+                throw config_exception("List does not contain only configs.");
+            }
+            object_list.push_back(obj);
+        }
+        return object_list;
+    }
+
+    template<>
+    std::vector<int64_t> config::get_homogeneous_unwrapped_list(std::string const& path) const {
+        auto list = boost::get<std::vector<unwrapped_value>>(get_list(path)->unwrapped());
+        std::vector<int64_t> long_list;
+        for (auto item : list) {
+            // Even if the parser stored the number as an int, we want to treat it as a long.
+            try {
+                long_list.push_back(boost::get<int64_t>(item));
+            } catch (std::exception& ex) {
+                try {
+                    long_list.push_back(boost::get<int>(item));
+                } catch (boost::bad_get &ex) {
+                    throw config_exception("The list did not contain only the desired type.");
+                }
+            }
+        }
+        return long_list;
     }
 
     shared_value config::to_fallback_value() const {
@@ -273,14 +310,6 @@ namespace hocon {
 
     bool config::operator==(config const &other) const {
         return _object == other._object;
-    }
-
-    template<typename T>
-    vector<T> config::get_homogeneous_unwrapped_list(string const& path, config_value::type expected) const {
-        // TODO: this relies on complex config_value types
-        // Also will need to some design decisions about getting naked values of type T
-        // out of anonymous config values... possible a templated version of the Java's unwrapped method?
-        throw runtime_error("not implemented");
     }
 
     shared_config config::with_value(string const& path_expression, shared_ptr<const config_value> value) const {

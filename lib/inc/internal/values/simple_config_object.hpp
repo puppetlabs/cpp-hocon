@@ -21,10 +21,16 @@ namespace hocon {
         bool is_empty() const override { return _value.empty(); }
         size_t size() const override { return _value.size(); }
         shared_value operator[](std::string const& key) const override { return _value.at(key); }
-        shared_value get(std::string const& key) const override { return _value.at(key); }
         iterator begin() const override { return _value.begin(); }
         iterator end() const override { return _value.end(); }
         unwrapped_value unwrapped() const override;
+
+        shared_value get(std::string const& key) const override {
+            if (_value.find(key) == _value.end()) {
+                return nullptr;
+            }
+            return _value.at(key);
+        }
 
         std::unordered_map<std::string, shared_value> const& entry_set() const override;
 
