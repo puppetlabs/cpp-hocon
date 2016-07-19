@@ -6,6 +6,7 @@
 #include "config_object.hpp"
 #include "config_resolve_options.hpp"
 #include "config_value.hpp"
+#include "config_list.hpp"
 #include "config_exception.hpp"
 #include "path.hpp"
 #include <vector>
@@ -570,6 +571,20 @@ namespace hocon {
         virtual unwrapped_value get_any_ref(std::string const& path) const;
         virtual std::shared_ptr<const config_value> get_value(std::string const& path) const;
 
+        template<typename T>
+        std::vector<T> get_homogeneous_unwrapped_list(std::string const& path) const {
+            auto list = boost::get<std::vector<unwrapped_value>>(get_list(path)->unwrapped());
+            std::vector<T> T_list;
+            for (auto item : list) {
+                try {
+                    T_list.push_back(boost::get<T>(item));
+                } catch (boost::bad_get &ex) {
+                    throw config_exception("The list did not contain only the desired type.");
+                }
+            }
+            return T_list;
+        }
+
         virtual shared_list get_list(std::string const& path) const;
         virtual std::vector<bool> get_bool_list(std::string const& path) const;
         virtual std::vector<int> get_int_list(std::string const& path) const;
@@ -578,7 +593,6 @@ namespace hocon {
         virtual std::vector<std::string> get_string_list(std::string const& path) const;
         virtual std::vector<shared_object> get_object_list(std::string const& path) const;
         virtual std::vector<shared_config> get_config_list(std::string const& path) const;
-
 
         // TODO: memory and duration parsing
 
@@ -682,10 +696,10 @@ namespace hocon {
         shared_value find_or_null(std::string const& path_expression, config_value::type expected) const;
         shared_value find_or_null(path path_expression, config_value::type expected, path original_path) const;
 
-        template<typename T>
-        std::vector<T> get_homogeneous_unwrapped_list(std::string const& path, config_value::type expected) const;
-
         shared_object _object;
     };
+
+    template<>
+    std::vector<int64_t> config::get_homogeneous_unwrapped_list(std::string const& path) const;
 
 }  // namespace hocon
