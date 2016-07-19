@@ -491,7 +491,7 @@ z = 15
     REQUIRE(15 == resolved->get_int("item1.n.o.p"));
 }
 
-TEST_CASE("(pending HC-78) fetch known value from delayed merge object", "[!shouldfail]") {
+TEST_CASE("Fetch known value from delayed merge object") {
     auto obj = parse_object(R"(
 defaults {
     a = 1
@@ -509,7 +509,7 @@ defaults {
     REQUIRE(3 == obj->to_config()->get_config("item1")->get_int("b"));
 }
 
-TEST_CASE("(peding HC-78) fail to fetch from delayed merge object needs full resolve", "[!shouldfail]") {
+TEST_CASE("Fail to fetch from delayed merge object needs full resolve") {
     auto obj = parse_object(R"(
   defaults {
     a = 1
@@ -674,15 +674,15 @@ TEST_CASE("optional override of object provided") {
     REQUIRE_FALSE(resolved->has_path("a.b"));
 }
 
-// TODO: Uncomment this test and write optionalUsedInArray when config::get_*_list are implemented: HC-75
-TEST_CASE("pending HC-75: optional vanishes from array (pending)", "[!shouldfail]") {
+TEST_CASE("optional vanishes from array") {
     auto obj = parse_object("{ a : [ 1, 2, 3, ${?NOT_HERE} ] }");
     auto resolved = resolve(obj);
     auto list = vector<int> {1,2,3};
     REQUIRE(list == resolved->get_int_list("a"));
 }
 
-TEST_CASE("subst self references (pending)", "[!shouldfail]") {
+
+TEST_CASE("subst self references") {
     SECTION("subst self reference") {
         auto obj = parse_object("a=1, a=${a}");
         auto resolved = resolve(obj);
@@ -762,14 +762,6 @@ TEST_CASE("subst self references (pending)", "[!shouldfail]") {
         auto resolved = resolve(obj);
         // the substitution would be 1, but then 2 overrides
         REQUIRE(2u == resolved->get_int("a"));
-    }
-
-    // TODO: this test legitimately fails: HC-76
-    SECTION("pending HC-76: subst self reference object middle of stack", "[!shouldfail]") {
-        auto obj = parse_object("a={b=5}, a=${a}, a={c=6}");
-        auto resolved = resolve(obj);
-        REQUIRE(5u == resolved->get_int("a.b"));
-        REQUIRE(6u == resolved->get_int("a.c"));
     }
 
     SECTION("subst optional self reference middle of stack") {
@@ -867,19 +859,6 @@ TEST_CASE("subst self references (pending)", "[!shouldfail]") {
         REQUIRE(3u == resolved->get_int("foo.c"));
     }
 
-    // TODO: these tests legitimately fail: HC-77
-    SECTION("pending HC-77: subst self reference multiple times", "[!shouldfail]") {
-        auto obj = parse_object("a=1,a=${a},a=${a},a=${a}");
-        auto resolved = resolve(obj);
-        REQUIRE(1u == resolved->get_int("a"));
-    }
-
-    SECTION("pending HC-77: subst self reference in concat multiple times", "[!shouldfail]") {
-        auto obj = parse_object("a=1,a=${a}x,a=${a}y,a=${a}z");
-        auto resolved = resolve(obj);
-        REQUIRE("1xyz" == resolved->get_string("a"));
-    }
-
     SECTION("subst self reference in array") {
         // never "look back" from "inside" an array
         bool thrown = false;
@@ -891,5 +870,28 @@ TEST_CASE("subst self references (pending)", "[!shouldfail]") {
             REQUIRE_STRING_CONTAINS(e.what(), "cycle");
         }
         REQUIRE(thrown);
+    }
+}
+
+TEST_CASE("subst self references (pending)", "[!shouldfail]") {
+    // TODO: this test legitimately fails: HC-76
+    SECTION("pending HC-76: subst self reference object middle of stack", "[!shouldfail]") {
+        auto obj = parse_object("a={b=5}, a=${a}, a={c=6}");
+        auto resolved = resolve(obj);
+        REQUIRE(5u == resolved->get_int("a.b"));
+        REQUIRE(6u == resolved->get_int("a.c"));
+    }
+
+    // TODO: these tests legitimately fail: HC-77
+    SECTION("pending HC-77: subst self reference multiple times", "[!shouldfail]") {
+        auto obj = parse_object("a=1,a=${a},a=${a},a=${a}");
+        auto resolved = resolve(obj);
+        REQUIRE(1u == resolved->get_int("a"));
+    }
+
+    SECTION("pending HC-77: subst self reference in concat multiple times", "[!shouldfail]") {
+        auto obj = parse_object("a=1,a=${a}x,a=${a}y,a=${a}z");
+        auto resolved = resolve(obj);
+        REQUIRE("1xyz" == resolved->get_string("a"));
     }
 }

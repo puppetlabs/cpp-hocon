@@ -246,10 +246,6 @@ TEST_CASE("implied comma handling") {
     REQUIRE_THROWS_AS(parse_config("{ a : y b : z }"), config_exception);
 
     REQUIRE_THROWS_AS(parse_config(R"({ "a" : "y" "b" : "z" })"), config_exception);
-}
-
-TEST_CASE("implied comma handling (pending)", "[!shouldfail]") {
-    // TODO: remaining tests require list accessors
 
     // with no newline or comma, we do value concatenation
     auto no_newline_in_array = parse_config(" { c : [ 1 2 3 ] } ");
@@ -709,7 +705,7 @@ TEST_CASE("include file unclosed parens") {
 // accept bom in string value
 // accept bom whitespace
 
-TEST_CASE("accept multi period numeric path (pending)", "[!shouldfail]") {
+TEST_CASE("accept multi period numeric path") {
     auto conf1 = config::parse_string("0.1.2.3=foobar1");
     REQUIRE("foobar1" == conf1->get_string("0.1.2.3"));
     auto conf2 = config::parse_string("0.1.2.3.ABC=foobar2");
