@@ -14,7 +14,9 @@ set(TEST_CASES
     conf_parser_test.cc
     config_substitution_test.cc
     config_value_factory_test.cc
-    config_test.cc)
+    config_test.cc
+    program_options.cc
+)
 
 add_executable(lib${PROJECT_NAME}_test $<TARGET_OBJECTS:libprojectsrc> ${TEST_CASES} main.cc)
 target_link_libraries(lib${PROJECT_NAME}_test
