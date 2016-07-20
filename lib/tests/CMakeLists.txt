@@ -19,6 +19,11 @@ set(TEST_CASES
 )
 
 add_executable(lib${PROJECT_NAME}_test $<TARGET_OBJECTS:libprojectsrc> ${TEST_CASES} main.cc)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    target_link_libraries(lib${PROJECT_NAME}_test rt)
+endif()
+
 target_link_libraries(lib${PROJECT_NAME}_test
     ${Boost_LIBRARIES}
     ${LEATHERMAN_LIBRARIES}
