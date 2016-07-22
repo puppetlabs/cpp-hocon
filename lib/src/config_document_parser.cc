@@ -277,7 +277,7 @@ namespace hocon { namespace config_document_parser {
         }
 
         string s = t->token_text();
-        for (char c : s) {
+        for (signed char c : s) {
             if (!is_whitespace(c)) {
                 return false;
             }

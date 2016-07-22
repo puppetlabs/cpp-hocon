@@ -206,7 +206,7 @@ namespace hocon {
             return true;
         }
 
-        for (char c : s) {
+        for (signed char c : s) {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
                 last_was_dot = false;
                 continue;

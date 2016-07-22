@@ -22,7 +22,7 @@ namespace hocon {
     /** Whitespace Saver */
     token_iterator::whitespace_saver::whitespace_saver() : _last_token_was_simple_value(false) { }
 
-    void token_iterator::whitespace_saver::add(char c) {
+    void token_iterator::whitespace_saver::add(signed char c) {
         _whitespace += c;
     }
 
@@ -92,24 +92,24 @@ namespace hocon {
      * like ${ or +=, everything else should use
      * next_char_skipping_comments().
      */
-    char token_iterator::next_char_raw() {
+    signed char token_iterator::next_char_raw() {
         if (_buffer.empty()) {
             return ios::traits_type::to_char_type(_input->get());
         } else {
-            char c = _buffer.back();
+            signed char c = _buffer.back();
             _buffer.pop_back();
             return c;
         }
     }
 
-    void token_iterator::put_back(char c) {
+    void token_iterator::put_back(signed char c) {
         if (_buffer.size() > 2) {
             throw config_exception("put_back() three times, undesirable look-ahead");
         }
         _buffer.push_back(c);
     }
 
-    bool token_iterator::start_of_comment(char c) {
+    bool token_iterator::start_of_comment(signed char c) {
         if (c == -1) {
             return false;
         } else {
@@ -117,7 +117,7 @@ namespace hocon {
                 if (c == '#') {
                     return true;
                 } else if (c == '/') {
-                    char maybe_second_slash = next_char_raw();
+                    signed char maybe_second_slash = next_char_raw();
                     // we want to predictably NOT consume any chars
                     put_back(maybe_second_slash);
                     return maybe_second_slash == '/';  // Double slash indicates a comment
@@ -130,8 +130,8 @@ namespace hocon {
         }
     }
 
-    char token_iterator::next_char_after_whitespace(whitespace_saver& saver) {
-        char c = 0;
+    signed char token_iterator::next_char_after_whitespace(whitespace_saver& saver) {
+        signed char c = 0;
         while ((c = next_char_raw()) != -1) {
             if (is_whitespace_not_newline(c)) {
                 saver.add(c);
@@ -161,7 +161,7 @@ namespace hocon {
         return rendered_text;
     }
 
-    shared_token token_iterator::pull_comment(char first_char) {
+    shared_token token_iterator::pull_comment(signed char first_char) {
         bool double_slash = false;
         if (first_char == '/') {
             int discard = next_char_raw();
@@ -208,7 +208,7 @@ namespace hocon {
     shared_token token_iterator::pull_unquoted_text() {
         auto const& origin = _line_origin;
         string result;
-        char c = next_char_raw();
+        signed char c = next_char_raw();
         while (c != -1
               && not_in_unquoted_text.find(c) == string::npos
               && !is_whitespace(c)
@@ -240,11 +240,11 @@ namespace hocon {
         return make_shared<unquoted_text>(origin, result);
     }
 
-    shared_token token_iterator::pull_number(char first_char) {
+    shared_token token_iterator::pull_number(signed char first_char) {
         string result;
         result += first_char;
         bool contained_decimal_or_E = false;
-        char c = next_char_raw();
+        signed char c = next_char_raw();
         while (c != -1 && number_chars().find(c) != string::npos) {
             if (c == '.' || c == 'e' || c == 'E') {
                 contained_decimal_or_E = true;
@@ -278,7 +278,7 @@ namespace hocon {
     }
 
     void token_iterator::pull_escape_sequence(string& parsed, string& original) {
-        char escaped = next_char_raw();
+        signed char escaped = next_char_raw();
         if (escaped == -1) {
             throw config_exception("End of input but backslash in string had nothing after it");
         }
@@ -316,7 +316,7 @@ namespace hocon {
             case 'u': {
                 char utf[5] = {};
                 for (int i = 0; i < 4; i++) {
-                    char c = next_char_raw();
+                    signed char c = next_char_raw();
                     if (c == -1) {
                         throw config_exception("End of input but expecting 4 hex digits for \\uXXXX escape");
                     }
@@ -339,7 +339,7 @@ namespace hocon {
         // We are after the opening triple quote and need to consume the close triple
         int consecutive_quotes = 0;
         while (true) {
-            char c = next_char_raw();
+            signed char c = next_char_raw();
             if (c == '"') {
                 consecutive_quotes++;
             } else if (consecutive_quotes >= 3) {
@@ -392,7 +392,7 @@ namespace hocon {
 
         // maybe switch to triple quoted string
         if (result.length() == 0) {
-            char third = next_char_raw();
+            signed char third = next_char_raw();
             if (third == '"') {
                 original += third;
                 append_triple_quoted_string(result, original);
@@ -417,7 +417,7 @@ namespace hocon {
     shared_token token_iterator::pull_substitution() {
         // The initial '$' has already been consumed
         auto const& origin = _line_origin;
-        char c = next_char_raw();
+        signed char c = next_char_raw();
         if (c != '{') {
             throw config_exception("'$' not follwoed by '{', '" + string(1, c) + "' not allowed after '$'");
         }
@@ -458,7 +458,7 @@ namespace hocon {
     }
 
     shared_token token_iterator::pull_next_token(whitespace_saver& saver) {
-        char c = next_char_after_whitespace(saver);
+        signed char c = next_char_after_whitespace(saver);
         if (c == -1) {
             return tokens::end_token();
         } else if (c == '\n') {

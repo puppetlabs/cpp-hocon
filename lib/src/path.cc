@@ -169,7 +169,7 @@ namespace hocon {
     }
 
     bool path::has_funky_chars(string const& s) {
-        auto bad_char = find_if(s.begin(), s.end(), [] (char c) {
+        auto bad_char = find_if(s.begin(), s.end(), [] (signed char c) {
             return !(isalnum(c) || c == '-' || c == '_');
         });
 

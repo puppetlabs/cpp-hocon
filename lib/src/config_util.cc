@@ -5,7 +5,7 @@ using namespace std;
 
 namespace hocon {
 
-    bool is_whitespace(char c) {
+    bool is_whitespace(signed char c) {
         switch (c) {
             case ' ':
             case '\n':
@@ -20,17 +20,17 @@ namespace hocon {
         }
     }
 
-    bool is_whitespace_not_newline(char c) {
+    bool is_whitespace_not_newline(signed char c) {
         return c != '\n' && is_whitespace(c);
     }
 
-    bool is_C0_control(char c) {
+    bool is_C0_control(signed char c) {
         return c >= 0 && c <= 0x001F;
     }
 
     string render_json_string(string const& s) {
         string result = "\"";
-        for (char c : s) {
+        for (signed char c : s) {
             switch (c) {
                 case '"':
                     result += "\\\"";
@@ -72,7 +72,7 @@ namespace hocon {
 
         // if it starts with a hyphen or number, we have to quote
         // to ensure we end up with a string and not a number
-        char first = s[0];
+        signed char first = s[0];
         if (isdigit(first) || first == '-') {
             return render_json_string(s);
         }
@@ -83,7 +83,7 @@ namespace hocon {
         }
 
         // only unquote if it's pure alphanumeric
-        for (char c : s) {
+        for (signed char c : s) {
             if (!(isalpha(c) || isdigit(c) || c == '-')) {
                 return render_json_string(s);
             }
