@@ -72,8 +72,6 @@ namespace hocon {
             bool _last_token_was_simple_value;
         };
 
-        char next_char_raw();
-        void put_back(char c);
         bool start_of_comment(char c);
         shared_token pull_comment(char first_char);
 
@@ -111,7 +109,6 @@ namespace hocon {
 
         shared_origin _origin;
         std::unique_ptr<std::istream> _input;
-        std::vector<char> _buffer;
         bool _allow_comments;
         int _line_number;
         shared_origin _line_origin;

@@ -25,7 +25,7 @@ namespace hocon {
     }
 
     bool is_C0_control(char c) {
-        return c >= 0 && c <= 0x001F;
+        return c <= 0x001F;
     }
 
     string render_json_string(string const& s) {

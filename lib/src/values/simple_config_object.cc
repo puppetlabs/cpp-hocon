@@ -378,7 +378,7 @@ namespace hocon {
                 } else if (second == fallback->_value.end()) {
                     return first->second;
                 } else {
-                    auto merge = dynamic_pointer_cast<const config_value>(first->second->with_fallback(second->second));
+                    const auto merge = dynamic_pointer_cast<const config_value>(first->second->with_fallback(second->second));
                     if (!merge) {
                         throw bug_or_broken_exception("Expected with_fallback to return same type of object");
                     }

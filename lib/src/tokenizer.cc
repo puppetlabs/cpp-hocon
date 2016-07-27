@@ -86,40 +86,15 @@ namespace hocon {
     token_iterator::token_iterator(shared_origin origin, unique_ptr<std::istream> input, config_syntax flavor) :
         token_iterator(move(origin), move(input), flavor != config_syntax::JSON) {}
 
-    /**
-     * This should ONLY be called from next_char_skipping_comments,
-     * or when inside a quoted string, or when parsing a sequence
-     * like ${ or +=, everything else should use
-     * next_char_skipping_comments().
-     */
-    char token_iterator::next_char_raw() {
-        if (_buffer.empty()) {
-            return ios::traits_type::to_char_type(_input->get());
-        } else {
-            char c = _buffer.back();
-            _buffer.pop_back();
-            return c;
-        }
-    }
-
-    void token_iterator::put_back(char c) {
-        if (_buffer.size() > 2) {
-            throw config_exception("put_back() three times, undesirable look-ahead");
-        }
-        _buffer.push_back(c);
-    }
-
     bool token_iterator::start_of_comment(char c) {
-        if (c == -1) {
+        if (!*_input) {
             return false;
         } else {
             if (_allow_comments) {
                 if (c == '#') {
                     return true;
                 } else if (c == '/') {
-                    char maybe_second_slash = next_char_raw();
-                    // we want to predictably NOT consume any chars
-                    put_back(maybe_second_slash);
+                    char maybe_second_slash = _input->peek();
                     return maybe_second_slash == '/';  // Double slash indicates a comment
                 } else {
                     return false;
@@ -132,7 +107,8 @@ namespace hocon {
 
     char token_iterator::next_char_after_whitespace(whitespace_saver& saver) {
         char c = 0;
-        while ((c = next_char_raw()) != -1) {
+        while (*_input) {
+            c = _input->get();
             if (is_whitespace_not_newline(c)) {
                 saver.add(c);
                 continue;
@@ -164,7 +140,7 @@ namespace hocon {
     shared_token token_iterator::pull_comment(char first_char) {
         bool double_slash = false;
         if (first_char == '/') {
-            int discard = next_char_raw();
+            int discard = _input->get();
             if (discard != '/') {
                 throw config_exception("called pull_comment() but // not seen");
             }
@@ -172,11 +148,14 @@ namespace hocon {
         }
 
         string result;
-        int c = 0;
-        while ((c = next_char_raw()) != -1 && (c != '\n')) {
+        int c = _input->get();
+        while (*_input && c != '\n') {
             result += c;
+            c = _input->get();
         }
-        put_back(c);
+        if (c == '\n') {
+            _input->putback(c);
+        }
         if (double_slash) {
             return make_shared<double_slash_comment>(_line_origin, result);
         } else {
@@ -208,12 +187,11 @@ namespace hocon {
     shared_token token_iterator::pull_unquoted_text() {
         auto const& origin = _line_origin;
         string result;
-        char c = next_char_raw();
-        while (c != -1
-              && not_in_unquoted_text.find(c) == string::npos
-              && !is_whitespace(c)
-              && !start_of_comment(c))
-        {
+        char c = _input->get();
+        while (*_input
+               && not_in_unquoted_text.find(c) == string::npos
+               && !is_whitespace(c)
+               && !start_of_comment(c)) {
             result += c;
 
             // We parse true/false/null tokens as such no matter
@@ -231,11 +209,12 @@ namespace hocon {
                 }
             }
 
-            c = next_char_raw();
+            c = _input->get();
         }
 
         // Put back the char that ended the unquoted text
-        put_back(c);
+        _input->putback(c);
+
 
         return make_shared<unquoted_text>(origin, result);
     }
@@ -244,17 +223,17 @@ namespace hocon {
         string result;
         result += first_char;
         bool contained_decimal_or_E = false;
-        char c = next_char_raw();
-        while (c != -1 && number_chars().find(c) != string::npos) {
+        char c = _input->get();
+        while (*_input && number_chars().find(c) != string::npos) {
             if (c == '.' || c == 'e' || c == 'E') {
                 contained_decimal_or_E = true;
             }
             result += c;
-            c = next_char_raw();
+            c = _input->get();
         }
 
         // The last char we looked at wasn't part of the number, put it back
-        put_back(c);
+        _input->putback(c);
 
         try {
             if (contained_decimal_or_E) {
@@ -278,13 +257,13 @@ namespace hocon {
     }
 
     void token_iterator::pull_escape_sequence(string& parsed, string& original) {
-        char escaped = next_char_raw();
-        if (escaped == -1) {
+        if (!*_input) {
             throw config_exception("End of input but backslash in string had nothing after it");
         }
 
         // This is needed so we return the unescaped escape characters back out when rendering
         // the token
+        char escaped = _input->get();
         original += "\\";
         original += escaped;
 
@@ -316,11 +295,10 @@ namespace hocon {
             case 'u': {
                 char utf[5] = {};
                 for (int i = 0; i < 4; i++) {
-                    char c = next_char_raw();
-                    if (c == -1) {
+                    if (!*_input) {
                         throw config_exception("End of input but expecting 4 hex digits for \\uXXXX escape");
                     }
-                    utf[i] = c;
+                    utf[i] = _input->get();
                 }
                 original += string(utf);
                 short character;
@@ -339,17 +317,17 @@ namespace hocon {
         // We are after the opening triple quote and need to consume the close triple
         int consecutive_quotes = 0;
         while (true) {
-            char c = next_char_raw();
+            char c = _input->get();
             if (c == '"') {
                 consecutive_quotes++;
             } else if (consecutive_quotes >= 3) {
                 // The last three quotes end the string, and the others are kept.
                 parsed = parsed.substr(0, parsed.length() - 3);
-                put_back(c);
+                _input->putback(c);
                 break;
             } else {
                 consecutive_quotes = 0;
-                if (c == -1) {
+                if (!*_input) {
                     throw config_exception("End of input but triple-quoted string was still open");
                 } else if (c == '\n') {
                     _line_number++;
@@ -371,11 +349,11 @@ namespace hocon {
         string original = "\"";
 
         while (true) {
-            int c = next_char_raw();
-            if (c == -1) {
+            if (!*_input) {
                 throw config_exception("End of input but string quote was still open");
             }
 
+            char c = _input->get();
             if (c == '\\') {
                 pull_escape_sequence(result, original);
             } else if (c == '"') {
@@ -392,12 +370,12 @@ namespace hocon {
 
         // maybe switch to triple quoted string
         if (result.length() == 0) {
-            char third = next_char_raw();
+            char third = _input->get();
             if (third == '"') {
                 original += third;
                 append_triple_quoted_string(result, original);
             } else {
-                put_back(third);
+                _input->putback(third);
             }
         }
 
@@ -406,7 +384,7 @@ namespace hocon {
     }
 
     shared_token const& token_iterator::pull_plus_equals() {
-        int c = next_char_raw();
+        char c = _input->get();
         if (c != '=') {
             throw config_exception("'+' not followed by '=', '" + string(1, c) +
                 "' not allowed after '+'");
@@ -417,17 +395,17 @@ namespace hocon {
     shared_token token_iterator::pull_substitution() {
         // The initial '$' has already been consumed
         auto const& origin = _line_origin;
-        char c = next_char_raw();
+        char c = _input->get();
         if (c != '{') {
             throw config_exception("'$' not follwoed by '{', '" + string(1, c) + "' not allowed after '$'");
         }
 
         bool optional = false;
-        c = next_char_raw();
+        c = _input->get();
         if (c == '?') {
             optional = true;
         } else {
-            put_back(c);
+            _input->putback(c);
         }
 
         whitespace_saver saver;
@@ -459,7 +437,7 @@ namespace hocon {
 
     shared_token token_iterator::pull_next_token(whitespace_saver& saver) {
         char c = next_char_after_whitespace(saver);
-        if (c == -1) {
+        if (!*_input) {
             return tokens::end_token();
         } else if (c == '\n') {
             shared_token newline = make_shared<line>(_line_origin);
@@ -514,7 +492,7 @@ namespace hocon {
                         throw config_exception("Reserved character '" + string(1, c) + "' is not allowed" +
                             " outside quotes");
                     } else {
-                        put_back(c);
+                        _input->putback(c);
                         t = pull_unquoted_text();
                     }
                 }
