@@ -4,11 +4,11 @@
 
 namespace hocon {
 
-    bool is_whitespace(signed char codepoint);
+    bool is_whitespace(char codepoint);
 
-    bool is_whitespace_not_newline(signed char codepoint);
+    bool is_whitespace_not_newline(char codepoint);
 
-    bool is_C0_control(signed char c);
+    bool is_C0_control(char c);
 
     std::string render_json_string(std::string const& s);
 

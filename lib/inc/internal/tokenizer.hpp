@@ -60,7 +60,7 @@ namespace hocon {
         class whitespace_saver {
         public:
             whitespace_saver();
-            void add(signed char c);
+            void add(char c);
             shared_token check(token_type type, shared_origin base_origin, int line_number);
 
         private:
@@ -72,13 +72,11 @@ namespace hocon {
             bool _last_token_was_simple_value;
         };
 
-        signed char next_char_raw();
-        void put_back(signed char c);
-        bool start_of_comment(signed char c);
-        shared_token pull_comment(signed char first_char);
+        bool start_of_comment(char c);
+        shared_token pull_comment(char first_char);
 
         /** Get next char, skipping newline whitespace */
-        signed char next_char_after_whitespace(whitespace_saver& saver);
+        char next_char_after_whitespace(whitespace_saver& saver);
 
         /**
          * The rules here are intended to maximize convenience while
@@ -88,7 +86,7 @@ namespace hocon {
          */
         shared_token pull_unquoted_text();
 
-        shared_token pull_number(signed char first_char);
+        shared_token pull_number(char first_char);
 
         /**
          * @param parsed The string with the escape sequence parsed.
@@ -106,12 +104,11 @@ namespace hocon {
         void queue_next_token();
 
         static bool is_simple_value(token_type type);
-        static std::string as_string(signed char c);
+        static std::string as_string(char c);
         static shared_origin line_origin(shared_origin base_origin, int line_number);
 
         shared_origin _origin;
         std::unique_ptr<std::istream> _input;
-        std::vector<char> _buffer;
         bool _allow_comments;
         int _line_number;
         shared_origin _line_origin;

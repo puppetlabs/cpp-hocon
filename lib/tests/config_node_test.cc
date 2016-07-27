@@ -158,7 +158,7 @@ void top_level_value_replace_test(shared_node_value value,
 TEST_CASE("replace nodes", "[config-node]") {
     SECTION("simple values can be replaced") {
         top_level_value_replace_test(int_node(10), int_node(15));
-        top_level_value_replace_test(long_node(int64_t(numeric_limits<int>::max()) + 1), int_node(1));
+        top_level_value_replace_test(long_node(numeric_limits<int>::max() + 1ll), int_node(1));
         top_level_value_replace_test(double_node(3.14), int_node(2));
         top_level_value_replace_test(bool_node(false), bool_node(false));
         top_level_value_replace_test(bool_node(true), null_node());
