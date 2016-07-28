@@ -117,11 +117,21 @@ namespace hocon {
         }
     }
 
+    not_resolved_exception resolve_source::improve_not_resolved(path what, not_resolved_exception const& original) {
+        string new_message = what.render() + " has not been resolved, you need to call config::resolve()"
+                             + " see API docs for config::resolve()";
+        if (new_message == original.what()) {
+            return original;
+        } else {
+            return not_resolved_exception(new_message);
+        }
+    }
+
     resolve_source::value_with_path resolve_source::find_in_object(shared_object obj, path the_path) {
         try {
             return find_in_object(obj, the_path, {});
         } catch (const not_resolved_exception &e) {
-            throw config::improve_not_resolved(move(the_path), e);
+            throw improve_not_resolved(move(the_path), e);
         }
     }
 

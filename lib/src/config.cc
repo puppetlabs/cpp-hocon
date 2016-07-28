@@ -75,7 +75,11 @@ namespace hocon {
         try {
             peeked = _object->peek_path(raw_path);
         } catch (config_exception& ex) {
-            throw config_exception(raw_path.render() + " has not been resolved, you need to call config::resolve()");
+            if (_object->get_resolve_status() == resolve_status::RESOLVED) {
+                throw ex;
+            }
+            throw config_exception(
+                    raw_path.render() + " has not been resolved, you need to call config::resolve()");
         }
         return peeked;
     }
@@ -121,7 +125,8 @@ namespace hocon {
 
     shared_value config::throw_if_null(shared_value v, config_value::type expected, path original_path) {
         if (v->value_type() == config_value::type::CONFIG_NULL) {
-            throw config_exception(original_path.render() + " was null");
+            // TODO Once we decide on a way of converting the type enum to a string, pass expected type string
+            throw null_exception(*(v->origin()), original_path.render());
         } else {
             return v;
         }
@@ -136,7 +141,7 @@ namespace hocon {
                                                  path original_path) {
         shared_value v = self->peek_assuming_resolved(key, original_path);
         if (!v) {
-            throw config_exception("Value missing at " + original_path.render());
+            throw missing_exception(original_path.render());
         }
 
         if (expected != config_value::type::UNSPECIFIED) {
@@ -146,7 +151,7 @@ namespace hocon {
         if (expected != config_value::type::UNSPECIFIED &&
                 v->value_type() != expected &&
                 v->value_type() != config_value::type::CONFIG_NULL) {
-            throw config_exception(original_path.render() + " could not be converted to the requested type");
+            throw wrong_type_exception(original_path.render() + " could not be converted to the requested type");
         } else {
             return v;
         }
@@ -166,6 +171,9 @@ namespace hocon {
                 return find_or_null(o, next, expected, original_path);
             }
         } catch (config_exception& ex) {
+            if (self->get_resolve_status() == resolve_status::RESOLVED) {
+                throw ex;
+            }
             throw config_exception(desired_path.render() +
                                            " has not been resolved, you need to call config::resolve()");
         }
@@ -377,14 +385,5 @@ namespace hocon {
         return make_shared<simple_config_object>(origin, move(values), resolve_status::RESOLVED, false);
     }
 
-    not_resolved_exception config::improve_not_resolved(path what, not_resolved_exception const& original) {
-        string new_message = what.render() + " has not been resolved, you need to call config::resolve()"
-                                           + " see API docs for config::resolve()";
-        if (new_message == original.what()) {
-            return original;
-        } else {
-            return not_resolved_exception(new_message);
-        }
-    }
 
 }  // namespace hocon

@@ -2,6 +2,7 @@
 
 #include <hocon/config.hpp>
 #include "fixtures.hpp"
+#include "test_utils.hpp"
 
 using namespace std;
 using namespace hocon;
@@ -26,7 +27,7 @@ TEST_CASE("should be able to get bare C++ types from a config", "[config]") {
     SECTION("get list values") {
         auto conf = config::parse_file_any_syntax(TEST_FILE_DIR + string("/fixtures/test01.conf"))->resolve();
 
-        vector<int> ints { 1,2,3 };
+        vector<int> ints { 1, 2, 3 };
         REQUIRE(ints == conf->get_int_list("arrays.ofInt"));
 
         vector<int64_t> longs { 1, 2, 3 };
@@ -47,4 +48,68 @@ TEST_CASE("should be able to get bare C++ types from a config", "[config]") {
         auto string_conf = config::parse_string(bad_list);
         REQUIRE_THROWS(string_conf->get_int_list("bad"));
     };
+}
+
+TEST_CASE("correct exceptions should be thrown", "[config]") {
+    SECTION("missing exception should be thrown when the value is not in the config") {
+        bool thrown = false;
+        try {
+            auto conf = config::parse_file_any_syntax(TEST_FILE_DIR + string("/fixtures/test01.conf"))->resolve();
+            conf->get_int("badSetting");
+        } catch (const config_exception& e) {
+            thrown = true;
+            REQUIRE_STRING_CONTAINS(e.what(), "No configuration setting found");
+            REQUIRE_STRING_CONTAINS(e.what(), "badSetting");
+        }
+        REQUIRE(thrown);
+    }
+
+    SECTION("a missing exception should be thrown when single-quoted strings are queried incorrectly") {
+        bool thrown = false;
+        try {
+            auto conf = config::parse_string("object : { 'key' : value }");
+            conf->get_string("key");
+        } catch (const config_exception& e) {
+            thrown = true;
+            REQUIRE_STRING_CONTAINS(e.what(), "No configuration setting found");
+            REQUIRE_STRING_CONTAINS(e.what(), "'key'");
+        }
+        REQUIRE(thrown);
+    }
+
+    SECTION("null exception should be thrown when a null value is queried with a different type") {
+        bool thrown = false;
+        try {
+            auto conf = config::parse_string("object : null");
+            conf->get_int("object");
+        } catch (const config_exception& e) {
+            thrown = true;
+            REQUIRE_STRING_CONTAINS(e.what(), "Configuration key \"object\" is null");
+        }
+        REQUIRE(thrown);
+    }
+
+    SECTION("wrong type exception should be thrown when a value cannot be converted to the queried type") {
+        bool thrown = false;
+        try {
+            auto conf = config::parse_string("object : { key : value }");
+            conf->get_string("object");
+        } catch (const config_exception& e) {
+            thrown = true;
+            REQUIRE_STRING_CONTAINS(e.what(), "object could not be converted");
+        }
+        REQUIRE(thrown);
+    }
+
+    SECTION("not resolved error message should display when config has not been resolved") {
+        bool thrown = false;
+        try {
+            auto conf = config::parse_string("a : b\nc : ${a}");
+            conf->get_string("c");
+        } catch (const config_exception& e) {
+            thrown = true;
+            REQUIRE_STRING_CONTAINS(e.what(), "c has not been resolved");
+        }
+        REQUIRE(thrown);
+    }
 }
