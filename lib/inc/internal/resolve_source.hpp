@@ -4,6 +4,7 @@
 #include <list>
 #include <hocon/types.hpp>
 #include <internal/resolve_result.hpp>
+#include <hocon/config_exception.hpp>
 
 namespace hocon {
 
@@ -45,6 +46,7 @@ namespace hocon {
         static value_with_path find_in_object(shared_object obj, path the_path);
         static result_with_path find_in_object(shared_object obj, resolve_context context, path the_path);
         static value_with_path find_in_object(shared_object obj, path the_path, node parents);
+        static not_resolved_exception improve_not_resolved(path what, not_resolved_exception const& original);
 
         shared_object root_must_be_obj(std::shared_ptr<const container> value) const;
 

@@ -45,9 +45,9 @@ namespace hocon {
      * was set to null.
      */
     struct null_exception : public missing_exception {
-        null_exception(config_origin const& origin, std::string const& path, std::string const& expected) :
-                missing_exception(origin, (expected.empty() ? "Configuration key '" + path + "' is null"
-                                                            : "Configuration key '" + path + "' is set to null but expected " + expected)) { }
+        null_exception(config_origin const& origin, std::string const& path, std::string const& expected = "") :
+                missing_exception(origin, (expected.empty() ? "Configuration key \"" + path + "\" is null"
+                                                            : "Configuration key \"" + path + "\" is set to null but expected " + expected)) { }
     };
 
     /**
