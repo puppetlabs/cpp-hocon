@@ -7,12 +7,20 @@
 #include <internal/values/config_boolean.hpp>
 #include <internal/values/config_null.hpp>
 #include <internal/values/config_number.hpp>
+#include <internal/values/config_double.hpp>
+#include <internal/values/config_long.hpp>
+#include <internal/values/config_int.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/values/simple_config_object.hpp>
 #include <internal/parseable.hpp>
 #include <internal/simple_includer.hpp>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <leatherman/util/environment.hpp>
 #include <leatherman/locale/locale.hpp>
+
+#include <cfenv>
 
 // Mark string for translation (alias for leatherman::locale::format)
 using leatherman::locale::_;
@@ -195,7 +203,7 @@ namespace hocon {
         return v->value_type() == config_value::type::CONFIG_NULL;
     }
 
-    shared_ptr<const config_value> config::get_value(string const& path_expression) const {
+    shared_value config::get_value(string const& path_expression) const {
         return find(path_expression, config_value::type::UNSPECIFIED);
     }
 
@@ -303,6 +311,215 @@ namespace hocon {
             }
         }
         return long_list;
+    }
+
+    duration config::get_duration(string const& path) const {
+        auto v = get_value(path);
+        if (auto d = dynamic_pointer_cast<const config_double>(v)) {
+            return convert(d->double_value(), time_unit::MILLISECONDS);
+        } else if (auto l = dynamic_pointer_cast<const config_long>(v)) {
+            return convert(l->long_value(), time_unit::MILLISECONDS);
+        } else if (auto i = dynamic_pointer_cast<const config_int>(v)) {
+            return convert(i->long_value(), time_unit::MILLISECONDS);
+        } else if (auto str = dynamic_pointer_cast<const config_string>(v)) {
+            return parse_duration(str->transform_to_string(), str->origin(), path);
+        } else {
+            throw bad_value_exception(*v->origin(), path, _("Value at '{1}' was not a number or string.", path));
+        }
+    }
+
+    double config::get_duration_as_double(string const& path, time_unit unit) const {
+        auto timespan = get_duration(path);
+        double result = 0.0;
+        switch (unit) {
+            case time_unit::NANOSECONDS:
+                result = (timespan.first * 1000000000.0) + timespan.second;
+                break;
+            case time_unit::MICROSECONDS:
+                result = (timespan.first * 1000000.0) + (timespan.second / 1000.0);
+                break;
+            case time_unit::MILLISECONDS:
+                result = (timespan.first * 1000.0) + (timespan.second / 1000000.0);
+                break;
+            case time_unit::SECONDS:
+                result = timespan.first + (timespan.second / 1000000000.0);
+                break;
+            case time_unit::MINUTES:
+                result = (timespan.first + (timespan.second / 1000000000.0)) / 60.0;
+                break;
+            case time_unit::HOURS:
+                result = (timespan.first + (timespan.second / 1000000000.0)) / 3600.0;
+                break;
+            case time_unit::DAYS:
+                result = (timespan.first + (timespan.second / 1000000000.0)) / 84600.0;
+                break;
+            default:
+                throw config_exception(_("Not a valid time_unit"));
+        }
+        if (!isnormal(result)) {
+            throw config_exception(_("as_double: Overflow occurred during time conversion"));
+        }
+        return result;
+    }
+
+    int64_t config::get_duration_as_long(string const& path, time_unit unit) const {
+        auto timespan = get_duration(path);
+        int64_t result = 0;
+        switch (unit) {
+            case time_unit::NANOSECONDS:
+                result = (timespan.first * 1000000000) + timespan.second;
+                break;
+            case time_unit::MICROSECONDS:
+                result = (timespan.first * 1000000) + (timespan.second / 1000);
+                break;
+            case time_unit::MILLISECONDS:
+                result = (timespan.first * 1000) + (timespan.second / 1000000);
+                break;
+            case time_unit::SECONDS:
+                result = timespan.first;
+                break;
+            case time_unit::MINUTES:
+                result = timespan.first / 60;
+                break;
+            case time_unit::HOURS:
+                result = timespan.first / 3600;
+                break;
+            case time_unit::DAYS:
+                result = timespan.first / 86400;
+                break;
+            default:
+                throw config_exception(_("Not a valid time_unit"));
+        }
+        if ((result >= 0) != (timespan.first >= 0)) {
+            throw config_exception(_("as_long: Overflow occurred during time conversion"));
+        }
+        return result;
+    }
+
+    duration config::convert(int64_t number, time_unit units) {
+        int64_t seconds = 0;
+        int nanos = 0;
+        switch (units) {
+            case time_unit::NANOSECONDS:
+                seconds = number / 1000000000;
+                nanos = number % 1000000000;
+                break;
+            case time_unit::MICROSECONDS:
+                seconds = number / 1000000;
+                nanos = (number % 1000000) * 1000;
+                break;
+            case time_unit::MILLISECONDS:
+                seconds = number / 1000;
+                nanos = (number % 1000) * 1000000;
+                break;
+            case time_unit::SECONDS:
+                seconds = number;
+                break;
+            case time_unit::MINUTES:
+                seconds = number * 60;
+                break;
+            case time_unit::HOURS:
+                seconds = number * 3600;
+                break;
+            case time_unit::DAYS:
+                seconds = number * 86400;
+                break;
+            default:
+                throw config_exception(_("Not a valid time_unit"));
+        }
+        if ((number >= 0) != (seconds >= 0)) {
+            throw config_exception(_("convert_long: Overflow occurred during time conversion"));
+        }
+        return duration(seconds, nanos);
+    }
+
+    duration config::convert(double number, time_unit units) {
+        double seconds = 0;
+        double nanos = 0;
+        switch (units) {
+            case time_unit::NANOSECONDS:
+                seconds = number / 1000000000;
+                nanos = fmod(number, 1000000000);
+                break;
+            case time_unit::MICROSECONDS:
+                seconds = number / 1000000;
+                nanos = fmod(number, 1000000) * 1000;
+                break;
+            case time_unit::MILLISECONDS:
+                seconds = number / 1000;
+                nanos = fmod(number, 1000) * 1000000;
+                break;
+            case time_unit::SECONDS:
+                seconds = number;
+                nanos = fmod(number, 1) * 1000000000;
+                break;
+            case time_unit::MINUTES:
+                seconds = number * 60;
+                nanos = fmod(number * 60,  1) * 1000000000;
+                break;
+            case time_unit::HOURS:
+                seconds = number * 3600;
+                nanos = fmod(number * 3600, 1) * 1000000000;
+                break;
+            case time_unit::DAYS:
+                seconds = number * 86400;
+                nanos = fmod(number * 86400, 1) * 1000000000;
+                break;
+            default:
+                throw config_exception(_("Not a valid time_unit"));
+        }
+        if (!isnormal(seconds) || !isnormal(nanos)) {
+            throw config_exception(_("convert_double: Overflow occurred during time conversion"));
+        }
+        return duration(static_cast<int64_t>(seconds), static_cast<int>(nanos));
+    }
+
+    time_unit config::get_units(string const& unit_string) {
+        if (unit_string == "ns" || unit_string == "nanos" || unit_string == "nanoseconds") {
+            return time_unit::NANOSECONDS;
+        } else if (unit_string == "us" || unit_string == "micros" || unit_string == "microseconds") {
+            return time_unit::MICROSECONDS;
+        } else if (unit_string.empty() || unit_string == "ms" || unit_string == "millis" || unit_string == "milliseconds") {
+            return time_unit::MILLISECONDS;
+        } else if (unit_string == "s" || unit_string == "seconds") {
+            return time_unit::SECONDS;
+        } else if (unit_string == "m" || unit_string == "minutes") {
+            return time_unit::MINUTES;
+        } else if (unit_string == "h" || unit_string == "hours") {
+            return time_unit::HOURS;
+        } else if (unit_string == "d" || unit_string == "days") {
+            return time_unit::DAYS;
+        } else {
+            throw config_exception(_("Could not parse time unit '{1}' (try ns, us, ms, s, m, h, or d)", unit_string));
+        }
+    }
+
+    duration config::parse_duration(string input, shared_origin origin_for_exception, string path_for_exception) {
+        boost::algorithm::trim(input);
+        string original_unit_string = boost::algorithm::trim_left_copy_if(input, !boost::algorithm::is_alpha());
+        string unit_string = original_unit_string;
+        string number_string = boost::algorithm::trim_copy(input.substr(0, input.length() - unit_string.length()));
+
+        if (number_string.empty()) {
+            throw bad_value_exception(*origin_for_exception, path_for_exception, _("No number in duration value '{1}'", input));
+        }
+
+        if (unit_string.length() > 2 && unit_string.back() != 's') {
+            unit_string += "s";
+        }
+
+        try {
+            int64_t number = boost::lexical_cast<int64_t>(number_string);
+            return convert(number, get_units(unit_string));
+        } catch (boost::bad_lexical_cast& ex) {
+            try {
+                double number = boost::lexical_cast<double>(number_string);
+                return convert(number, get_units(unit_string));
+            }
+            catch (boost::bad_lexical_cast& ex) {
+                throw bad_value_exception(*origin_for_exception, path_for_exception, _("Value '{1}' could not be converted to a number.", number_string));
+            }
+        }
     }
 
     shared_value config::to_fallback_value() const {
