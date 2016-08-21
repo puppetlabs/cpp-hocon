@@ -4,6 +4,10 @@
 #include <internal/values/config_delayed_merge_object.hpp>
 #include <hocon/config_exception.hpp>
 #include <hocon/path.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -30,8 +34,7 @@ namespace hocon {
                 }
             }
         } catch (config_exception& ex) {
-            throw config_exception(desired_path.render() +
-                                           " has not been resolved, you need to call config::resolve()");
+            throw config_exception(_("{1} has not been resolved, you need to call config::resolve()", desired_path.render()));
         }
     }
 
@@ -39,8 +42,7 @@ namespace hocon {
         try {
             return attempt_peek_with_partial_resolve(key);
         } catch (config_exception& ex) {
-            throw config_exception(original_path.render() +
-                                           " has not been resolved, you need to call config::resolve()");
+            throw config_exception(_("{1} has not been resolved, you need to call config::resolve()", original_path.render()));
         }
     }
 
@@ -62,7 +64,7 @@ namespace hocon {
 
     shared_origin config_object::merge_origins(std::vector<shared_value> const& stack) {
         if (stack.empty()) {
-            throw config_exception("can't merge origins on empty list");
+            throw config_exception(_("can't merge origins on empty list"));
         }
 
         vector<shared_origin> origins;

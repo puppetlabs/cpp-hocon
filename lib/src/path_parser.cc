@@ -2,8 +2,11 @@
 #include <internal/tokens.hpp>
 #include <sstream>
 #include <internal/values/config_string.hpp>
-
 #include <boost/algorithm/string.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 using namespace boost::algorithm;
@@ -61,7 +64,7 @@ namespace hocon {
 
         if (!expression.has_next()) {
             throw bad_path_exception(*origin, original_text,
-                                     "Expecting a field name or path here, but got nothing");
+                                     _("Expecting a field name or path here, but got nothing"));
         }
 
         while (expression.has_next()) {
@@ -114,9 +117,7 @@ namespace hocon {
                     text = t->token_text();
                 } else {
                     throw bad_path_exception(*origin, original_text,
-                                             "Token not allowed in path expression: " +
-                                             t->to_string() +
-                                             " (you can double-quote this token if you really want it here)");
+                                             _("Token not allowed in path expression: {1} (you can double-quote this token if you really want it here)", t->to_string()));
                 }
 
                 add_path_text(elements, false, text);
@@ -127,8 +128,7 @@ namespace hocon {
         for (element e : elements) {
             if (e._value.length() == 0 && !e._can_be_empty) {
                 throw bad_path_exception(*origin, original_text,
-                                         "path has a leading, trailing, or two adjacent '.'"
-                                         " (use quoted \"\" empty string if you want an empty element)");
+                                         _("path has a leading, trailing, or two adjacent '.' (use quoted \"\" empty string if you want an empty element)"));
             } else {
                 builder.append_key(e._value);
             }

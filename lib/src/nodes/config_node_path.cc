@@ -1,5 +1,9 @@
 #include <internal/nodes/config_node_path.hpp>
 #include <hocon/config_exception.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -28,7 +32,7 @@ namespace hocon {
                 return config_node_path(_path.sub_path(to_remove), token_list { it + 1, tokens_copy.end() });
             }
         }
-        throw config_exception("Tried to remove too many elements from a path node.");
+        throw config_exception(_("Tried to remove too many elements from a path node."));
     }
 
     config_node_path config_node_path::first() {

@@ -13,6 +13,10 @@
 #include <string>
 #include <set>
 #include "export.h"
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 namespace hocon {
 
@@ -579,7 +583,7 @@ namespace hocon {
                 try {
                     T_list.push_back(boost::get<T>(item));
                 } catch (boost::bad_get &ex) {
-                    throw config_exception("The list did not contain only the desired type.");
+                    throw config_exception(_("The list did not contain only the desired type."));
                 }
             }
             return T_list;

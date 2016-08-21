@@ -3,7 +3,11 @@
 #include <internal/resolve_context.hpp>
 #include <internal/resolve_result.hpp>
 #include <internal/resolve_source.hpp>
+#include <leatherman/locale/locale.hpp>
 #include <algorithm>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -48,7 +52,7 @@ namespace hocon {
             return make_resolve_result(*this, cached);
         } else {
             if (find(_cycle_markers.begin(), _cycle_markers.end(), original) != _cycle_markers.end()) {
-                throw not_possible_to_resolve_exception("Cycle detected, can't resolve.");
+                throw not_possible_to_resolve_exception(_("Cycle detected, can't resolve."));
             }
 
             auto result = original->resolve_substitutions(*this, source);
@@ -60,13 +64,13 @@ namespace hocon {
             }  else {
                 if (is_restricted_to_child()) {
                     if (restricted_key.value == nullptr && restricted_key.restrict_to_child.empty()) {
-                        throw bug_or_broken_exception("restricted_key should not be empty here");
+                        throw bug_or_broken_exception(_("restricted_key should not be empty here"));
                     }
                     with_memo = with_memo.memoize(restricted_key, resolved);
                 } else if (options().get_allow_unresolved()) {
                     with_memo = with_memo.memoize(full_key, resolved);
                 } else {
-                    throw bug_or_broken_exception("resolve_substitutions() did not give us a resolved object");
+                    throw bug_or_broken_exception(_("resolve_substitutions() did not give us a resolved object"));
                 }
             }
 
@@ -80,7 +84,7 @@ namespace hocon {
 
     resolve_context resolve_context::add_cycle_marker(shared_value value) const {
         if (find(_cycle_markers.begin(), _cycle_markers.end(), value) != _cycle_markers.end()) {
-            throw config_exception("Added cycle marker twice");
+            throw config_exception(_("Added cycle marker twice"));
         }
 
         vector<shared_value> copy { _cycle_markers };

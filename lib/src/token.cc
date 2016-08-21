@@ -1,5 +1,9 @@
 #include <internal/token.hpp>
 #include <internal/simple_config_origin.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -37,7 +41,7 @@ namespace hocon {
         if (_origin) {
             return _origin;
         } else {
-            throw unsupported_exception("This token has no origin.");
+            throw unsupported_exception(_("This token has no origin."));
         }
     }
 

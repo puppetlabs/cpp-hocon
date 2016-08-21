@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "config_origin.hpp"
@@ -7,6 +8,10 @@
 #include <string>
 #include <vector>
 #include "export.h"
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 namespace hocon {
 
@@ -63,7 +68,7 @@ namespace hocon {
                 case type::CONFIG_NULL: return "null";
                 case type::STRING: return "string";
                 case type::UNSPECIFIED: return "unspecified";
-                default: throw std::logic_error("Got impossible value for type enum");
+                default: throw std::logic_error(_("Got impossible value for type enum"));
             }
         }
 

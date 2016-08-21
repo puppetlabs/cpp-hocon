@@ -16,6 +16,10 @@
 #include <internal/values/config_reference.hpp>
 #include <internal/values/simple_config_object.hpp>
 #include <internal/values/simple_config_list.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 namespace hocon { namespace config_parser {
     using namespace std;
@@ -43,7 +47,7 @@ namespace hocon { namespace config_parser {
     path parse_context::full_current_path() const {
         // pathStack has top of stack at front
         if (_path_stack.empty()) {
-            throw bug_or_broken_exception("Bug in parser; tried to get current path when at root");
+            throw bug_or_broken_exception(_("Bug in parser; tried to get current path when at root"));
         } else {
             return path {_path_stack.front()};
         }
@@ -65,20 +69,20 @@ namespace hocon { namespace config_parser {
             } else {
                 auto &deref_n = *n;
                 throw parse_exception(*line_origin(),
-                                      string("Expecting a value but got wrong node type: ") + typeid(deref_n).name());
+                                      _("Expecting a value but got wrong node type: {1}", typeid(deref_n).name()));
             }
         }();
 
         if (!comments.empty()) {
             auto old_origin = dynamic_pointer_cast<const simple_config_origin>(v->origin());
             if (!old_origin) {
-                throw bug_or_broken_exception("origin should be a simple_config_origin");
+                throw bug_or_broken_exception(_("origin should be a simple_config_origin"));
             }
             v = v->with_origin(old_origin->prepend_comments(move(comments)));
         }
 
         if (array_count != starting_array_count) {
-            throw bug_or_broken_exception("Bug in config parser: unbalanced array count");
+            throw bug_or_broken_exception(_("Bug in config parser: unbalanced array count"));
         }
         return v;
     }
@@ -123,13 +127,13 @@ namespace hocon { namespace config_parser {
                 break;
             case config_include_kind::CLASSPATH:
                 // TODO: implement include_resource (?)
-                throw config_exception("full_includer::include_resource not implemented");
+                throw config_exception(_("full_includer::include_resource not implemented"));
                 break;
             case config_include_kind::HEURISTIC:
                 obj = dynamic_pointer_cast<const config_object>(_includer->include(_include_context, n->name()));
                 break;
             default:
-                throw config_exception("should not be reached");
+                throw config_exception(_("should not be reached"));
                 break;
         }
 
@@ -137,9 +141,7 @@ namespace hocon { namespace config_parser {
         // exception is better than producing an incorrect result.
         // See https://github.com/typesafehub/config/issues/160
         if (array_count > 0 && obj->get_resolve_status() != resolve_status::RESOLVED) {
-            throw config_exception("Due to current limitations of the config parser, when an include statement is nested inside a list value,\n"
-                                           "${} substitutions inside the included file cannot be resolved correctly. Either move the include outside of the list value or\n"
-                                           "remove the ${} statements from the included file.");
+            throw config_exception(leatherman::locale::translate("Due to current limitations of the config parser, when an include statement is nested inside a list value,\n${} substitutions inside the included file cannot be resolved correctly. Either move the include outside of the list value or\nremove the ${} statements from the included file."));
         }
 
         if (!_path_stack.empty()) {
@@ -201,10 +203,7 @@ namespace hocon { namespace config_parser {
                     // result. See
                     // https://github.com/typesafehub/config/issues/160
                     if (array_count > 0) {
-                        throw parse_exception(*line_origin(), "Due to current limitations of the config parser, += does"
-                            " not work nested inside a list. += expands to a ${} substitution and the path in ${} "
-                            "cannot currently refer to list elements. You might be able to move the += outside of the "
-                            "list and then refer to it from inside the list with ${}.");
+                        throw parse_exception(*line_origin(), leatherman::locale::translate("Due to current limitations of the config parser, += does not work nested inside a list. += expands to a ${} substitution and the path in ${} cannot currently refer to list elements. You might be able to move the += outside of the list and then refer to it from inside the list with ${}."));
                     }
 
                     // because we will put it in an array after the fact so
@@ -236,7 +235,7 @@ namespace hocon { namespace config_parser {
                         if (auto comment = dynamic_pointer_cast<const config_node_comment>(nodes.at(i))) {
                             auto old_origin = dynamic_pointer_cast<const simple_config_origin>(new_value->origin());
                             if (!old_origin) {
-                                throw bug_or_broken_exception("expected origin to be simple_config_origin");
+                                throw bug_or_broken_exception(_("expected origin to be simple_config_origin"));
                             }
                             new_value = new_value->with_origin(old_origin->append_comments({comment->comment_text()}));
                             break;
@@ -270,8 +269,7 @@ namespace hocon { namespace config_parser {
                         // could become an object).
 
                         if (_flavor == config_syntax::JSON) {
-                            throw parse_exception(*line_origin(), "JSON does not allow duplicate fields: '"
-                                + *key + "' was already seen at " + existing->second->origin()->description());
+                            throw parse_exception(*line_origin(), _("JSON does not allow duplicate fields: '{1}' was already seen at {2}", *key, existing->second->origin()->description()));
                         } else {
                             new_value = dynamic_pointer_cast<const config_value>(new_value->with_fallback(existing->second));
                             assert(new_value);
@@ -280,7 +278,7 @@ namespace hocon { namespace config_parser {
                     values[*key] = new_value;
                 } else {
                     if (_flavor == config_syntax::JSON) {
-                        throw new bug_or_broken_exception("somehow got multi-element path in JSON mode");
+                        throw new bug_or_broken_exception(_("somehow got multi-element path in JSON mode"));
                     }
 
                     shared_object obj = create_value_under_path(remaining, new_value);
@@ -300,7 +298,7 @@ namespace hocon { namespace config_parser {
     static shared_ptr<const simple_config_origin> as_origin(shared_origin o) {
         auto simple_o = dynamic_pointer_cast<const simple_config_origin>(o);
         if (!simple_o) {
-            throw bug_or_broken_exception("origin was not a simple_config_origin");
+            throw bug_or_broken_exception(_("origin was not a simple_config_origin"));
         }
         return simple_o;
     }
@@ -352,7 +350,7 @@ namespace hocon { namespace config_parser {
 
     shared_value parse_context::parse_concatenation(shared_node_concatenation n) {
         if (_flavor == config_syntax::JSON) {
-            throw bug_or_broken_exception("Found a concatenation node in JSON");
+            throw bug_or_broken_exception(_("Found a concatenation node in JSON"));
         }
 
         vector<shared_value> values;

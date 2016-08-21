@@ -11,8 +11,11 @@
 #include <internal/values/simple_config_object.hpp>
 #include <internal/parseable.hpp>
 #include <internal/simple_includer.hpp>
-
 #include <leatherman/util/environment.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -78,8 +81,7 @@ namespace hocon {
             if (_object->get_resolve_status() == resolve_status::RESOLVED) {
                 throw ex;
             }
-            throw config_exception(
-                    raw_path.render() + " has not been resolved, you need to call config::resolve()");
+            throw config_exception(_("{1} has not been resolved, you need to call config::resolve()", raw_path.render()));
         }
         return peeked;
     }
@@ -151,7 +153,7 @@ namespace hocon {
         if (expected != config_value::type::UNSPECIFIED &&
                 v->value_type() != expected &&
                 v->value_type() != config_value::type::CONFIG_NULL) {
-            throw wrong_type_exception(original_path.render() + " could not be converted to the requested type");
+            throw wrong_type_exception(_("{1} could not be converted to the requested type", original_path.render()));
         } else {
             return v;
         }
@@ -174,8 +176,7 @@ namespace hocon {
             if (self->get_resolve_status() == resolve_status::RESOLVED) {
                 throw ex;
             }
-            throw config_exception(desired_path.render() +
-                                           " has not been resolved, you need to call config::resolve()");
+            throw config_exception(_("{1} has not been resolved, you need to call config::resolve()", desired_path.render()));
         }
     }
 
@@ -265,7 +266,7 @@ namespace hocon {
         for (auto item : *list) {
             shared_object obj = dynamic_pointer_cast<const config_object>(item);
             if (obj == nullptr) {
-                throw new config_exception("List does not contain only config_objects.");
+                throw new config_exception(_("List does not contain only config_objects."));
             }
             object_list.push_back(obj);
         }
@@ -278,7 +279,7 @@ namespace hocon {
         for (auto item : *list) {
             shared_config obj = dynamic_pointer_cast<const config>(item);
             if (obj == nullptr) {
-                throw config_exception("List does not contain only configs.");
+                throw config_exception(_("List does not contain only configs."));
             }
             object_list.push_back(obj);
         }
@@ -297,7 +298,7 @@ namespace hocon {
                 try {
                     long_list.push_back(boost::get<int>(item));
                 } catch (boost::bad_get &ex) {
-                    throw config_exception("The list did not contain only the desired type.");
+                    throw config_exception(_("The list did not contain only the desired type."));
                 }
             }
         }
@@ -312,7 +313,7 @@ namespace hocon {
         if (auto newobj = dynamic_pointer_cast<const config_object>(_object->with_fallback(other))) {
             return newobj->to_config();
         } else {
-            throw bug_or_broken_exception("Creating new object from config_object did not return a config_object");
+            throw bug_or_broken_exception(_("Creating new object from config_object did not return a config_object"));
         }
     }
 
@@ -358,7 +359,7 @@ namespace hocon {
 
     void config::check_valid(shared_config reference, std::vector<std::string> restrict_to_paths) const {
         // TODO: implement this once resolve functionality is working
-        throw runtime_error("Method not implemented");
+        throw runtime_error(_("Method not implemented"));
     }
 
     shared_value config::peek_path(path desired_path) const {

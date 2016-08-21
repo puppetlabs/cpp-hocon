@@ -19,7 +19,7 @@ endif()
 enable_testing()
 
 # Leatherman setup
-set(LEATHERMAN_COMPONENTS catch nowide util)
+set(LEATHERMAN_COMPONENTS locale catch nowide util)
 find_package(Leatherman REQUIRED COMPONENTS ${LEATHERMAN_COMPONENTS})
 
 ## Before we find any packages, we want to pull in the common leatherman options, as they can affect commonly-used packages.
@@ -28,6 +28,7 @@ include(options)
 include(cflags)
 set(${PROJECT_NAME_UPPER}_CXX_FLAGS "${LEATHERMAN_CXX_FLAGS}")
 add_definitions(${LEATHERMAN_DEFINITIONS})
+add_definitions(-DLEATHERMAN_I18N)
 ## Pull in helper macros for working with leatherman libraries
 include(leatherman)
 
@@ -41,12 +42,13 @@ find_package(Threads)
 include(FeatureSummary)
 feature_summary(WHAT ALL)
 
-add_subdirectory(lib)
-
 # Add cpplint and cppcheck targets
 file(GLOB_RECURSE ALL_SOURCES lib/src/*.cc lib/inc/*.hpp exe/*.cc)
 add_cpplint_files(${ALL_SOURCES})
 enable_cpplint()
+
+add_subdirectory(lib)
+add_subdirectory(locales)
 
 add_cppcheck_dirs("${PROJECT_SOURCE_DIR}/lib" "${PROJECT_SOURCE_DIR}/exe")
 enable_cppcheck()

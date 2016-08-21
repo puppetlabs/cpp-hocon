@@ -2,6 +2,10 @@
 #include <hocon/config_exception.hpp>
 #include <internal/tokenizer.hpp>
 #include <iostream>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -238,7 +242,7 @@ namespace hocon {
         if (auto value_token = dynamic_pointer_cast<const value>(t)) {
             return value_token->get_value();
         } else {
-            throw config_exception("Tried to get the value of a non-value token.");
+            throw config_exception(_("Tried to get the value of a non-value token."));
         }
     }
 

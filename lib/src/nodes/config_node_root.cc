@@ -3,6 +3,10 @@
 #include <internal/nodes/config_node_array.hpp>
 #include <internal/nodes/config_node_object.hpp>
 #include <internal/path_parser.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -12,7 +16,7 @@ namespace hocon {
             config_node_complex_value(move(children)), _origin(move(origin)) { }
 
     shared_ptr<const config_node_complex_value> config_node_root::new_node(shared_node_list nodes) const {
-        throw config_exception("Tried to indent a root node");
+        throw config_exception(_("Tried to indent a root node"));
     }
 
     shared_ptr<const config_node_complex_value> config_node_root::value() const {
@@ -21,7 +25,7 @@ namespace hocon {
                 return complex;
             }
         }
-        throw config_exception("Root node did not contain a value");
+        throw config_exception(_("Root node did not contain a value"));
     }
 
     shared_ptr<const config_node_root> config_node_root::set_value(std::string desired_path,
@@ -33,8 +37,7 @@ namespace hocon {
             auto node = children_copy[i];
             if (dynamic_pointer_cast<const config_node_complex_value>(node)) {
                 if (dynamic_pointer_cast<const config_node_array>(node)) {
-                    throw config_exception(string("The config document had an array at the root level,") +
-                                                   string("and values cannot be modified inside an array"));
+                    throw config_exception(_("The config document had an array at the root level, and values cannot be modified inside an array"));
                 } else if (auto object = dynamic_pointer_cast<const config_node_object>(node)) {
                     if (value == nullptr) {
                         children_copy[i] = object->remove_value_on_path(desired_path, flavor);
@@ -45,7 +48,7 @@ namespace hocon {
                 }
             }
         }
-        throw config_exception("Root node did not contain a value");
+        throw config_exception(_("Root node did not contain a value"));
     }
 
     bool config_node_root::has_value(string desired_path) const {
@@ -55,14 +58,13 @@ namespace hocon {
             auto node = children_copy[i];
             if (dynamic_pointer_cast<const config_node_complex_value>(node)) {
                 if (dynamic_pointer_cast<const config_node_array>(node)) {
-                    throw config_exception(string("The config document had an array at the root level,") +
-                                           string("and values cannot be modified inside an array"));
+                    throw config_exception(_("The config document had an array at the root level, and values cannot be modified inside an array"));
                 } else if (auto object = dynamic_pointer_cast<const config_node_object>(node)) {
                     return object->has_value(raw_path);
                 }
             }
         }
-        throw config_exception("Root node did not contain a value");
+        throw config_exception(_("Root node did not contain a value"));
     }
 
 }  // namespace hocon

@@ -15,7 +15,11 @@
 #include <vector>
 #include <numeric>
 #include <leatherman/util/scope_exit.hpp>
+#include <leatherman/locale/locale.hpp>
 #include <boost/filesystem.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -117,7 +121,7 @@ namespace hocon {
         if (auto obj = dynamic_pointer_cast<const config_object>(value)) {
             return obj;
         } else {
-            throw wrong_type_exception(*value->origin(), "", "object at file root", value->value_type_name());
+            throw wrong_type_exception(*value->origin(), "", _("object at file root"), value->value_type_name());
         }
     }
 
@@ -133,10 +137,7 @@ namespace hocon {
             string stacktrace = accumulate(pstack->begin(), pstack->end(), string(), [](string s, shared_ptr<const parseable> p) {
                 return s + '\t' + p->to_string() + '\n';
             });
-            throw parse_exception(*_initial_origin, "include statements nested more than "
-                                                    + std::to_string(MAX_INCLUDE_DEPTH)
-                                                    + " times, you probably have a cycle in your includes. Trace:\n"
-                                                    + stacktrace);
+            throw parse_exception(*_initial_origin, _("include statements nested more than {1} times, you probably have a cycle in your includes. Trace:\n{2}", std::to_string(MAX_INCLUDE_DEPTH), stacktrace));
         }
 
         pstack->push_back(shared_from_this());
@@ -177,7 +178,7 @@ namespace hocon {
                         make_shared<simple_config_origin>(origin->description() + " (not found)"),
                         unordered_map<string, shared_value>());
             } else {
-                throw io_exception(*origin, typeid(*this).name() + string(": ") + e.what());
+                throw io_exception(*origin, _("{1}: {2}", typeid(*this).name(), e.what()));
             }
         }
     }
@@ -231,7 +232,7 @@ namespace hocon {
                 return make_shared<simple_config_document>(make_shared<config_node_root>(children, origin),
                                                            final_options);
             } else {
-                throw config_exception("exception loading " + origin->description() + ": " + e.what());
+                throw config_exception(_("exception loading {1}: {2}", origin->description(), e.what()));
             }
         }
     }
@@ -301,7 +302,7 @@ namespace hocon {
     }
 
     std::unique_ptr<std::istream> parseable_resources::reader() const {
-        throw config_exception("reader() should not be called on resources");
+        throw config_exception(_("reader() should not be called on resources"));
     }
 
     shared_origin parseable_resources::create_origin() const {

@@ -4,7 +4,10 @@
 #include <internal/resolve_source.hpp>
 #include <internal/container.hpp>
 #include <internal/substitution_expression.hpp>
+#include <leatherman/locale/locale.hpp>
 
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -14,7 +17,7 @@ namespace hocon {
             : config_value(origin), _expr(expr), _prefix_length(prefix_length) { }
 
     config_reference::type config_reference::value_type() const {
-        throw not_resolved_exception("ur lame");
+        throw not_resolved_exception(_("ur lame"));
     }
 
     vector<shared_value> config_reference::unmerged_values() const {
@@ -22,7 +25,7 @@ namespace hocon {
     }
 
     unwrapped_value config_reference::unwrapped() const {
-        throw not_resolved_exception("Can't unwrap a config reference.");
+        throw not_resolved_exception(_("Can't unwrap a config reference."));
     }
 
     shared_value config_reference::new_copy(shared_origin origin) const {
@@ -61,7 +64,7 @@ namespace hocon {
             if (_expr->optional()) {
                 v = nullptr;
             } else {
-                throw config_exception(_expr->to_string() + " was part of a cycle of substitutions.");
+                throw config_exception(_("{1} was part of a cycle of substitutions.", _expr->to_string()));
             }
         }
 

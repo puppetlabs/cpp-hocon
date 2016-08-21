@@ -6,6 +6,10 @@
 #include <internal/values/config_reference.hpp>
 #include <internal/values/config_string.hpp>
 #include <internal/substitution_expression.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -40,7 +44,7 @@ namespace hocon {
             return make_shared<config_reference>(sub_token->origin(), make_shared<substitution_expression>(the_path, optional));
         }
 
-        throw config_exception("Tried to get a config value from a non-value token.");
+        throw config_exception(_("Tried to get a config value from a non-value token."));
     }
 
 }  // namespace hocon
