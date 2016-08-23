@@ -25,13 +25,19 @@ namespace hocon { namespace program_options {
 
             for (const auto& entry : cfg->entry_set()) {
                 po::option opt;
-
-                // TODO: enforce unregistered variable flag based on allow_unregistered setting
-
                 if (prefix.empty()) {
                     opt.string_key = entry.first;
                 } else {
                     opt.string_key = prefix + "." + entry.first;
+                }
+
+                // Skips options that are not registered in the description.
+                // This is different behavior than the built in program_options
+                // parsers, which pass the options along somehow. But for now
+                // it stops an exception from being thrown if there is an unknown
+                // item in the config file.
+                if (allow_unregistered && !desc.find_nothrow(opt.string_key, false)) {
+                    continue;
                 }
 
                 if (entry.second->value_type() == config_value::type::LIST) {
