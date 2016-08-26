@@ -8,6 +8,10 @@
 #include <internal/values/config_string.hpp>
 #include <hocon/config_object.hpp>
 #include <hocon/config_exception.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -53,7 +57,7 @@ namespace hocon {
                     // no-op, already a string
                     break;
                 case config_value::type::UNSPECIFIED:
-                    throw config_exception("No target value type specified");
+                    throw config_exception(_("No target value type specified"));
             }
         } else if (requested == config_value::type::STRING) {
             // if we converted null to string here, then you wouldn't properly get a missing value error
@@ -76,11 +80,11 @@ namespace hocon {
                     // no-op, already a string
                     break;
                 case config_value::type::UNSPECIFIED:
-                    throw config_exception("No target value type specified");
+                    throw config_exception(_("No target value type specified"));
             }
         } else if (requested == config_value::type::LIST && value->value_type() == config_value::type::OBJECT) {
             // TODO: implement this later when we support complex config objects
-            throw config_exception("We currently do not support lists");
+            throw config_exception(_("We currently do not support lists"));
         }
 
         return value;

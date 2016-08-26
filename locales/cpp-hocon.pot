@@ -1,0 +1,735 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Puppet <docs@puppet.com>
+# This file is distributed under the same license as the cpp-hocon package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cpp-hocon 0.1.0\n"
+"Report-Msgid-Bugs-To: docs@puppet.com\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lib/inc/hocon/config.hpp
+#: lib/src/config.cc
+msgid "The list did not contain only the desired type."
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+#: lib/src/parseable.cc
+msgid "{1}: {2}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "{1} {2}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "{1} has type {2} rather than {3}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "No configuration setting found for key '{1}'"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "Configuration key \"{1}\" is null"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "Configuration key \"{1}\" is set to null but expected {2}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "Invalid value at '{1}': {2}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "Invalid path '{1}': {2}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "Could not resolve subtitution to a value: {1}"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "ValidationProblem({1},{2},{3})"
+msgstr ""
+
+#: lib/inc/hocon/config_exception.hpp
+msgid "validation_failed_exception must have a non-empty list of problems"
+msgstr ""
+
+#: lib/inc/hocon/config_value.hpp
+msgid "Got impossible value for type enum"
+msgstr ""
+
+#: lib/src/config.cc
+#: lib/src/values/config_object.cc
+msgid "{1} has not been resolved, you need to call config::resolve()"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "{1} could not be converted to the requested type"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "List does not contain only config_objects."
+msgstr ""
+
+#: lib/src/config.cc
+msgid "List does not contain only configs."
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Creating new object from config_object did not return a config_object"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Method not implemented"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Token not allowed in valid JSON: '{1}'"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Substitutions (${} syntax) not allowed in JSON"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "no value"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"{1} (if you intended '{2}' to be part of a value, instead of a key, try "
+"adding double quotes around the whole value"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"{1} (if you intended {2} to be part of the value for '{3}', try enclosing "
+"the value in double quotes"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"{1} (if you intended {2} to be part of a key or string value, try enclosing "
+"the key or value in double quotes"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"{1}, or you may be able to rename the file .properties rather than .conf)"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Expecting a value but got wrong token: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Bug in config parser: unbalanced quals count"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Expecting close brace } or a field name here, got {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "expecting a close brace or a field name here, got {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"expecting include parameter to be quoted filename, file(), classpath(), or "
+"url(). No spaces are allowed before the open paren. Not expecting: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"expecting a quoted string inside file(), classpath(), or url(), rather than "
+"{1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "expecting a close parentheses ')' here, not: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "include keyword is not followed by a quoted string, but by: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "expecting a field name after a comma, got a close brace '}' instead"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "unbalanced close brace '}' with no open brace"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Key '{1}' may not be followed by token: {2}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "JSON does not allow duplicate fields: '{1}' was already seen"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+#: lib/src/config_parser.cc
+msgid "somehow got multi-element path in JSON mode"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Expecting close brace '}' or a comma, got {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Expecting end of input or a comma, got {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"List should have ']' or a first element after the '[', instead had token: "
+"{1} (if you want {2} to be part of a string value, then double quote it)"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"List should have ended with ']' or had a comma, instead had token: {1} (if "
+"you want {2} to be part of a string value, then double quote it)"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"List should have had a new element after a comma, instead had token: {1} (if "
+"you want the comma or {2} to be part of a string value, then double quote it)"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "token stream did not begin with START, had {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "empty document"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Document must have an object or array at root, unexpected token: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Document has trailing tokens after first object or array: {1}"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"The value from with_value_text cannot have leading or trailing newlines, "
+"whitespace, or comments"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid "Empty value"
+msgstr ""
+
+#: lib/src/config_document_parser.cc
+msgid ""
+"Parsing JSON and the value set in with_value_text was either a concatenation "
+"or had trailing whitespace, newlines, or comments"
+msgstr ""
+
+#: lib/src/config_parse_options.cc
+msgid "null includer passed to prepend_includer"
+msgstr ""
+
+#: lib/src/config_parse_options.cc
+msgid "null includer passed to append_includer"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "Bug in parser; tried to get current path when at root"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "Expecting a value but got wrong node type: {1}"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "origin should be a simple_config_origin"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "Bug in config parser: unbalanced array count"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "full_includer::include_resource not implemented"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "should not be reached"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid ""
+"Due to current limitations of the config parser, when an include statement "
+"is nested inside a list value,\n"
+"${} substitutions inside the included file cannot be resolved correctly. "
+"Either move the include outside of the list value or\n"
+"remove the ${} statements from the included file."
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid ""
+"Due to current limitations of the config parser, += does not work nested "
+"inside a list. += expands to a ${} substitution and the path in ${} cannot "
+"currently refer to list elements. You might be able to move the += outside "
+"of the list and then refer to it from inside the list with ${}."
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "expected origin to be simple_config_origin"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "JSON does not allow duplicate fields: '{1}' was already seen at {2}"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "origin was not a simple_config_origin"
+msgstr ""
+
+#: lib/src/config_parser.cc
+msgid "Found a concatenation node in JSON"
+msgstr ""
+
+#: lib/src/default_transformer.cc
+msgid "No target value type specified"
+msgstr ""
+
+#: lib/src/default_transformer.cc
+msgid "We currently do not support lists"
+msgstr ""
+
+#: lib/src/nodes/config_node_field.cc
+msgid "Field doesn't have a value."
+msgstr ""
+
+#: lib/src/nodes/config_node_field.cc
+msgid "Field node doesn't have a value."
+msgstr ""
+
+#: lib/src/nodes/config_node_field.cc
+msgid "Field node does not have a path"
+msgstr ""
+
+#: lib/src/nodes/config_node_path.cc
+msgid "Tried to remove too many elements from a path node."
+msgstr ""
+
+#: lib/src/nodes/config_node_root.cc
+msgid "Tried to indent a root node"
+msgstr ""
+
+#: lib/src/nodes/config_node_root.cc
+msgid "Root node did not contain a value"
+msgstr ""
+
+#: lib/src/nodes/config_node_root.cc
+msgid ""
+"The config document had an array at the root level, and values cannot be "
+"modified inside an array"
+msgstr ""
+
+#: lib/src/nodes/config_node_simple_value.cc
+msgid "Tried to get a config value from a non-value token."
+msgstr ""
+
+#: lib/src/parseable.cc
+msgid "object at file root"
+msgstr ""
+
+#: lib/src/parseable.cc
+msgid ""
+"include statements nested more than {1} times, you probably have a cycle in "
+"your includes. Trace:\n"
+"{2}"
+msgstr ""
+
+#: lib/src/parseable.cc
+msgid "exception loading {1}: {2}"
+msgstr ""
+
+#: lib/src/parseable.cc
+msgid "reader() should not be called on resources"
+msgstr ""
+
+#: lib/src/path.cc
+msgid "Empty path"
+msgstr ""
+
+#: lib/src/path.cc
+msgid "Bad call to sub_path: invalid range"
+msgstr ""
+
+#: lib/src/path.cc
+msgid "sub_path last_index out of range"
+msgstr ""
+
+#: lib/src/path_parser.cc
+msgid "Expecting a field name or path here, but got nothing"
+msgstr ""
+
+#: lib/src/path_parser.cc
+msgid ""
+"Token not allowed in path expression: {1} (you can double-quote this token "
+"if you really want it here)"
+msgstr ""
+
+#: lib/src/path_parser.cc
+msgid ""
+"path has a leading, trailing, or two adjacent '.' (use quoted \"\" empty "
+"string if you want an empty element)"
+msgstr ""
+
+#: lib/src/resolve_context.cc
+msgid "Cycle detected, can't resolve."
+msgstr ""
+
+#: lib/src/resolve_context.cc
+msgid "restricted_key should not be empty here"
+msgstr ""
+
+#: lib/src/resolve_context.cc
+msgid "resolve_substitutions() did not give us a resolved object"
+msgstr ""
+
+#: lib/src/resolve_context.cc
+msgid "Added cycle marker twice"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid "can't push null parent"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid "attempt to replace root with invalid value"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid "replace in parent not possible"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid "resolved object to non-object"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid ""
+"{1} has not been resolved, you need to call config::resolve() see API docs "
+"for config::resolve()"
+msgstr ""
+
+#: lib/src/resolve_source.cc
+msgid "Can only replace() the top node we're resolving"
+msgstr ""
+
+#: lib/src/simple_config_document.cc
+msgid "empty value for {1} passed to with_value_text"
+msgstr ""
+
+#: lib/src/simple_config_document.cc
+msgid "null value for {1} passed to with_value"
+msgstr ""
+
+#: lib/src/simple_config_origin.cc
+msgid "can't merge empty list of origins"
+msgstr ""
+
+#: lib/src/simple_includer.cc
+msgid "Trying to create includer cycle"
+msgstr ""
+
+#: lib/src/simple_includer.cc
+msgid "Should not be reached: nothing found but no exceptions thrown"
+msgstr ""
+
+#: lib/src/simple_includer.cc
+msgid "include was not found: '{1}'"
+msgstr ""
+
+#: lib/src/token.cc
+msgid "This token has no origin."
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "called pull_comment() but // not seen"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "Line {1}: Reserved character '{2}' not allowed outside quotes"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "End of input but backslash in string had nothing after it"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "End of input but expecting 4 hex digits for \\uXXXX escape"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid ""
+"backslash followed by {1}, this is not a valid escape sequence. (Quoted "
+"strings use JSON escaping, so use double-backslash \\\\ for literal "
+"backslash)"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "End of input but triple-quoted string was still open"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "End of input but string quote was still open"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid ""
+"Line {1}: JSON does not allow unescaped {2} in quoted strings, use a "
+"backslash escape"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "'+' not followed by '=', '{1}' not allowed after '+'"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "'$' not followed by '{', '{1}' not allowed after '$'"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "Substitution '${' was not closed with a '}'"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "Reserved character '{1}' is not allowed outside quotes"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "Failed to generate next token"
+msgstr ""
+
+#: lib/src/tokenizer.cc
+msgid "Tokens queue should not be empty here"
+msgstr ""
+
+#: lib/src/tokens.cc
+msgid "Tried to get the value of a non-value token."
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid "Created concatenation with less than 2 items"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid "config_concatenation should never be nested"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid "Created concatenation without an unmergeable in it"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid "Bug in the library: resolved list was joined to too many values"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid ""
+"Not resolved, call config::resolve() before attempting to unwrap. See API "
+"docs."
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid ""
+"need to config#resolve(), see the API docs for config#resolve; substitution "
+"not resolved"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid "unflattened config_concatenation"
+msgstr ""
+
+#: lib/src/values/config_concatenation.cc
+msgid ""
+"Cannot concatenate object or list with a non-object-or-list: {1} and {2} are "
+"not compatible"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "creating empty delayed merge value"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid ""
+"placed nested delayed_merge in a config_delayed_merge, should have "
+"consolidated stack"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid ""
+"called value_type() on value with unresolved substitutions, need to "
+"config#resolve() first, see API docs."
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid ""
+"called unwrapped() on value with unresolved substitutions, need to config::"
+"resolve() first, see API docs."
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "A delayed merge should not contain another one"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "# unresolved merge of {1} values follows (\n"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid ""
+"# this unresolved merge will not be parseable because it's at the root of "
+"the object =\n"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid ""
+"# the HOCON format has no way to list multiple root objects in a single "
+"file \n"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "#     unmerged value {1} for key {2} from "
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "#     unmerged value {1} from "
+msgstr ""
+
+#: lib/src/values/config_delayed_merge.cc
+msgid "# ) end of unresolved merge\n"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "creating empty delayed merge object"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "created a delayed merge object not guaranteed to be an object"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid ""
+"placed nested delayed_merge in a config_delayed_merge_object, should have "
+"consolidated stack"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "attempt to create resolved config_delayted_merge_object"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "need to config::resolve before using this object, see the API docs."
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "should not be reached: unmergeable object returned null value"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid ""
+"Key '{1}' is not available at '{2}' because value at '{3}' has not been "
+"resolved and may turn out to contain or hide '{4}'. Be sure to config::"
+"resolve() before using a config object"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "Expecting a list here, not {1}"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "resolved non-object should ignore fallbacks"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid "Delayed merge stack does not contain any unmergeable values"
+msgstr ""
+
+#: lib/src/values/config_delayed_merge_object.cc
+msgid ""
+"need to config::resolve() before using this object, see the API docs for "
+"config::resolve()"
+msgstr ""
+
+#: lib/src/values/config_number.cc
+msgid "Tried to get int from out of range value {1}"
+msgstr ""
+
+#: lib/src/values/config_object.cc
+msgid "can't merge origins on empty list"
+msgstr ""
+
+#: lib/src/values/config_reference.cc
+msgid "ur lame"
+msgstr ""
+
+#: lib/src/values/config_reference.cc
+msgid "Can't unwrap a config reference."
+msgstr ""
+
+#: lib/src/values/config_reference.cc
+msgid "{1} was part of a cycle of substitutions."
+msgstr ""
+
+#: lib/src/values/config_value.cc
+msgid "Unexpected exception:{1}"
+msgstr ""
+
+#: lib/src/values/config_value.cc
+msgid "method should not have been called with ignores_fallbacks=true"
+msgstr ""
+
+#: lib/src/values/config_value.cc
+msgid "value class doesn't implement forced fallback-ignoring"
+msgstr ""
+
+#: lib/src/values/config_value.cc
+msgid "Objects must reimplement merged_with_object"
+msgstr ""
+
+#: lib/src/values/simple_config_list.cc
+msgid "simple_config_list created with wrong resolve status"
+msgstr ""
+
+#: lib/src/values/simple_config_object.cc
+msgid "Trying to store null config_value in a config_object"
+msgstr ""
+
+#: lib/src/values/simple_config_object.cc
+msgid "simple_config_object::replace_child did not find {1}"
+msgstr ""
+
+#: lib/src/values/simple_config_object.cc
+msgid "should not be reached (merging non-simple_config_object)"
+msgstr ""
+
+#: lib/src/values/simple_config_object.cc
+msgid "Expected with_fallback to return same type of object"
+msgstr ""

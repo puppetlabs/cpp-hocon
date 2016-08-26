@@ -3,7 +3,11 @@
 #include <internal/values/config_long.hpp>
 #include <internal/values/config_double.hpp>
 #include <hocon/config_exception.hpp>
+#include <leatherman/locale/locale.hpp>
 #include <limits>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -40,7 +44,7 @@ namespace hocon {
     int config_number::int_value_range_checked(std::string const& path) const {
         long l = long_value();
         if (l < numeric_limits<int>::min() || l > numeric_limits<int>::max()) {
-            throw config_exception("Tried to get int from out of range value " + to_string(l));
+            throw config_exception(_("Tried to get int from out of range value {1}", to_string(l)));
         }
         return static_cast<int>(l);
     }

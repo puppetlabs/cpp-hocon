@@ -3,6 +3,10 @@
 #include <internal/path_builder.hpp>
 #include <internal/config_util.hpp>
 #include <internal/path_parser.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -17,7 +21,7 @@ namespace hocon {
 
     path::path(vector<string> elements) {
         if (elements.size() == 0) {
-            throw config_exception("Empty path");
+            throw config_exception(_("Empty path"));
         }
 
         path remainder;
@@ -33,7 +37,7 @@ namespace hocon {
 
     path::path(vector<path> paths_to_concat) {
         if (paths_to_concat.size() == 0) {
-            throw config_exception("Empty path");
+            throw config_exception(_("Empty path"));
         }
 
         path_builder builder;
@@ -102,7 +106,7 @@ namespace hocon {
 
     path path::sub_path(int first_index, int last_index) {
         if (last_index < first_index) {
-            throw config_exception("Bad call to sub_path: invalid range");
+            throw config_exception(_("Bad call to sub_path: invalid range"));
         }
 
         path from = sub_path(first_index);
@@ -113,7 +117,7 @@ namespace hocon {
             builder.append_key(*from.first());
             from = from.remainder();
             if (from.empty()) {
-                throw config_exception("sub_path last_index out of range");
+                throw config_exception(_("sub_path last_index out of range"));
             }
         }
         return builder.result();

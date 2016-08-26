@@ -5,10 +5,13 @@
 #include <internal/nodes/config_node_simple_value.hpp>
 #include <internal/path_parser.hpp>
 #include <internal/config_util.hpp>
-
 #include <unordered_map>
 #include <internal/nodes/config_node_field.hpp>
 #include <internal/nodes/config_node_array.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -49,9 +52,9 @@ namespace hocon { namespace config_document_parser {
         shared_token t = pop_token();
         if (_flavor == config_syntax::JSON) {
             if (t->get_token_type() == token_type::UNQUOTED_TEXT && !is_unquoted_whitespace(t)) {
-                throw parse_error("Token not allowed in valid JSON: '" + t->token_text() + "'");
+                throw parse_error(_("Token not allowed in valid JSON: '{1}'", t->token_text()));
             } else if (t->get_token_type() == token_type::SUBSTITUTION) {
-                throw parse_error("Substitutions (${} syntax) not allowed in JSON");
+                throw parse_error(leatherman::locale::translate("Substitutions (${} syntax) not allowed in JSON"));
             }
         }
         return t;
@@ -145,7 +148,7 @@ namespace hocon { namespace config_document_parser {
                 break;
             }
             if (v == nullptr) {
-                throw config_exception("no value");
+                throw config_exception(_("no value"));
             }
 
             values.push_back(v);
@@ -195,24 +198,20 @@ namespace hocon { namespace config_document_parser {
         if (bad_token == tokens::end_token()->to_string()) {
             // EOF require special handling for the error to make sense
             if (!prev_field_name.empty()) {
-                part = message + " (if you intended '" + prev_field_name
-                       + "' to be part of a value, instead of a key, try adding double quotes around the whole value";
+                part = _("{1} (if you intended '{2}' to be part of a value, instead of a key, try adding double quotes around the whole value", message, prev_field_name);
             } else {
                 return message;
             }
         } else {
             if (!prev_field_name.empty()) {
-                part = message + " (if you intended " + bad_token
-                       + " to be part of the value for '" + prev_field_name +
-                        "', try enclosing the value in double quotes";
+                part = _("{1} (if you intended {2} to be part of the value for '{3}', try enclosing the value in double quotes",  message, bad_token, prev_field_name);
             } else {
-                part = message + " (if you intended " + bad_token
-                       + " to be part of a key or string value, try enclosing the key or value in double quotes";
+                part = _("{1} (if you intended {2} to be part of a key or string value, try enclosing the key or value in double quotes", message, bad_token);
             }
         }
 
         if (inside_equals) {
-            return part + ", or you may be able to rename the file .properties rather than .conf)";
+            return _("{1}, or you may be able to rename the file .properties rather than .conf)", part);
         } else {
             return part + ")";
         }
@@ -231,11 +230,11 @@ namespace hocon { namespace config_document_parser {
             v = parse_array();
         } else {
             throw parse_error(add_quote_suggestion(t->to_string(),
-                                                   "Expecting a value but got wrong token: " + t->to_string()));
+                                                   _("Expecting a value but got wrong token: {1}", t->to_string())));
         }
 
         if (_equals_count != starting_equals_count) {
-            throw config_exception("Bug in config parser: unbalanced quals count");
+            throw config_exception(_("Bug in config parser: unbalanced quals count"));
         }
 
         return v;
@@ -247,7 +246,7 @@ namespace hocon { namespace config_document_parser {
                 single_token_iterator it(token);
                 return make_shared<config_node_path>(path_parser::parse_path_node_expression(it, nullptr));
             } else {
-                throw parse_error("Expecting close brace } or a field name here, got " + token->to_string());
+                throw parse_error(_("Expecting close brace } or a field name here, got {1}", token->to_string()));
             }
         } else {
             token_list expression;
@@ -258,7 +257,7 @@ namespace hocon { namespace config_document_parser {
             }
 
             if (expression.empty()) {
-                throw parse_error("expecting a close brace or a field name here, got " + t->to_string());
+                throw parse_error(_("expecting a close brace or a field name here, got {1}", t->to_string()));
             }
 
             put_back(t);
@@ -309,9 +308,7 @@ namespace hocon { namespace config_document_parser {
             } else if (kind_text == "classpath(") {
                 kind = config_include_kind::CLASSPATH;
             } else {
-                throw parse_error("expecting include parameter to be quoted filename, file(), classpath(), or "
-                                              "url(). No spaces are allowed before the open paren. Not expecting: " +
-                                                t->to_string());
+                throw parse_error(_("expecting include parameter to be quoted filename, file(), classpath(), or url(). No spaces are allowed before the open paren. Not expecting: {1}", t->to_string()));
             }
 
             children.push_back(make_shared<config_node_single_token>(t));
@@ -321,8 +318,7 @@ namespace hocon { namespace config_document_parser {
 
             // quoted string
             if (!tokens::is_value_with_type(t, config_value::type::STRING)) {
-                throw parse_error("expecting a quoted string inside file(), classpath(), or url(), rather than" +
-                t->to_string());
+                throw parse_error(_("expecting a quoted string inside file(), classpath(), or url(), rather than {1}", t->to_string()));
             }
             children.push_back(make_shared<config_node_simple_value>(t));
 
@@ -330,14 +326,14 @@ namespace hocon { namespace config_document_parser {
             t = next_token_collecting_whitespace(children);
 
             if (t->token_text() != ")") {
-                throw parse_error("expecting a close parentheses ')' here, not: " + t->to_string());
+                throw parse_error(_("expecting a close parentheses ')' here, not: {1}", t->to_string()));
             }
             return make_shared<config_node_include>(children, kind);
         } else if (tokens::is_value_with_type(t, config_value::type::STRING)) {
             children.push_back(make_shared<config_node_simple_value>(t));
             return make_shared<config_node_include>(children, config_include_kind::HEURISTIC);
         } else {
-            throw parse_error("include keyword is not followed by a quoted string, but by: " + t->to_string());
+            throw parse_error(_("include keyword is not followed by a quoted string, but by: {1}", t->to_string()));
         }
     }
 
@@ -359,10 +355,10 @@ namespace hocon { namespace config_document_parser {
             if (t->get_token_type() == token_type::CLOSE_CURLY) {
                 if (_flavor == config_syntax::JSON && after_comma) {
                     throw parse_error(add_quote_suggestion(t->to_string(),
-                        "expecting a field name after a comma, got a close brace '}' instead"));
+                        _("expecting a field name after a comma, got a close brace '}' instead")));
                 } else if (!had_open_curly) {
                     throw parse_error(add_quote_suggestion(t->to_string(),
-                           "unbalanced close brace '}' with no open brace"));
+                           _("unbalanced close brace '}' with no open brace")));
                 }
                 object_nodes.push_back(make_shared<config_node_single_token>(tokens::close_curly_token()));
                 break;
@@ -390,7 +386,7 @@ namespace hocon { namespace config_document_parser {
                 } else {
                     if (!is_key_value_separator(after_key)) {
                         throw parse_error(add_quote_suggestion(after_key->to_string(),
-                        "Key '" + key_path->render() + "' may not be followed by token: " + after_key->to_string()));
+                        _("Key '{1}' may not be followed by token: {2}", key_path->render(), after_key->to_string())));
                     }
 
                     key_value_nodes.push_back(make_shared<config_node_single_token>(after_key));
@@ -422,14 +418,13 @@ namespace hocon { namespace config_document_parser {
                         // if the value is an object (or substitution that
                         // could become an object).
                         if (_flavor == config_syntax::JSON) {
-                            throw parse_error("JSON does not allow duplicate fields: '" +
-                                                  key + "' was already seen");
+                            throw parse_error(_("JSON does not allow duplicate fields: '{1}' was already seen", key));
                         }
                         emplace.first->second = true;
                     }
                 } else {
                     if (_flavor == config_syntax::JSON) {
-                        throw config_exception("somehow got multi-element path in JSON mode");
+                        throw config_exception(_("somehow got multi-element path in JSON mode"));
                     }
                     keys.insert(make_pair(move(key), true));
                 }
@@ -445,20 +440,20 @@ namespace hocon { namespace config_document_parser {
                 if (t->get_token_type() == token_type::CLOSE_CURLY) {
                     if (!had_open_curly) {
                         throw parse_error(add_quote_suggestion(t->to_string(),
-                            "unbalanced close brace '}' with no open brace", last_inside_equals, last_path));
+                            _("unbalanced close brace '}' with no open brace"), last_inside_equals, last_path));
                     }
                     object_nodes.push_back(make_shared<config_node_single_token>(t));
                     break;
                 } else if (had_open_curly) {
                     throw parse_error(add_quote_suggestion(t->to_string(),
-                         "Expecting close brace '}' or a comma, got " + t->to_string(), last_inside_equals, last_path));
+                         _("Expecting close brace '}' or a comma, got {1}", t->to_string()), last_inside_equals, last_path));
                 } else {
                     if (t->get_token_type() == token_type::END) {
                         put_back(t);
                         break;
                     } else {
                         throw parse_error(add_quote_suggestion(t->to_string(),
-                            "Expecting end of input or a comma, got " + t->to_string(), last_inside_equals, last_path));
+                            _("Expecting end of input or a comma, got {1}", t->to_string()), last_inside_equals, last_path));
                     }
                 }
             }
@@ -485,9 +480,7 @@ namespace hocon { namespace config_document_parser {
                 next_value = parse_value(t);
                 children.push_back(next_value);
             } else {
-                throw parse_error("List should have ']' or a first element after the '[', instead had token: " +
-                t->to_string() + " (if you want " + t->to_string() + " to be part of a string value, then"
-                "double quote it)");
+                throw parse_error(_("List should have ']' or a first element after the '[', instead had token: {1} (if you want {2} to be part of a string value, then double quote it)",  t->to_string(), t->to_string()));
             }
         }
 
@@ -502,9 +495,7 @@ namespace hocon { namespace config_document_parser {
                     children.push_back(make_shared<config_node_single_token>(t));
                     return make_shared<config_node_array>(children);
                 } else {
-                    throw parse_error("List should have ended with ']' or had a comma, instead had token: " +
-                                          t->to_string() + " (if you want " + t->to_string() + " to be part of a "
-                                          "string value, then double quote it)");
+                    throw parse_error(_("List should have ended with ']' or had a comma, instead had token: {1} (if you want {2} to be part of a string value, then double quote it)", t->to_string(), t->to_string()));
                 }
             }
 
@@ -521,9 +512,7 @@ namespace hocon { namespace config_document_parser {
                     // we allow one trailing comma
                     put_back(t);
                 } else {
-                    throw parse_error("List should have had a new element after a comma, instead had token: " +
-                                          t->to_string() + " (if you want the comma or" + t->to_string() +
-                                                  " to be part of a string value, then double quote it)");
+                    throw parse_error(_("List should have had a new element after a comma, instead had token: {1} (if you want the comma or {2} to be part of a string value, then double quote it)", t->to_string(), t->to_string()));
                 }
             }
         }
@@ -535,7 +524,7 @@ namespace hocon { namespace config_document_parser {
         if (t->get_token_type() == token_type::START) {
             // OK
         } else {
-            throw config_exception("token stream did not begin with START, had " + t->to_string());
+            throw config_exception(_("token stream did not begin with START, had {1}", t->to_string()));
         }
 
         t = next_token_collecting_whitespace(children);
@@ -546,10 +535,9 @@ namespace hocon { namespace config_document_parser {
         } else {
             if (_flavor == config_syntax::JSON) {
                 if (t->get_token_type() == token_type::END) {
-                    throw parse_error("empty document");
+                    throw parse_error(_("empty document"));
                 } else {
-                    throw parse_error("Document must have an object or array at root, unexpected token: " +
-                    t->to_string());
+                    throw parse_error(_("Document must have an object or array at root, unexpected token: {1}", t->to_string()));
                 }
             } else {
                 // the root object can omit the surrounding braces.
@@ -579,7 +567,7 @@ namespace hocon { namespace config_document_parser {
                 return make_shared<config_node_root>(children, _base_origin);
             }
         } else {
-            throw parse_error("Document has trailing tokens after first object or array: " + t->to_string());
+            throw parse_error(_("Document has trailing tokens after first object or array: {1}", t->to_string()));
         }
     }
 
@@ -588,17 +576,16 @@ namespace hocon { namespace config_document_parser {
         if (t->get_token_type() == token_type::START) {
             // OK
         } else {
-            throw config_exception("token stream did not being with START, had " + t->to_string());
+            throw config_exception(_("token stream did not begin with START, had {1}", t->to_string()));
         }
 
         t = next_token();
         if (t->get_token_type() == token_type::IGNORED_WHITESPACE || t->get_token_type() == token_type::NEWLINE ||
                 is_unquoted_whitespace(t) || t->get_token_type() == token_type::COMMENT) {
-            throw parse_error("The value from with_value_text cannot have leading or trailing newlines, "
-                                          "whitespace, or comments");
+            throw parse_error(_("The value from with_value_text cannot have leading or trailing newlines, whitespace, or comments"));
         }
         if (t->get_token_type() == token_type::END) {
-            throw parse_error("Empty value");
+            throw parse_error(_("Empty value"));
         }
         if (_flavor == config_syntax::JSON) {
             shared_node_value node = parse_value(t);
@@ -606,8 +593,7 @@ namespace hocon { namespace config_document_parser {
             if (t->get_token_type() == token_type::END) {
                 return node;
             } else {
-                throw parse_error("Parsing JSON and the value set in with_value_text was either a concatenation or "
-                                      "had trailing whitespace, newlines, or comments");
+                throw parse_error(_("Parsing JSON and the value set in with_value_text was either a concatenation or had trailing whitespace, newlines, or comments"));
             }
         } else {
             put_back(t);
@@ -617,8 +603,7 @@ namespace hocon { namespace config_document_parser {
             if (t->get_token_type() == token_type::END) {
                 return node;
             } else {
-                throw parse_error("The value from with_value_text cannot have leading or trailing newlines, "
-                "whitespace, or comments");
+                throw parse_error(_("The value from with_value_text cannot have leading or trailing newlines, whitespace, or comments"));
             }
         }
     }

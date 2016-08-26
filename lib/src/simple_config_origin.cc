@@ -2,8 +2,12 @@
 #include <internal/simple_config_origin.hpp>
 #include <hocon/config_exception.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <leatherman/locale/locale.hpp>
 #include <algorithm>
 #include <stdexcept>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -90,7 +94,7 @@ namespace hocon {
 
     shared_origin simple_config_origin::merge_origins(std::vector<shared_origin> const& stack) {
         if (stack.empty()) {
-            throw config_exception("can't merge empty list of origins");
+            throw config_exception(_("can't merge empty list of origins"));
         } else if (stack.size() == 1) {
             return stack.front();
         } else if (stack.size() == 2) {

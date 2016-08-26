@@ -5,6 +5,10 @@
 #include <hocon/config_object.hpp>
 #include <internal/values/simple_config_object.hpp>
 #include <internal/container.hpp>
+#include <leatherman/locale/locale.hpp>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 namespace hocon {
 
@@ -19,7 +23,7 @@ namespace hocon {
     resolve_source resolve_source::push_parent(shared_container parent) const
     {
         if (!parent) {
-            throw bug_or_broken_exception("can't push null parent");
+            throw bug_or_broken_exception(_("can't push null parent"));
         }
 
         if ( _path_from_root.empty() ) {
@@ -50,7 +54,7 @@ namespace hocon {
             if (old == dynamic_pointer_cast<const container>(_root)) {
                 return resolve_source(root_must_be_obj(replacement));
             } else {
-                throw bug_or_broken_exception("attempt to replace root with invalid value");
+                throw bug_or_broken_exception(_("attempt to replace root with invalid value"));
             }
         }
     }
@@ -68,7 +72,7 @@ namespace hocon {
             if (old == _root && replacement_as_container) {
                 return resolve_source(root_must_be_obj(replacement_as_container));
             } else {
-                throw bug_or_broken_exception("replace in parent not possible");
+                throw bug_or_broken_exception(_("replace in parent not possible"));
             }
         }
     }
@@ -113,13 +117,12 @@ namespace hocon {
             return {make_resolve_result(new_context, pair.value), pair.path_from_root};
 
         } else {
-            throw bug_or_broken_exception("resolved object to non-object");
+            throw bug_or_broken_exception(_("resolved object to non-object"));
         }
     }
 
     not_resolved_exception resolve_source::improve_not_resolved(path what, not_resolved_exception const& original) {
-        string new_message = what.render() + " has not been resolved, you need to call config::resolve()"
-                             + " see API docs for config::resolve()";
+        string new_message = _("{1} has not been resolved, you need to call config::resolve() see API docs for config::resolve()", what.render());
         if (new_message == original.what()) {
             return original;
         } else {
@@ -167,7 +170,7 @@ namespace hocon {
     {
         auto child = list.front();
         if (child != old) {
-            throw bug_or_broken_exception("Can only replace() the top node we're resolving");
+            throw bug_or_broken_exception(_("Can only replace() the top node we're resolving"));
         }
 
         shared_ptr<const container> parent;

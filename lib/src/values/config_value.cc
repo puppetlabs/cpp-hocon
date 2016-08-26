@@ -7,7 +7,11 @@
 #include <internal/container.hpp>
 #include <internal/values/config_delayed_merge.hpp>
 #include <internal/resolve_result.hpp>
+#include <leatherman/locale/locale.hpp>
 #include <algorithm>
+
+// Mark string for translation (alias for leatherman::locale::format)
+using leatherman::locale::_;
 
 using namespace std;
 
@@ -166,7 +170,7 @@ namespace hocon {
         } catch (runtime_error& e) {
             throw e;
         } catch (exception& e) {
-            throw config_exception("Unexpected exception:", e);
+            throw config_exception(_("Unexpected exception:{1}", e.what()));
         }
     }
 
@@ -192,7 +196,7 @@ namespace hocon {
 
     void config_value::require_not_ignoring_fallbacks() const {
         if (ignores_fallbacks()) {
-            throw config_exception("method should not have been called with ignores_fallbacks=true");
+            throw config_exception(_("method should not have been called with ignores_fallbacks=true"));
         }
     }
 
@@ -204,7 +208,7 @@ namespace hocon {
         if (ignores_fallbacks()) {
             return shared_from_this();
         } else {
-            throw config_exception("value class doesn't implement forced fallback-ignoring");
+            throw config_exception(_("value class doesn't implement forced fallback-ignoring"));
         }
     }
 
@@ -235,7 +239,7 @@ namespace hocon {
         require_not_ignoring_fallbacks();
 
         if (dynamic_cast<const config_object*>(this)) {
-            throw config_exception("Objects must reimplement merged_with_object");
+            throw config_exception(_("Objects must reimplement merged_with_object"));
         }
 
         return merged_with_non_object(move(stack), move(fallback));
