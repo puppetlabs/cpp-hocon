@@ -17,6 +17,8 @@
 
 namespace hocon {
 
+    enum class time_unit { NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS };
+
     /**
      * An immutable map from config paths to config values. Paths are dot-separated
      * expressions such as <code>foo.bar.baz</code>. Values are as in JSON
@@ -595,7 +597,26 @@ namespace hocon {
         virtual std::vector<shared_object> get_object_list(std::string const& path) const;
         virtual std::vector<shared_config> get_config_list(std::string const& path) const;
 
-        // TODO: memory and duration parsing
+        // TODO: memory parsing
+
+        /**
+         * Gets a value as a decimal number of the specified units.
+         * Correctly handles durations within the range +/-2^63 seconds.
+         * @param path the path to the time value
+         * @param unit the units of the number returned
+         * @return a double representing the value converted to the requested units
+         */
+        virtual double get_duration_as_double(std::string const& path, time_unit unit) const;
+
+        /**
+         * Gets a value as an integer number of the specified units.
+         * If the result would have a fractional part, the number is truncated.
+         * Correctly handles durations within the range +/-2^63 seconds.
+         * @param path the path to the time value
+         * @param unit the units of the number returned
+         * @return a 64-bit integer representing the value converted to the requested units
+         */
+        virtual int64_t get_duration_as_long(std::string const& path, time_unit unit) const;
 
         /**
          * Clone the config with only the given path (and its children) retained;
@@ -681,6 +702,23 @@ namespace hocon {
         // TODO: memory and duration parsing
 
     private:
+        /**
+         * Parses a duration string. If no units are specified in the string, it is assumed to be in
+         * milliseconds.
+         * Valid suffixes include ns, us, ms, s, m, h, and d. The units can also be specified as complete
+         * words (e.g. "seconds").
+         * @param input the string to parse
+         * @param origin_for_exception the origin of the value being parsed
+         * @param path_for_exception the path to the value being parsed
+         * @return the value parsed as a time_duration
+         */
+        static duration parse_duration(std::string input, shared_origin origin_for_exception, std::string path_for_exception);
+
+        static duration convert(int64_t number, time_unit units);
+        static duration convert(double number, time_unit units);
+        static time_unit get_units(std::string const& unit_string);
+        duration get_duration(std::string const& path) const;
+
         shared_value has_path_peek(std::string const& path_expression) const;
         shared_value peek_path(path desired_path) const;
 

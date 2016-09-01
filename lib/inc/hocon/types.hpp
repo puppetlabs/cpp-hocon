@@ -7,6 +7,13 @@
 
 namespace hocon {
 
+    /**
+     * A duration represented as a 64-bit integer of seconds plus
+     * a 32-bit number of nanoseconds representing a fraction of a
+     * second.
+     */
+    using duration = std::pair<int64_t, int>;
+
     class config;
     using shared_config = std::shared_ptr<const config>;
 
