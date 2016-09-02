@@ -600,15 +600,6 @@ namespace hocon {
         // TODO: memory parsing
 
         /**
-         * Gets a value as a decimal number of the specified units.
-         * Correctly handles durations within the range +/-2^63 seconds.
-         * @param path the path to the time value
-         * @param unit the units of the number returned
-         * @return a double representing the value converted to the requested units
-         */
-        virtual double get_duration_as_double(std::string const& path, time_unit unit) const;
-
-        /**
          * Gets a value as an integer number of the specified units.
          * If the result would have a fractional part, the number is truncated.
          * Correctly handles durations within the range +/-2^63 seconds.
@@ -616,7 +607,7 @@ namespace hocon {
          * @param unit the units of the number returned
          * @return a 64-bit integer representing the value converted to the requested units
          */
-        virtual int64_t get_duration_as_long(std::string const& path, time_unit unit) const;
+        virtual int64_t get_duration(std::string const& path, time_unit unit) const;
 
         /**
          * Clone the config with only the given path (and its children) retained;

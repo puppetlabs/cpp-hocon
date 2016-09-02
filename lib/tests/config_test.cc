@@ -119,44 +119,33 @@ TEST_CASE("should correctly parse durations", "[config]") {
     auto conf = config::parse_file_any_syntax(TEST_FILE_DIR + string("/fixtures/test01.conf"))->resolve();
 
     SECTION("should be able to fetch number nodes as durations", "[config]") {
-        REQUIRE(1 == conf->get_duration_as_long("durations.secondAsNumber", time_unit::SECONDS));
-        REQUIRE(1000000000.0 == conf->get_duration_as_double("durations.secondAsNumber", time_unit::NANOSECONDS));
+        REQUIRE(1 == conf->get_duration("durations.secondAsNumber", time_unit::SECONDS));
     }
 
     SECTION("should be able to get durations in specific units", "[config]") {
         // Get as a long
-        REQUIRE(1 == conf->get_duration_as_long("durations.second", time_unit::SECONDS));
-        REQUIRE(500 == conf->get_duration_as_long("durations.halfSecond", time_unit::MILLISECONDS));
-        REQUIRE(1 == conf->get_duration_as_long("durations.millis", time_unit::MILLISECONDS));
-        REQUIRE(1000 == conf->get_duration_as_long("durations.second", time_unit::MILLISECONDS));
-        REQUIRE(60 == conf->get_duration_as_long("durations.minute", time_unit::SECONDS));
-        REQUIRE(60 == conf->get_duration_as_long("durations.hour", time_unit::MINUTES));
-        REQUIRE(24 == conf->get_duration_as_long("durations.day", time_unit::HOURS));
-        REQUIRE(-4 == conf->get_duration_as_long("durations.minusSeconds", time_unit::SECONDS));
-        REQUIRE(43 == conf->get_duration_as_long("durations.secondWithFractional", time_unit::SECONDS));
-        REQUIRE(43200 == conf->get_duration_as_long("durations.secondWithFractional", time_unit::MILLISECONDS));
-        REQUIRE(9223372036854775807 == conf->get_duration_as_long("durations.largeNanos", time_unit::NANOSECONDS));
-        REQUIRE(-9223372036854775807 == conf->get_duration_as_long("durations.minusLargeNanos", time_unit::NANOSECONDS));
+        REQUIRE(1 == conf->get_duration("durations.second", time_unit::SECONDS));
+        REQUIRE(500 == conf->get_duration("durations.halfSecond", time_unit::MILLISECONDS));
+        REQUIRE(1 == conf->get_duration("durations.millis", time_unit::MILLISECONDS));
+        REQUIRE(1000 == conf->get_duration("durations.second", time_unit::MILLISECONDS));
+        REQUIRE(60 == conf->get_duration("durations.minute", time_unit::SECONDS));
+        REQUIRE(60 == conf->get_duration("durations.hour", time_unit::MINUTES));
+        REQUIRE(24 == conf->get_duration("durations.day", time_unit::HOURS));
+        REQUIRE(-4 == conf->get_duration("durations.minusSeconds", time_unit::SECONDS));
+        REQUIRE(43 == conf->get_duration("durations.secondWithFractional", time_unit::SECONDS));
+        REQUIRE(43200 == conf->get_duration("durations.secondWithFractional", time_unit::MILLISECONDS));
+        REQUIRE(9223372036854775807 == conf->get_duration("durations.largeNanos", time_unit::NANOSECONDS));
+        REQUIRE(-9223372036854775807 == conf->get_duration("durations.minusLargeNanos", time_unit::NANOSECONDS));
         // getting as a long truncates when casting to a larger value
-        REQUIRE(0 == conf->get_duration_as_long("durations.minute", time_unit::HOURS));
-        REQUIRE(9223372036 == conf->get_duration_as_long("durations.largeNanos", time_unit::SECONDS));
-        REQUIRE(153722867 == conf->get_duration_as_long("durations.largeNanos", time_unit::MINUTES));
-        REQUIRE(2562047 == conf->get_duration_as_long("durations.largeNanos", time_unit::HOURS));
-        REQUIRE(106751 == conf->get_duration_as_long("durations.largeNanos", time_unit::DAYS));
-
-        // Get as a double
-        REQUIRE(43.2 == conf->get_duration_as_double("durations.secondWithFractional", time_unit::SECONDS));
-        REQUIRE(43200.0 == conf->get_duration_as_double("durations.secondWithFractional", time_unit::MILLISECONDS));
-        REQUIRE(-4.0 == conf->get_duration_as_double("durations.minusSeconds", time_unit::SECONDS));
-        REQUIRE(0.5 == conf->get_duration_as_double("durations.halfSecond", time_unit::SECONDS));
-        REQUIRE(1000.0 == conf->get_duration_as_double("durations.second", time_unit::MILLISECONDS));
-        // getting as a double retains fractional part
-        REQUIRE((1.0 / 60.0) == conf->get_duration_as_double("durations.minute", time_unit::HOURS));
+        REQUIRE(0 == conf->get_duration("durations.minute", time_unit::HOURS));
+        REQUIRE(9223372036 == conf->get_duration("durations.largeNanos", time_unit::SECONDS));
+        REQUIRE(153722867 == conf->get_duration("durations.largeNanos", time_unit::MINUTES));
+        REQUIRE(2562047 == conf->get_duration("durations.largeNanos", time_unit::HOURS));
+        REQUIRE(106751 == conf->get_duration("durations.largeNanos", time_unit::DAYS));
     }
 
     SECTION("should throw an exception when overflow occurs", "[config]") {
-        REQUIRE_THROWS(conf->get_duration_as_long("durations.largeDays", time_unit::DAYS));
-        REQUIRE_THROWS(conf->get_duration_as_double("durations.largeDays", time_unit::NANOSECONDS));
-        REQUIRE_THROWS(conf->get_duration_as_long("durations.largeDays", time_unit::NANOSECONDS));
+        REQUIRE_THROWS(conf->get_duration("durations.largeDays", time_unit::DAYS));
+        REQUIRE_THROWS(conf->get_duration("durations.largeDays", time_unit::NANOSECONDS));
     }
 }

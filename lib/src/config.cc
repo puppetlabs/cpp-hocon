@@ -328,41 +328,7 @@ namespace hocon {
         }
     }
 
-    double config::get_duration_as_double(string const& path, time_unit unit) const {
-        auto timespan = get_duration(path);
-        double result = 0.0;
-        switch (unit) {
-            case time_unit::NANOSECONDS:
-                result = (timespan.first * 1000000000.0) + timespan.second;
-                break;
-            case time_unit::MICROSECONDS:
-                result = (timespan.first * 1000000.0) + (timespan.second / 1000.0);
-                break;
-            case time_unit::MILLISECONDS:
-                result = (timespan.first * 1000.0) + (timespan.second / 1000000.0);
-                break;
-            case time_unit::SECONDS:
-                result = timespan.first + (timespan.second / 1000000000.0);
-                break;
-            case time_unit::MINUTES:
-                result = (timespan.first + (timespan.second / 1000000000.0)) / 60.0;
-                break;
-            case time_unit::HOURS:
-                result = (timespan.first + (timespan.second / 1000000000.0)) / 3600.0;
-                break;
-            case time_unit::DAYS:
-                result = (timespan.first + (timespan.second / 1000000000.0)) / 84600.0;
-                break;
-            default:
-                throw config_exception(_("Not a valid time_unit"));
-        }
-        if (!isnormal(result)) {
-            throw config_exception(_("as_double: Overflow occurred during time conversion"));
-        }
-        return result;
-    }
-
-    int64_t config::get_duration_as_long(string const& path, time_unit unit) const {
+    int64_t config::get_duration(string const& path, time_unit unit) const {
         auto timespan = get_duration(path);
         int64_t result = 0;
         switch (unit) {
