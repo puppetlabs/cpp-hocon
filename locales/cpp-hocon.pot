@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cpp-hocon 0.1.0\n"
+"Project-Id-Version: cpp-hocon 0.1.2\n"
 "Report-Msgid-Bugs-To: docs@puppet.com\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -86,6 +86,38 @@ msgstr ""
 
 #: lib/src/config.cc
 msgid "List does not contain only configs."
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Value at '{1}' was not a number or string."
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Not a valid time_unit"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "as_long: Overflow occurred during time conversion"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "convert_long: Overflow occurred during time conversion"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "convert_double: Overflow occurred during time conversion"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Could not parse time unit '{1}' (try ns, us, ms, s, m, h, or d)"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "No number in duration value '{1}'"
+msgstr ""
+
+#: lib/src/config.cc
+msgid "Value '{1}' could not be converted to a number."
 msgstr ""
 
 #: lib/src/config.cc
