@@ -23,7 +23,7 @@ static shared_value parse_without_resolving(string s) {
     auto options = config_parse_options()
         .set_origin_description(make_shared<string>("test conf string"))
         .set_syntax(config_syntax::CONF);
-    return parseable::new_string(move(s), move(options)).parse_value();
+    return parseable::new_string(move(s), move(options))->parse_value();
 }
 
 static shared_value parse(string s) {
@@ -221,7 +221,7 @@ TEST_CASE("implied comma handling") {
         [&](string const &s) { return drop_curlies(s); }
     };
 
-    auto tested = 0;
+    auto tested = 0u;
     for (auto v : valids) {
         for (auto change : changes) {
             ++tested;
@@ -306,7 +306,7 @@ TEST_CASE("line numbers in errors (pending)", "[!shouldfail]") {
 TEST_CASE("to string for parseables") {
     // just be sure the to_string don't throw, to get test coverage
     auto options = config_parse_options();
-    parseable::new_file("foo", options).to_string();
+    parseable::new_file("foo", options)->to_string();
     // TODO: are other APIs needed?
 }
 

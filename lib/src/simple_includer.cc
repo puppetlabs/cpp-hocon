@@ -144,8 +144,7 @@ namespace hocon {
         auto p = _context->relative_to(name);
         if (p == nullptr) {
             // avoid returning null
-            return make_shared<parseable_not_found>(
-                parseable::new_not_found(name, _("include was not found: '{1}'", name), move(parse_options)));
+            return parseable::new_not_found(name, _("include was not found: '{1}'", name), move(parse_options));
         } else {
             return p;
         }
@@ -153,8 +152,7 @@ namespace hocon {
 
     /** File name source */
     shared_parseable file_name_source::name_to_parseable(std::string name, config_parse_options parse_options) const {
-        return make_shared<parseable_file>(
-                parseable::new_file(move(name), move(parse_options)));
+        return parseable::new_file(move(name), move(parse_options));
     }
 
     /** Proxy */

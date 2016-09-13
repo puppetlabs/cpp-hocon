@@ -27,17 +27,17 @@ namespace hocon {
 
     const int parseable::MAX_INCLUDE_DEPTH = 50;
 
-    parseable_file parseable::new_file(std::string input_file_path, config_parse_options options) {
-        return parseable_file(move(input_file_path),  move(options));
+    shared_ptr<parseable> parseable::new_file(std::string input_file_path, config_parse_options options) {
+        return make_shared<parseable_file>(move(input_file_path),  move(options));
     }
 
-    parseable_string parseable::new_string(std::string s, config_parse_options options) {
-        return parseable_string(move(s), move(options));
+    shared_ptr<parseable> parseable::new_string(std::string s, config_parse_options options) {
+        return make_shared<parseable_string>(move(s), move(options));
     }
 
-    parseable_not_found parseable::new_not_found(std::string what_not_found, std::string message,
+    shared_ptr<parseable> parseable::new_not_found(std::string what_not_found, std::string message,
                                                  config_parse_options options) {
-        return parseable_not_found(move(what_not_found), move(message), move(options));
+        return make_shared<parseable_not_found>(move(what_not_found), move(message), move(options));
     }
 
     void parseable::post_construct(config_parse_options const& base_options) {
