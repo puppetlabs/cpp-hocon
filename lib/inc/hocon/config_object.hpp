@@ -45,6 +45,12 @@ namespace hocon {
          */
         virtual shared_value attempt_peek_with_partial_resolve(std::string const& key) const = 0;
 
+        /**
+         * Construct a list of keys in the _value map.
+         * Use a vector rather than set, because most of the time we just want to iterate over them.
+         */
+        virtual std::vector<std::string> key_set() const = 0;
+
         // map interface
         using iterator = std::unordered_map<std::string, shared_value>::const_iterator;
         virtual bool is_empty() const = 0;

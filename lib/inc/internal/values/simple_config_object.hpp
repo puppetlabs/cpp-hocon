@@ -70,7 +70,7 @@ namespace hocon {
          * Construct a list of keys in the _value map.
          * Use a vector rather than set, because most of the time we just want to iterate over them.
          */
-        std::vector<std::string> key_set() const;
+        std::vector<std::string> key_set() const override;
 
         /**
          * Construct a list of the values from the provided map.
