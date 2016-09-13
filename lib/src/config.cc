@@ -40,7 +40,7 @@ namespace hocon {
 
     shared_config config::parse_string(string s, config_parse_options options)
     {
-        return parseable::new_string(move(s), move(options)).parse()->to_config();
+        return parseable::new_string(move(s), move(options))->parse()->to_config();
     }
 
     shared_config config::parse_string(string s)

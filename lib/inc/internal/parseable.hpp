@@ -9,16 +9,13 @@
 namespace hocon {
 
     class config_document;
-    class parseable_file;
-    class parseable_string;
-    class parseable_not_found;
 
     class parseable : public config_parseable, public std::enable_shared_from_this<parseable> {
     public:
-        static parseable_file new_file(std::string input_file_path, config_parse_options options);
-        static parseable_string new_string(std::string s, config_parse_options options);
-        static parseable_not_found new_not_found(std::string what_not_found, std::string message,
-                                                 config_parse_options options);
+        static std::shared_ptr<parseable> new_file(std::string input_file_path, config_parse_options options);
+        static std::shared_ptr<parseable> new_string(std::string s, config_parse_options options);
+        static std::shared_ptr<parseable> new_not_found(std::string what_not_found, std::string message,
+                                                        config_parse_options options);
 
         static config_syntax syntax_from_extension(std::string name);
 
@@ -42,6 +39,11 @@ namespace hocon {
         virtual std::shared_ptr<config_parseable> relative_to(std::string file_name) const;
 
         std::string to_string() const;
+
+        // Disable copy constructors, as include_context assumes it can hold a reference to parseable.
+        parseable() = default;
+        parseable(parseable const&) = delete;
+        parseable& operator=(parseable const&) = delete;
 
     private:
         std::shared_ptr<config_document> parse_document(config_parse_options const& base_options) const;

@@ -6,7 +6,7 @@ using namespace std;
 namespace hocon { namespace config_document_factory {
 
     shared_ptr<config_document> parse_file(string input_file_path, config_parse_options options) {
-        return parseable::new_file(move(input_file_path), move(options)).parse_config_document();
+        return parseable::new_file(move(input_file_path), move(options))->parse_config_document();
     }
 
     shared_ptr<config_document> parse_file(string input_file_path) {
@@ -14,7 +14,7 @@ namespace hocon { namespace config_document_factory {
     }
 
     shared_ptr<config_document> parse_string(string s, config_parse_options options) {
-        return parseable::new_string(move(s), move(options)).parse_config_document();
+        return parseable::new_string(move(s), move(options))->parse_config_document();
     }
 
     shared_ptr<config_document> parse_string(string s) {
