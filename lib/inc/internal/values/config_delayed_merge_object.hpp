@@ -18,6 +18,8 @@ namespace hocon {
 
         resolve_status get_resolve_status() const override { return resolve_status::UNRESOLVED; }
 
+        std::vector<std::string> key_set() const override { throw not_resolved(); }
+
         // map interface
         bool is_empty() const override { throw not_resolved(); }
         size_t size() const override { throw not_resolved(); }
