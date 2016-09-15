@@ -33,7 +33,7 @@ add_definitions(-DLEATHERMAN_I18N)
 include(leatherman)
 
 # Add other dependencies
-find_package(Boost 1.54 REQUIRED COMPONENTS thread date_time chrono system program_options)
+find_package(Boost 1.54 REQUIRED COMPONENTS locale thread date_time chrono system program_options)
 
 # pthreads if you require the Boost.Thread component.
 find_package(Threads)

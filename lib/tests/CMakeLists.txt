@@ -30,6 +30,10 @@ target_link_libraries(lib${PROJECT_NAME}_test
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND BOOST_STATIC)
+    target_link_libraries(lib${PROJECT_NAME}_test iconv)
+endif()
+
 add_test(NAME "unit_tests" COMMAND lib${PROJECT_NAME}_test)
 
 configure_file (
