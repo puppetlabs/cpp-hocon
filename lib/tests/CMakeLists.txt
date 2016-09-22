@@ -30,7 +30,7 @@ target_link_libraries(lib${PROJECT_NAME}_test
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND BOOST_STATIC)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND BOOST_STATIC AND LEATHERMAN_USE_LOCALES)
     target_link_libraries(lib${PROJECT_NAME}_test iconv)
 endif()
 
