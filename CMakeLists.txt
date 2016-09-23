@@ -28,12 +28,24 @@ include(options)
 include(cflags)
 set(${PROJECT_NAME_UPPER}_CXX_FLAGS "${LEATHERMAN_CXX_FLAGS}")
 add_definitions(${LEATHERMAN_DEFINITIONS})
-add_definitions(-DLEATHERMAN_I18N)
+
+if(LEATHERMAN_USE_LOCALES)
+    add_definitions(-DLEATHERMAN_I18N)
+endif()
+
 ## Pull in helper macros for working with leatherman libraries
 include(leatherman)
 
+if(LEATHERMAN_USE_LOCALES)
+    set(BOOST_COMPONENTS locale)
+else()
+    set(BOOST_COMPONENTS regex)
+endif()
+
+list(APPEND BOOST_COMPONENTS thread date_time chrono system program_options)
+
 # Add other dependencies
-find_package(Boost 1.54 REQUIRED COMPONENTS locale thread date_time chrono system program_options)
+find_package(Boost 1.54 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 # pthreads if you require the Boost.Thread component.
 find_package(Threads)
