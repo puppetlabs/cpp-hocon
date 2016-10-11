@@ -49,10 +49,6 @@ M=MMMMMMMM++  FOR HUMANS   ++M8MMMMMM7M
 
 ## Pre-Build
 
-Initialize the Leatherman utility library submodule:
-
-    $ git submodule update --init
-
 Prepare the cmake release environment:
 
     $ mkdir release
