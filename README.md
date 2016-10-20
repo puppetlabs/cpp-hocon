@@ -7,7 +7,7 @@
 
 This is a port of the TypesafeConfig library to C++.
 
-The library provides C++ support for the HOCON configuration file format.
+The library provides C++ support for the [HOCON configuration file format](https://github.com/typesafehub/config/blob/master/HOCON.md).
 
 ```
           MMMMMMMMMMMMMMMMMMMM
