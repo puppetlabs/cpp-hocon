@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include "export.h"
+#include <string>
 
 namespace hocon {
     class LIBCPP_HOCON_EXPORT config_value_factory {
