@@ -75,11 +75,7 @@ set(PROJECT_SOURCES
 ## Without the intermediate target, unexported symbols can't be tested.
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
 set_target_properties(libprojectsrc PROPERTIES POSITION_INDEPENDENT_CODE true)
-if(CPP_HOCON_SHARED)
-	add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:libprojectsrc>)
-else()
-	add_library(${PROJECT_NAME} $<TARGET_OBJECTS:libprojectsrc>)
-endif()
+add_library(${PROJECT_NAME} $<TARGET_OBJECTS:libprojectsrc>)
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 target_link_libraries(${PROJECT_NAME}
     ${LEATHERMAN_LIBRARIES}
