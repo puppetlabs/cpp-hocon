@@ -33,8 +33,7 @@ namespace hocon { namespace config_document_parser {
 
     /** Parse context */
     parse_context::parse_context(config_syntax flavor, shared_origin origin, token_iterator tokens) :
-        _line_number(1), _tokens(move(tokens)), _flavor(flavor), _base_origin(move(origin)),
-        _equals_count(0) { }
+        _line_number(1), _tokens(move(tokens)), _flavor(flavor), _base_origin(move(origin)) { }
 
     parse_exception parse_context::parse_error(string message) {
         return parse_exception(*_base_origin->with_line_number(_line_number), move(message));

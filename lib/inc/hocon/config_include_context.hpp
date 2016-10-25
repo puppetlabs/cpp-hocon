@@ -18,7 +18,7 @@ namespace hocon {
      * interface is likely to grow new methods over time, so third-party
      * implementations will break.
      */
-    class LIBCPP_HOCON_EXPORT config_include_context {
+    class CPP_HOCON_EXPORT config_include_context {
     public:
         /**
          * Tries to find a name relative to whatever is doing the including, for
