@@ -41,9 +41,9 @@ M=MMMMMMMM++  FOR HUMANS   ++M8MMMMMM7M
 ## Build Requirements
 
 * OSX or Linux
-* GCC >= 5.0 or Clang >= 3.4 (with libc++)
-* CMake >= 3.0
-* Boost Libraries >= 1.57
+* GCC >= 4.8 or Clang >= 3.4 (with libc++)
+* CMake >= 3.2.2
+* Boost Libraries >= 1.54
 * [Leatherman](https://github.com/puppetlabs/leatherman)
 
 
