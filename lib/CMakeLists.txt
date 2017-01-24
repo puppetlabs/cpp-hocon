@@ -71,6 +71,10 @@ set(PROJECT_SOURCES
     src/config_value_factory.cc)
 
 
+# Add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 ## An object target is generated that can be used by both the library and test executable targets.
 ## Without the intermediate target, unexported symbols can't be tested.
 add_library(libprojectsrc OBJECT ${PROJECT_SOURCES})
@@ -83,12 +87,20 @@ target_link_libraries(lib${PROJECT_NAME}
     ${Boost_LIBRARIES}
     )
 
+add_library(lib${PROJECT_NAME}-shared MODULE $<TARGET_OBJECTS:libprojectsrc>)
+set_target_properties(lib${PROJECT_NAME}-shared PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+target_link_libraries(lib${PROJECT_NAME}-shared
+    ${LEATHERMAN_LIBRARIES}
+    ${Boost_LIBRARIES}
+    )
+
 # Generate the export header for restricting symbols exported from the library.
 # Restricting symbols has several advantages, noted at https://gcc.gnu.org/wiki/Visibility.
 symbol_exports(lib${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/inc/hocon/export.h")
 
 # This correctly handles DLL installation on Windows.
 leatherman_install(lib${PROJECT_NAME})
+leatherman_install(lib${PROJECT_NAME}-shared)
 install(DIRECTORY inc/hocon DESTINATION include)
 
 add_subdirectory(tests)
