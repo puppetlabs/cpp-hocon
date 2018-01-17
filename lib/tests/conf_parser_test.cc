@@ -632,6 +632,11 @@ TEST_CASE("include file") {
     REQUIRE(1u == conf->get_int("fromJson1"));
 }
 
+TEST_CASE("include file relative paths") {
+    auto conf = config::parse_string("root { include file(\"" + fixture_path("test01.conf") + "\") }");
+    REQUIRE("abcd" == conf->get_string("root.strings.abcdAgain"));
+}
+
 TEST_CASE("include file with extension") {
     auto conf = config::parse_string("include file(\"" + fixture_path("test01.conf") + "\")");
 
