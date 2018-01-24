@@ -37,6 +37,13 @@ M=MMMMMMMM++  FOR HUMANS   ++M8MMMMMM7M
   7MM   MMMDMMMM?MM88MM?MMMMOMM8   MM8
 ```
 
+## Caveats
+
+This is a mostly complete implementation of the HOCON format. It currently has some known limitations
+
+* Include requires the location specifier, i.e. `include "foo"` won't work but `include file("foo")` will. URL is not yet implemented, and classpath won't be supported as it makes less sense outside of the JVM.
+* Unicode testing is absent so support is unknown. There are likely things that won't work.
+
 
 ## Build Requirements
 
