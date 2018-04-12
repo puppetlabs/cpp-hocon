@@ -164,7 +164,7 @@ namespace hocon {
 
     config_value::no_exceptions_modifier::no_exceptions_modifier(string prefix): _prefix(std::move(prefix)) {}
 
-    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string key_or_null, shared_value v) {
+    shared_value config_value::no_exceptions_modifier::modify_child_may_throw(string const& key_or_null, shared_value v) {
         try {
             return modify_child(key_or_null, v);
         } catch (runtime_error& e) {
@@ -174,7 +174,7 @@ namespace hocon {
         }
     }
 
-    shared_value config_value::no_exceptions_modifier::modify_child(string key, shared_value v) const {
+    shared_value config_value::no_exceptions_modifier::modify_child(string const& key, shared_value v) const {
         return v->relativized(_prefix);
     }
 

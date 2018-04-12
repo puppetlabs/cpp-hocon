@@ -211,15 +211,15 @@ namespace hocon {
 
         class modifier {
          public:
-            virtual shared_value modify_child_may_throw(std::string key_or_null, shared_value v) = 0;
+            virtual shared_value modify_child_may_throw(std::string const& key_or_null, shared_value v) = 0;
         };
 
         class no_exceptions_modifier : public modifier {
         public:
             no_exceptions_modifier(std::string prefix);
 
-            shared_value modify_child_may_throw(std::string key_or_null, shared_value v) override;
-            shared_value modify_child(std::string key, shared_value v) const;
+            shared_value modify_child_may_throw(std::string const &key_or_null, shared_value v) override;
+            shared_value modify_child(std::string const& key, shared_value v) const;
         private:
             std::string _prefix;
         };

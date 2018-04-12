@@ -1,51 +1,31 @@
-language: cpp
-compiler:
-  - gcc
-sudo: false
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - boost-latest
-    packages:
-      - gcc-4.8
-      - g++-4.8
-      - libboost-filesystem1.55-dev
-      - libboost-program-options1.55-dev
-      - libboost-regex1.55-dev
-      - libboost-date-time1.55-dev
-      - libboost-thread1.55-dev
-      - libboost-log1.55-dev
-      - libboost-locale1.55-dev
-      - libboost-chrono1.55-dev
+sudo: required
+services:
+  - docker
 
 before_install:
-  # Use a predefined install location; cppcheck requires the cfg location is defined at compile-time.
-  - mkdir -p $USERDIR
-  # grab a pre-built cmake 3.2.3
-  - wget --no-check-certificate https://cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
-  - tar xzvf cmake-3.2.3-Linux-x86_64.tar.gz --strip 1 -C $USERDIR
-  - wget https://github.com/puppetlabs/leatherman/releases/download/${LEATHERMAN_VERSION}/leatherman.tar.gz
-  - tar xzvf leatherman.tar.gz -C $USERDIR
+  - docker pull gcr.io/cpp-projects/cpp-ci:1
 
 script:
-  - ./.travis_target.sh
+  - >
+    docker run -v `pwd`:/cpp-hocon gcr.io/cpp-projects/cpp-ci:1 /bin/bash -c "
+    wget https://github.com/puppetlabs/leatherman/releases/download/${LEATHERMAN_VERSION}/leatherman.tar.gz &&
+    tar xzvf leatherman.tar.gz --strip 1 -C / &&
+    cd /cpp-hocon &&
+    cmake $EXTRA_VARS . &&
+    mkdir dest &&
+    make $TARGET DESTDIR=/cpp-hocon/dest VERBOSE=1 -j2 &&
+    { [[ '$COVERALLS' != 'ON' ]] || coveralls --gcov-options '\-lp' -r . -b . -e src -e vendor >/dev/null || true; }
+    "
+  - if [[ $DO_RELEASE = true ]]; then tar czvf cpp-hocon.tar.gz `find dest -type f -print`; fi
 
 env:
   global:
-    - USERDIR=/tmp/userdir
-    - PYTHONUSERBASE=$USERDIR
-    - PATH=$USERDIR/bin:$PATH
-    - LD_LIBRARY_PATH=$USERDIR/lib:$LD_LIBRARY_PATH
-    - LEATHERMAN_VERSION=0.9.0
+    - LEATHERMAN_VERSION=1.4.0
   matrix:
-    - TRAVIS_TARGET=CPPLINT
-    - TRAVIS_TARGET=CPPCHECK
-    - TRAVIS_TARGET=RELEASE
-    - TRAVIS_TARGET=DEBUG
-
-notifications:
-  email: false
+    - TARGET=cpplint
+    - TARGET=cppcheck
+    - TARGET="all test install ARGS=-V" DO_RELEASE=true EXTRA_VARS="-DBOOST_STATIC=ON"
+    - TARGET="all test install ARGS=-V" EXTRA_VARS="-DBOOST_STATIC=ON -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON" COVERALLS=ON
 
 deploy:
   provider: releases
@@ -56,4 +36,7 @@ deploy:
   on:
     repo: puppetlabs/cpp-hocon
     tags: true
-    condition: '"$TRAVIS_TARGET" == "RELEASE"'
+    condition: $DO_RELEASE = true
+
+notifications:
+  email: false
