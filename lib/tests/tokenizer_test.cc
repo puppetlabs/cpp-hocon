@@ -17,7 +17,7 @@ token_list tokenize_as_list(string const& source) {
     return tokens;
 }
 
-void tokenizer_test(string source, token_list expected) {
+void tokenizer_test(string const& source, token_list expected) {
     token_list result = tokenize_as_list(source);
     for (size_t i = 0; i < expected.size(); i++) {
         if (!(*expected[i] == *result[i])) {

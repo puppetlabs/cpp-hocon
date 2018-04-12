@@ -91,7 +91,7 @@ TEST_CASE("parse values", "[doc-parser]") {
     }
 }
 
-void invalid_json_test(string original_text, string message) {
+void invalid_json_test(string const& original_text, string const& message) {
     try {
         json_parse(original_text);
     } catch (parse_exception& ex) {
@@ -144,7 +144,7 @@ TEST_CASE("parse empty document", "[doc-parser]") {
     REQUIRE(dynamic_pointer_cast<const config_node_object>(node2->value()));
 }
 
-void parse_test_string(string original_text) {
+void parse_test_string(string const& original_text) {
     auto node = conf_parse(original_text);
     REQUIRE(original_text == node->render());
 }
