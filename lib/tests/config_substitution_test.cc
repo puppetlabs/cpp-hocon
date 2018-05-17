@@ -112,6 +112,34 @@ static shared_object subst_env_var_object() {
     return resolved;
 }
 
+static shared_object subst_nested_chain_object() {
+    static auto const resolved = parse_object(R"(
+{
+  "a": {
+    "b": 729
+  },
+  a.b: 27,
+  "obj": ${a}
+  "val": ${obj.b}
+}
+)");
+
+    return resolved;
+}
+
+static shared_object subst_nested_assign_object() {
+  static auto const resolved = parse_object(R"(
+{
+    a = {aa = "mama"},
+    b = ${a} {bb = "mia"},
+    b.aa = "mea",
+    b.bb = "culpa"
+}
+)");
+
+  return resolved;
+}
+
 static shared_config resolve_without_fallbacks (shared_object v) {
     auto options = config_resolve_options(false);
     return dynamic_pointer_cast<const config_object>(resolve_context::resolve(v, v, options))->to_config();
@@ -610,6 +638,20 @@ TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
     REQUIRE(57u == resolved->get_int("objB.d"));
 }
 
+TEST_CASE("nested substitution") {
+    auto resolved = resolve_without_fallbacks( subst_nested_chain_object() );
+
+    REQUIRE(729u == resolved->get_int("val"));
+    REQUIRE(729u == resolved->get_int("obj.b"));
+    REQUIRE(729u == resolved->get_int("a.b"));
+}
+
+TEST_CASE("nested assignment") {
+  auto resolved = resolve_without_fallbacks( subst_nested_assign_object() );
+
+  REQUIRE("mea" == resolved->get_string("b.aa"));
+  REQUIRE("culpa" == resolved->get_string("b.bb"));
+}
 
 // TODO: env variable fallback legitimately fails: HC-74
 TEST_CASE("pending HC-74: fallback to env (pending)", "[!shouldfail]") {
