@@ -1,6 +1,7 @@
 #include <internal/values/config_delayed_merge_object.hpp>
 #include <internal/values/config_delayed_merge.hpp>
 #include <internal/values/simple_config_list.hpp>
+#include <internal/resolve_result.hpp>
 #include <hocon/config_exception.hpp>
 #include <leatherman/locale/locale.hpp>
 
