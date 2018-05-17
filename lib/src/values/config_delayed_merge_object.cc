@@ -28,6 +28,15 @@ namespace hocon {
         }
     }
 
+    resolve_result<shared_value> config_delayed_merge_object::resolve_substitutions(resolve_context const& context,
+                                                                                    resolve_source const& source) const {
+        return config_delayed_merge::resolve_substitutions(dynamic_pointer_cast<const replaceable_merge_stack>(shared_from_this()), _stack, context, source);
+    }
+
+    vector<shared_value> config_delayed_merge_object::unmerged_values() const {
+        return _stack;
+    }
+
     shared_value config_delayed_merge_object::make_replacement(resolve_context const &context, int skipping) const {
         return config_delayed_merge::make_replacement(move(context), _stack, move(skipping));
     }
