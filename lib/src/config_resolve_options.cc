@@ -1,5 +1,7 @@
 #include <hocon/config_resolve_options.hpp>
 
+using leatherman::locale::_;
+
 namespace hocon {
 
     const shared_resolver config_resolve_options::NULL_RESOLVER = make_shared<config_resolver>();
