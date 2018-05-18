@@ -1,4 +1,6 @@
 #include <hocon/config_resolve_options.hpp>
+#include <hocon/config_resolver.hpp>
+#include <hocon/config_exception.hpp>
 
 using leatherman::locale::_;
 
