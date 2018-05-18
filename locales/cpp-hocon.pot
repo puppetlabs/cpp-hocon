@@ -343,6 +343,10 @@ msgstr ""
 msgid "Found a concatenation node in JSON"
 msgstr ""
 
+#: lib/src/config_resolve_options.cc
+msgid "null resolver passed to append_resolver"
+msgstr ""
+
 #: lib/src/default_transformer.cc
 msgid "No target value type specified"
 msgstr ""
