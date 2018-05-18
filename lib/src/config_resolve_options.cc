@@ -6,7 +6,7 @@ using leatherman::locale::_;
 
 namespace hocon {
 
-    const shared_resolver config_resolve_options::NULL_RESOLVER = make_shared<config_resolver>();
+    const shared_resolver config_resolve_options::NULL_RESOLVER = std::make_shared<config_resolver>();
 
     config_resolve_options::config_resolve_options(bool use_system_environment, bool allow_unresolved, shared_resolver resolver) :
         _use_system_environment(use_system_environment), _allow_unresovled(allow_unresolved), _resolver(resolver) { }
