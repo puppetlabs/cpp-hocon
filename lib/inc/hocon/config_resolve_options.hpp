@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.hpp"
 #include "export.h"
 
 namespace hocon {
@@ -35,7 +36,7 @@ namespace hocon {
          *
          * @return the default resolve options
          */
-        config_resolve_options(bool use_system_environment = true, bool allow_unresolved = false);
+        config_resolve_options(bool use_system_environment = true, bool allow_unresolved = false, shared_resolver resolver = NULL_RESOLVER);
 
         /**
          * Returns resolve options that disable any reference to "system" data
@@ -75,9 +76,48 @@ namespace hocon {
          */
         bool get_allow_unresolved() const;
 
+        /**
+         * Returns the resolver to use as a fallback if a substitution cannot be
+         * otherwise resolved. Never returns null. This method is mostly used by the
+         * config lib internally, not by applications.
+         *
+         * @param value
+         * @return the non-null fallback resolver
+         */
+        shared_resolver get_resolver() const;
+
+        /**
+         * Returns options where the given resolver used as a fallback if a
+         * reference cannot be otherwise resolved. This resolver will only be called
+         * after resolution has failed to substitute with a value from within the
+         * config itself and with any other resolvers that have been appended before
+         * this one. Multiple resolvers can be added using,
+         *
+         *  <pre>
+         *     ConfigResolveOptions options = ConfigResolveOptions.defaults()
+         *         .appendResolver(primary)
+         *         .appendResolver(secondary)
+         *         .appendResolver(tertiary);
+         * </pre>
+         *
+         * With this config unresolved references will first be resolved with the
+         * primary resolver, if that fails then the secondary, and finally if that
+         * also fails the tertiary.
+         *
+         * If all fallbacks fail to return a substitution "allow unresolved"
+         * determines whether resolution fails or continues.
+         *`
+         * @param value the resolver to fall back to
+         * @return options that use the given resolver as a fallback
+         */
+        config_resolve_options append_resolver(shared_resolver value);
+
     private:
         bool _use_system_environment;
         bool _allow_unresovled;
+        shared_resolver _resolver;
+
+        static const shared_resolver NULL_RESOLVER;
     };
 
 }  // namespace hocon
