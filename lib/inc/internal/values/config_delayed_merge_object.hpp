@@ -7,10 +7,12 @@
 
 namespace hocon {
 
-    class config_delayed_merge_object : public config_object, public replaceable_merge_stack {
+    class config_delayed_merge_object : public config_object, public unmergeable, public replaceable_merge_stack {
     public:
         config_delayed_merge_object(shared_origin origin, std::vector<shared_value> const& stack);
 
+        resolve_result<shared_value> resolve_substitutions(resolve_context const& context, resolve_source const& source) const override;
+        std::vector<shared_value> unmerged_values() const override;
         shared_value make_replacement(resolve_context const& context, int skipping) const override;
 
         shared_object with_value(path raw_path, shared_value value) const override;

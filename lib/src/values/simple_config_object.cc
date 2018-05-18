@@ -29,7 +29,7 @@ namespace hocon {
                 if (key == *context.restrict_to_child().first()) {
                     auto remainder = context.restrict_to_child().remainder();
 
-                    if (remainder.empty()) {
+                    if (!remainder.empty()) {
                         auto result = context.restrict(remainder).resolve(v, source);
                         context = result.context.unrestricted().restrict(original_restrict);
                         return result.value;

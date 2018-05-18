@@ -1,6 +1,7 @@
 #include <internal/values/config_delayed_merge_object.hpp>
 #include <internal/values/config_delayed_merge.hpp>
 #include <internal/values/simple_config_list.hpp>
+#include <internal/resolve_result.hpp>
 #include <hocon/config_exception.hpp>
 #include <leatherman/locale/locale.hpp>
 
@@ -26,6 +27,15 @@ namespace hocon {
                 throw config_exception(_("placed nested delayed_merge in a config_delayed_merge_object, should have consolidated stack"));
             }
         }
+    }
+
+    resolve_result<shared_value> config_delayed_merge_object::resolve_substitutions(resolve_context const& context,
+                                                                                    resolve_source const& source) const {
+        return config_delayed_merge::resolve_substitutions(dynamic_pointer_cast<const replaceable_merge_stack>(shared_from_this()), _stack, context, source);
+    }
+
+    vector<shared_value> config_delayed_merge_object::unmerged_values() const {
+        return _stack;
     }
 
     shared_value config_delayed_merge_object::make_replacement(resolve_context const &context, int skipping) const {

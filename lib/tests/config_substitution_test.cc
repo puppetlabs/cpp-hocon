@@ -322,7 +322,7 @@ TEST_CASE("ignore hidden circular subst") {
 
 // TODO: the following tests dealing with delayed merge objects do not pass, see HC-78
 
-TEST_CASE("(pending HC-78) avoid delayed merge object problem 1", "[!shouldfail]") {
+TEST_CASE("(pending HC-78) avoid delayed merge object problem 1") {
     auto problem = parse_object(R"(
     defaults {
             a = 1
@@ -398,7 +398,7 @@ item1.b.c = 100
     REQUIRE(100 == resolved->get_int("defaults.a"));
 }
 
-TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 4", "[!shouldfail]") {
+TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 4") {
     auto problem = parse_object(R"(
 defaults {
     a = 1
@@ -524,7 +524,7 @@ TEST_CASE("Fail to fetch from delayed merge object needs full resolve") {
     REQUIRE_THROWS(obj->to_config()->get_object("item1.b"));
 }
 
-TEST_CASE("(pending HC-78) resolve delayed merge object embrace", "[!shouldfail]") {
+TEST_CASE("(pending HC-78) resolve delayed merge object embrace") {
     auto obj = parse_object(R"(
   defaults {
     a = 1
@@ -600,7 +600,7 @@ TEST_CASE("use relative to root when relativized") {
 }
 
 // TODO: this test legitimately fails: HC-73
-TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
+TEST_CASE("pending HC-73: complex resolve (pending)") {
     auto resolved = resolve_without_fallbacks(subst_complex_object());
 
     REQUIRE(57u == resolved->get_int("foo"));
@@ -609,7 +609,6 @@ TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
     REQUIRE(57u == resolved->get_int("a.b.d"));
     REQUIRE(57u == resolved->get_int("objB.d"));
 }
-
 
 // TODO: env variable fallback legitimately fails: HC-74
 TEST_CASE("pending HC-74: fallback to env (pending)", "[!shouldfail]") {
