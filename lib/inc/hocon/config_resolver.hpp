@@ -45,6 +45,5 @@ namespace hocon {
         {
           return fallback;
         }
-
     };
 }  // namespace hocon
