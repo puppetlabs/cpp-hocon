@@ -54,4 +54,8 @@ namespace hocon {
 
     class config_parseable;
     using shared_parseable = std::shared_ptr<const config_parseable>;
+
+    class config_resolver;
+    using shared_resolver = std::shared_ptr<const config_resolver>;
+
 }  // namespace hocon
