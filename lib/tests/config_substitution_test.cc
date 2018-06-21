@@ -320,9 +320,7 @@ TEST_CASE("ignore hidden circular subst") {
     REQUIRE(42u == resolved->get_int("a"));
 }
 
-// TODO: the following tests dealing with delayed merge objects do not pass, see HC-78
-
-TEST_CASE("(pending HC-78) avoid delayed merge object problem 1", "[!shouldfail]") {
+TEST_CASE("avoid delayed merge object problem 1") {
     auto problem = parse_object(R"(
     defaults {
             a = 1
@@ -346,9 +344,9 @@ TEST_CASE("(pending HC-78) avoid delayed merge object problem 1", "[!shouldfail]
     REQUIRE(3 == resolved->get_int("item2.b"));
 }
 
-TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 2", "[!shouldfail]") {
+TEST_CASE("avoid delayed merge object resolve problem 2") {
     auto problem = parse_object(R"(
-defaults {
+  defaults {
     a = 1
     b = 2
   }
@@ -365,7 +363,7 @@ defaults {
     REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
 
     auto resolved = resolve_without_fallbacks(problem);
-    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(*parse_object("{ c : 43 }") == *resolved->get_object("item1.b"));
     REQUIRE(43 == resolved->get_int("item1.b.c"));
     REQUIRE(43 == resolved->get_int("item2.b.c"));
 
@@ -373,7 +371,7 @@ defaults {
 
 TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 3", "[!shouldfail]") {
     auto problem = parse_object(R"(
-item1.b.c = 100
+  item1.b.c = 100
   defaults {
     // we depend on item1.b.c
     a = ${item1.b.c}
@@ -392,15 +390,15 @@ item1.b.c = 100
     REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
 
     auto resolved = resolve_without_fallbacks(problem);
-    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(*parse_object("{ c : 43 }") == *resolved->get_object("item1.b"));
     REQUIRE(43 == resolved->get_int("item1.b.c"));
     REQUIRE(43 == resolved->get_int("item2.b.c"));
     REQUIRE(100 == resolved->get_int("defaults.a"));
 }
 
-TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 4", "[!shouldfail]") {
+TEST_CASE("avoid delayed merge object resolve problem 4") {
     auto problem = parse_object(R"(
-defaults {
+  defaults {
     a = 1
     b = 2
   }
@@ -422,7 +420,7 @@ defaults {
 
 TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 5", "[!shouldfail]") {
     auto problem = parse_object(R"(
-defaults {
+  defaults {
     a = ${item1.b} // tricky cycle - we won't see ${defaults}
                    // as we resolve this
     b = 2
@@ -441,12 +439,12 @@ defaults {
     auto resolved = resolve_without_fallbacks(problem);
     REQUIRE(2 == resolved->get_int("item1.b"));
     REQUIRE(2 == resolved->get_int("item2.b"));
-    REQUIRE(7 == resolved->get_int("defauls.a"));
+    REQUIRE(7 == resolved->get_int("defaults.a"));
 }
 
 TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 6", "[!shouldfail]") {
     auto problem = parse_object(R"(
-z = 15
+  z = 15
   defaults-defaults-defaults {
     m = ${z}
     n.o.p = ${z}
@@ -480,12 +478,12 @@ z = 15
 
     REQUIRE(dynamic_pointer_cast<const config_delayed_merge_object>(problem->attempt_peek_with_partial_resolve("item1")));
 
-    unwrapped_value expected(10);
+    unwrapped_value expected(101);
     bool test = expected == problem->to_config()->get_object("item1")->attempt_peek_with_partial_resolve("xyz")->unwrapped();
     REQUIRE(test);
 
     auto resolved = resolve_without_fallbacks(problem);
-    REQUIRE(parse_object("{ c : 43 }") == resolved->get_object("item1.b"));
+    REQUIRE(*parse_object("{ c : 43 }") == *resolved->get_object("item1.b"));
     REQUIRE(43 == resolved->get_int("item1.b.c"));
     REQUIRE(43 == resolved->get_int("item2.b.c"));
     REQUIRE(15 == resolved->get_int("item1.n.o.p"));
@@ -493,7 +491,7 @@ z = 15
 
 TEST_CASE("Fetch known value from delayed merge object") {
     auto obj = parse_object(R"(
-defaults {
+  defaults {
     a = 1
     b = 2
   }
@@ -524,7 +522,7 @@ TEST_CASE("Fail to fetch from delayed merge object needs full resolve") {
     REQUIRE_THROWS(obj->to_config()->get_object("item1.b"));
 }
 
-TEST_CASE("(pending HC-78) resolve delayed merge object embrace", "[!shouldfail]") {
+TEST_CASE("resolve delayed merge object embrace") {
     auto obj = parse_object(R"(
   defaults {
     a = 1
@@ -599,8 +597,7 @@ TEST_CASE("use relative to root when relativized") {
     REQUIRE("in parent" == resolved->get_string("a.bar"));
 }
 
-// TODO: this test legitimately fails: HC-73
-TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
+TEST_CASE("complex resolve") {
     auto resolved = resolve_without_fallbacks(subst_complex_object());
 
     REQUIRE(57u == resolved->get_int("foo"));
@@ -609,7 +606,6 @@ TEST_CASE("pending HC-73: complex resolve (pending)", "[!shouldfail]") {
     REQUIRE(57u == resolved->get_int("a.b.d"));
     REQUIRE(57u == resolved->get_int("objB.d"));
 }
-
 
 // TODO: env variable fallback legitimately fails: HC-74
 TEST_CASE("pending HC-74: fallback to env (pending)", "[!shouldfail]") {

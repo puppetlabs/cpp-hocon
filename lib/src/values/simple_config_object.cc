@@ -23,13 +23,13 @@ namespace hocon {
         resolve_modifier(resolve_context c, resolve_source s)
                 : context(move(c)), source(move(s)), original_restrict(context.restrict_to_child()) {}
 
-        shared_value modify_child_may_throw(string key, shared_value v) override
+        shared_value modify_child_may_throw(string const& key, shared_value v) override
         {
             if (context.is_restricted_to_child()) {
                 if (key == *context.restrict_to_child().first()) {
                     auto remainder = context.restrict_to_child().remainder();
 
-                    if (remainder.empty()) {
+                    if (!remainder.empty()) {
                         auto result = context.restrict(remainder).resolve(v, source);
                         context = result.context.unrestricted().restrict(original_restrict);
                         return result.value;

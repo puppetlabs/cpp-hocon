@@ -75,21 +75,21 @@ namespace hocon { namespace test_utils {
 
     std::shared_ptr<config_node_simple_value> double_node(double number);
 
-    std::shared_ptr<config_node_simple_value> string_node(std::string text);
+    std::shared_ptr<config_node_simple_value> string_node(std::string const& text);
 
     std::shared_ptr<config_node_simple_value> null_node();
 
     std::shared_ptr<config_node_simple_value> bool_node(bool value);
 
-    std::shared_ptr<config_node_simple_value> unquoted_text_node(std::string text);
+    std::shared_ptr<config_node_simple_value> unquoted_text_node(std::string const& text);
 
     std::shared_ptr<config_node_simple_value> substitution_node(shared_token key, bool optional);
 
     std::shared_ptr<config_node_single_token> line_node(int line_number);
 
-    std::shared_ptr<config_node_single_token> whitespace_node(std::string whitespace);
+    std::shared_ptr<config_node_single_token> whitespace_node(std::string const& whitespace);
 
-    std::shared_ptr<config_node_comment> double_slash_comment_node(std::string text);
+    std::shared_ptr<config_node_comment> double_slash_comment_node(std::string const& text);
 
     // it's important that these do NOT use the public API to create the
     // instances, because we may be testing that the public API returns the
@@ -108,7 +108,7 @@ namespace hocon { namespace test_utils {
 
     std::shared_ptr<config_reference> subst(std::string ref, bool optional = false);
 
-    std::shared_ptr<config_concatenation> subst_in_string(std::string ref, bool optional = false);
+    std::shared_ptr<config_concatenation> subst_in_string(std::string const& ref, bool optional = false);
 
     /** Paths */
     path test_path(std::initializer_list<std::string> path_elements);
@@ -118,6 +118,7 @@ namespace hocon { namespace test_utils {
     shared_config parse_config(std::string);
 
     struct parse_test {
+        // cppcheck-suppress passedByValue
         parse_test(std::string t, bool lbe = false, bool wm = false)
             : test(move(t)), lift_behavior_unexpected(lbe), whitespace_matters(wm) { }
 
@@ -135,5 +136,5 @@ namespace hocon { namespace test_utils {
 
     std::vector<parse_test> whitespace_variations(std::vector<parse_test> const& tests, bool valid_in_lift);
 
-    std::string fixture_path(std::string fixture_name);
+    std::string fixture_path(std::string const& fixture_name);
 }}  // namespace hocon::test_utils

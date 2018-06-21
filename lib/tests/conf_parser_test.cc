@@ -310,15 +310,15 @@ TEST_CASE("to string for parseables") {
     // TODO: are other APIs needed?
 }
 
-static void assert_comments(vector<string> comments, shared_config conf) {
+static void assert_comments(vector<string> const& comments, shared_config conf) {
     REQUIRE(comments == conf->root()->origin()->comments());
 }
 
-static void assert_comments(vector<string> comments, shared_config conf, string path) {
+static void assert_comments(vector<string> const& comments, shared_config conf, string const& path) {
     REQUIRE(comments == conf->get_value(path)->origin()->comments());
 }
 
-static void assert_comments(vector<string> comments, shared_config conf, string path, int index) {
+static void assert_comments(vector<string> const& comments, shared_config conf, string const& path, int index) {
     // TODO:
     // auto v = conf->get_list(path)->get(index);
     // REQUIRE(comments == v->origin()->comments());

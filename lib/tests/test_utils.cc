@@ -109,7 +109,7 @@ namespace hocon { namespace test_utils {
         return make_shared<config_node_simple_value>(bool_token(value));
     }
 
-    shared_ptr<config_node_simple_value> string_node(string text) {
+    shared_ptr<config_node_simple_value> string_node(string const& text) {
         return make_shared<config_node_simple_value>(string_token(text));
     }
 
@@ -117,7 +117,7 @@ namespace hocon { namespace test_utils {
         return make_shared<config_node_simple_value>(null_token());
     }
 
-    shared_ptr<config_node_simple_value> unquoted_text_node(string text) {
+    shared_ptr<config_node_simple_value> unquoted_text_node(string const& text) {
         return make_shared<config_node_simple_value>(unquoted_text_token(text));
     }
 
@@ -129,11 +129,11 @@ namespace hocon { namespace test_utils {
         return make_shared<config_node_single_token>(line_token(line_number));
     }
 
-    shared_ptr<config_node_single_token> whitespace_node(string whitespace) {
+    shared_ptr<config_node_single_token> whitespace_node(string const& whitespace) {
         return make_shared<config_node_single_token>(whitespace_token(whitespace));
     }
 
-    shared_ptr<config_node_comment> double_slash_comment_node(string text) {
+    shared_ptr<config_node_comment> double_slash_comment_node(string const& text) {
         return make_shared<config_node_comment>(double_slash_comment_token(text));
     }
 
@@ -161,7 +161,7 @@ namespace hocon { namespace test_utils {
         return make_shared<config_reference>(fake_origin(), make_shared<substitution_expression>(path::new_path(ref), optional));
     }
 
-    shared_ptr<config_concatenation> subst_in_string(string ref, bool optional) {
+    shared_ptr<config_concatenation> subst_in_string(string const& ref, bool optional) {
         auto pieces = vector<shared_value> {string_value("start<"), subst(ref, optional), string_value(">end")};
         return make_shared<config_concatenation>(fake_origin(), pieces);
     }
@@ -446,7 +446,7 @@ namespace hocon { namespace test_utils {
         return new_tests;
     }
 
-    std::string fixture_path(std::string fixture_name) {
+    std::string fixture_path(std::string const& fixture_name) {
         return string(TEST_FILE_DIR) + "/fixtures/" + fixture_name;
     }
 }}  // namespace hocon::test_utils

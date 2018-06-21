@@ -6,8 +6,8 @@
 using namespace hocon;
 using namespace std;
 
-void replace_test(string original_text, string final_text, string new_value,
-                  string replace_path, config_syntax syntax) {
+void replace_test(string const& original_text, string const& final_text, string const& new_value,
+                  string const& replace_path, config_syntax syntax) {
     auto config_doc = config_document_factory::parse_string(original_text,
                                                             config_parse_options().set_syntax(syntax));
     REQUIRE(original_text == config_doc->render());

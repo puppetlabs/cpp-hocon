@@ -1,5 +1,8 @@
 environment:
-  LEATHERMAN_VERSION: 1.2.1
+  LEATHERMAN_VERSION: 1.4.0
+  matrix:
+  - shared: OFF
+
 init:
   - |
       choco install -y mingw-w64 -Version 5.2.0 -source https://www.myget.org/F/puppetlabs
@@ -7,24 +10,28 @@ init:
       choco install -y gettext -Version 0.19.6 -source https://www.myget.org/F/puppetlabs
       choco install -y pl-toolchain-x64 -Version 2015.12.01.1 -source https://www.myget.org/F/puppetlabs
       choco install -y pl-boost-x64 -Version 1.58.0.2 -source https://www.myget.org/F/puppetlabs
+      choco install -y pl-openssl-x64 -Version 1.0.24.1 -source https://www.myget.org/F/puppetlabs
       choco install -y pl-curl-x64 -Version 7.46.0.1 -source https://www.myget.org/F/puppetlabs
-  - ps: |
-      wget "https://github.com/puppetlabs/leatherman/releases/download/$env:LEATHERMAN_VERSION/leatherman.7z" -OutFile "$env:temp\leatherman.7z"
-      7z.exe x $env:temp\leatherman.7z -oC:\tools | FIND /V "ing "
 
 install:
+  - ps: |
+      wget "https://github.com/puppetlabs/leatherman/releases/download/$env:LEATHERMAN_VERSION/leatherman.7z" -OutFile "$pwd\leatherman.7z"
+      7z.exe x leatherman.7z -oC:\tools | FIND /V "ing "
+
     # Minimize environment polution; previously we were linking against the wrong OpenSSL DLLs.
     # Include Ruby and Powershell for unit tests.
   - SET PATH=C:\tools\pl-build-tools\bin;C:\tools\mingw64\bin;C:\ProgramData\chocolatey\bin;C:\Ruby22-x64\bin;C:\Program Files\7-Zip;C:\Windows\system32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0
 
 build_script:
   - ps: |
-      cmake -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE="C:\tools\pl-build-tools\pl-build-toolchain.cmake" -DCMAKE_PREFIX_PATH="C:\tools\leatherman" -DCMAKE_INSTALL_PREFIX=C:\tools\cpp-hocon -DBOOST_STATIC=ON .
-      mingw32-make install
-      7z.exe a -t7z cpp-hocon.7z C:\tools\cpp-hocon\
+      cmake -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE="C:\tools\pl-build-tools\pl-build-toolchain.cmake" -DCMAKE_PREFIX_PATH="C:\tools\leatherman" -DCMAKE_INSTALL_PREFIX=C:\tools\cpp-hocon -DBOOST_STATIC=ON -DBUILD_SHARED_LIBS="$env:shared" .
+      mingw32-make -j2
 
 test_script:
-  - ps: ctest -V 2>&1 | %{ if ($_ -is [System.Management.Automation.ErrorRecord]) { $_ | c++filt } else { $_ } }
+  - ps: |
+      ctest -V 2>&1 | %{ if ($_ -is [System.Management.Automation.ErrorRecord]) { $_ | c++filt } else { $_ } }
+      mingw32-make install
+      7z.exe a -t7z cpp-hocon.7z C:\tools\cpp-hocon\
 
 artifacts:
   - path: cpp-hocon.7z
@@ -38,3 +45,4 @@ deploy:
   artifact: cpp-hocon.7z
   on:
     appveyor_repo_tag: true
+    shared: OFF

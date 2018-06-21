@@ -304,7 +304,7 @@ namespace hocon {
                     utf[i] = _input->get();
                 }
                 original += string(utf);
-                short character;
+                unsigned short character;
                 sscanf(utf, "%hx", &character);
                 wchar_t buffer[] { static_cast<wchar_t>(character), '\0'};
                 parsed += boost::nowide::narrow(buffer);

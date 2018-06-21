@@ -19,7 +19,7 @@ namespace hocon {
     struct simple_config_list::resolve_modifier : public modifier {
         resolve_modifier(resolve_context c, resolve_source s) : context(move(c)), source(move(s)) {}
 
-        shared_value modify_child_may_throw(string key, shared_value v) override
+        shared_value modify_child_may_throw(string const& key, shared_value v) override
         {
             resolve_result<shared_value> result = context.resolve(v, source);
             context = result.context;
