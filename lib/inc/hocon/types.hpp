@@ -3,7 +3,13 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waddress"
+#if defined(__GNUC__) && __GNUC__ > 5
+#pragma GCC diagnostic ignored "-Wnonnull-compare"
+#endif
 #include "boost/variant.hpp"
+#pragma GCC diagnostic pop
 
 namespace hocon {
 
