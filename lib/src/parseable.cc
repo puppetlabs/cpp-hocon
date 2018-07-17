@@ -11,7 +11,10 @@
 #include <internal/config_document_parser.hpp>
 #include <internal/simple_include_context.hpp>
 #include <internal/config_parser.hpp>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #include <boost/thread/tss.hpp>
+#pragma GCC diagnostic pop
 #include <vector>
 #include <numeric>
 #include <leatherman/util/scope_exit.hpp>
