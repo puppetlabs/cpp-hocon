@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.2.2)
 # Project Setup - modify to match project naming
 ## Source code for a simple command-line executable for a dynamic library will be generated from the project name.
 ## The command-line and library names will be based off the project name.
-project(cpp-hocon VERSION 0.2.0)
+project(cpp-hocon VERSION 0.2.1)
 
 string(MAKE_C_IDENTIFIER ${PROJECT_NAME} PROJECT_C_NAME)
 string(TOUPPER ${PROJECT_C_NAME} PROJECT_NAME_UPPER)
