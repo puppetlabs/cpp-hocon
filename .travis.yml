@@ -8,30 +8,32 @@ before_install:
 script:
   - >
     docker run -v `pwd`:/cpp-hocon gcr.io/cpp-projects/cpp-ci:1 /bin/bash -c "
-    wget https://github.com/puppetlabs/leatherman/releases/download/${LEATHERMAN_VERSION}/leatherman.tar.gz &&
-    tar xzvf leatherman.tar.gz --strip 1 -C / &&
+    wget https://github.com/puppetlabs/leatherman/releases/download/${LEATHERMAN_VERSION}/leatherman${PKG_SUFFIX}.tar.gz &&
+    tar xzvf leatherman${PKG_SUFFIX}.tar.gz --strip 1 -C / &&
     cd /cpp-hocon &&
     cmake $EXTRA_VARS . &&
     mkdir dest &&
     make $TARGET DESTDIR=/cpp-hocon/dest VERBOSE=1 -j2 &&
     { [[ '$COVERALLS' != 'ON' ]] || coveralls --gcov-options '\-lp' -r . -b . -e src -e vendor >/dev/null || true; }
     "
-  - if [[ $DO_RELEASE = true ]]; then tar czvf cpp-hocon.tar.gz `find dest -type f -print`; fi
+  - if [[ $DO_RELEASE = true ]]; then tar czvf cpp-hocon${PKG_SUFFIX}.tar.gz `find dest -type f -print`; fi
 
 env:
   global:
-    - LEATHERMAN_VERSION=1.4.0
+    - LEATHERMAN_VERSION=1.4.4
   matrix:
     - TARGET=cpplint
     - TARGET=cppcheck
-    - TARGET="all test install ARGS=-V" DO_RELEASE=true EXTRA_VARS="-DBOOST_STATIC=ON"
+    - TARGET="all test install ARGS=-V" DO_RELEASE=true PKG_SUFFIX="" EXTRA_VARS="-DBOOST_STATIC=ON"
+    - TARGET="all test install ARGS=-V" DO_RELEASE=true PKG_SUFFIX="-dynamic" EXTRA_VARS=""
     - TARGET="all test install ARGS=-V" EXTRA_VARS="-DBOOST_STATIC=ON -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON" COVERALLS=ON
 
 deploy:
   provider: releases
   api_key:
     secure: CpEaVGNtPPKb55xvohWoyAQ0IBFzatEcjnFq9zT3HTWAi8Or4wH9RTBdO6HJ64NOzUiLlR7HV7CEu0FnRqHGK3r61sc3rp9aVrmw/psHHhY5AhmrmWT304K1b6bepOOR/8y2JtDlsvY0ya1H954yFMyQ8iG11hemPwzJsJbMjxYtYXXFCsAVILPUIb9xC6vcMYgyYssfUXta73KyLdbIFS25nUq/fGX3MBXzf3PHpDcnbBrMm7aMy9tSAFrl7YDCFKWbkNczlf5v6zJIXgmjuix6Clac4DabJHufe/UHrqXtORbmuvYSOpxY4uGHi7sINfj53JsTx2pM3GCITMUVafMOyEKHYiHyIODxMs8Ey3KQLgzw8MxSZ5HaeWE7UPuIDMKBo4+qeKQw9vrsZglSNbqjJet2oOVzm7TMn9wPQm71ClefxT1lxHx/V/01jhfy3jlEPjHi756cycOQposvFzBqU8u1UyoxurifUtmpDm2f45uX6/vrUhqLCcDbJzU447GWAiKrmFRyWH7K6/AS3YNIMwdHiojF+TvmXgRO+49mDMRi8nLlCJwZHePDecU09Ir6f5ym/YsUeJHhLPwwiqHuf8lZZdtSVNOo+8FHwdRZzFwxcApR782XZSIlBbGJgDHaIF6TKrOU+C7UyxhWcmyRP6Xm06OGbcl/9nJj1Yg=
-  file: cpp-hocon.tar.gz
+  file_glob: true
+  file: cpp-hocon*.tar.gz
   skip_cleanup: true
   on:
     repo: puppetlabs/cpp-hocon
