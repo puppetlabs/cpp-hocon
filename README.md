@@ -17,13 +17,13 @@ Error occured when I was using cpp-hocon to parse some config files in our proje
 
 I'll use a simple example case to illustrate what the problem is. As is shown in the following image, in my example directory exist two sub_dirs, "bin" and "conf".
 
-![image]("https://github.com/SeaTalk/cpp-hocon/imgs/tree1.png")
+![image](imgs/tree1.png)
 
 Under conf directory lays two config file, "a.conf" and "b.conf". The content of a.conf is *{ Peter : { include file("b.conf") } }* , and the content of b.conf is *{ passwd1 : "asdf" }*. And the following image is test code.
 
-![image]("https://github.com/SeaTalk/cpp-hocon/imgs/test_code.png")
+![image](imgs/test_code.png)
 
-When I compile the code in directory "bin", and run the binary in "bin", I got an error. ![image]("https://github.com/SeaTalk/cpp-hocon/imgs/error.png")
+When I compile the code in directory "bin", and run the binary in "bin", I got an error. ![image](imgs/error.png)
 
 However when I run the binary in directory "conf", I could get the expected outputs.
 

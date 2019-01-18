@@ -28,11 +28,12 @@ namespace hocon {
 
         static shared_object from_basename(std::shared_ptr<name_source> source,
                                            std::string name,
-                                           config_parse_options options);
+                                           config_parse_options options,
+                                           shared_full_current fpath);
 
         static std::shared_ptr<const full_includer> make_full(std::shared_ptr<const config_includer> includer);
 
-        static full_path_operator _file_current_dir;
+        //static path_container _file_path_container;
     private:
         shared_includer _fallback;
 
@@ -59,7 +60,7 @@ namespace hocon {
     class name_source {
     public:
         virtual shared_parseable name_to_parseable(std::string name,
-                                                   config_parse_options parse_options) const = 0;
+                                                   config_parse_options parse_options, shared_full_current fpath = nullptr) const = 0;
     };
 
     class relative_name_source : public name_source {
@@ -67,7 +68,7 @@ namespace hocon {
         relative_name_source(shared_include_context context);
 
         shared_parseable name_to_parseable(std::string name,
-                                           config_parse_options parse_options) const override;
+                                           config_parse_options parse_options, shared_full_current fpath = nullptr) const override;
     private:
         const shared_include_context _context;
     };
@@ -75,7 +76,7 @@ namespace hocon {
     class file_name_source : public name_source {
     public:
         shared_parseable name_to_parseable(std::string name,
-                                           config_parse_options parse_options) const override;
+                                           config_parse_options parse_options, shared_full_current fpath = nullptr) const override;
     };
 
 }  // namespace hocon

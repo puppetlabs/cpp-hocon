@@ -30,8 +30,10 @@ namespace hocon {
 
     const int parseable::MAX_INCLUDE_DEPTH = 50;
 
-    shared_ptr<parseable> parseable::new_file(std::string input_file_path, config_parse_options options) {
-        return make_shared<parseable_file>(move(input_file_path),  move(options));
+    shared_ptr<parseable> parseable::new_file(std::string input_file_path,
+                                            config_parse_options options,
+                                            shared_full_current fpath) {
+        return make_shared<parseable_file>(move(input_file_path),  move(options), fpath);
     }
 
     shared_ptr<parseable> parseable::new_string(std::string s, config_parse_options options) {
@@ -47,6 +49,18 @@ namespace hocon {
         _initial_options = fixup_options(move(base_options));
 
         _include_context = make_shared<simple_include_context>(*this);
+
+        if (_initial_options.get_origin_description()) {
+            _initial_origin = make_shared<simple_config_origin>(*_initial_options.get_origin_description());
+        } else {
+            _initial_origin = create_origin();
+        }
+    }
+
+    void parseable::post_construct(config_parse_options const& base_options, shared_full_current fpath) {
+        _initial_options = fixup_options(move(base_options));
+
+        _include_context = make_shared<simple_include_context>(*this, fpath);
 
         if (_initial_options.get_origin_description()) {
             _initial_origin = make_shared<simple_config_origin>(*_initial_options.get_origin_description());
@@ -268,9 +282,9 @@ namespace hocon {
     }
 
     /** Parseable file */
-    parseable_file::parseable_file(std::string input_file_path, config_parse_options options) :
+    parseable_file::parseable_file(std::string input_file_path, config_parse_options options, shared_full_current fpath) :
         _input(move(input_file_path)) {
-        post_construct(options);
+        post_construct(options, fpath);
     }
 
     unique_ptr<istream> parseable_file::reader() const {

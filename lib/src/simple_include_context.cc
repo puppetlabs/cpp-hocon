@@ -5,7 +5,10 @@ using namespace std;
 
 namespace hocon {
 
-    simple_include_context::simple_include_context(parseable const& parse) : _parseable(parse) { }
+    simple_include_context::simple_include_context(parseable const& parse) : config_include_context(), _parseable(parse) { }
+
+    simple_include_context::simple_include_context(parseable const& parseable, shared_full_current fpath)
+        : config_include_context(fpath), _parseable(parseable) { }
 
     shared_parseable simple_include_context::relative_to(std::string file_name) const {
         return _parseable.relative_to(file_name);

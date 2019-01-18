@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <memory>
 #include "export.h"
 #include <leatherman/locale/locale.hpp>
 
@@ -208,7 +209,7 @@ namespace hocon {
          *            parse options
          * @return the parsed configuration
          */
-        static shared_config parse_file_any_syntax(std::string file_basename, config_parse_options options);
+        static shared_config parse_file_any_syntax(std::string file_basename, config_parse_options options, shared_full_current fpath);
 
         /**
          * Like {@link #parseFileAnySyntax(File,ConfigParseOptions)} but always uses
@@ -219,17 +220,6 @@ namespace hocon {
          * @return the parsed configuration
          */
         static shared_config parse_file_any_syntax(std::string file_basename);
-
-        /**
-         * Like {@link #parseFileAnySyntax(File)}} but always uses default parse options.
-         * 
-         * @param file_dirname
-         *            a directory where we can locate the file whose name is @file_name
-         * @param file_name
-         *            a filename with or without extension
-         * @return the parsed configuration
-         */
-        static shared_config parse_file_any_syntax(std::string file_dirname, std::string file_name, config_parse_options options);
 
         /**
          * Parses a string (which should be valid HOCON or JSON by default, or

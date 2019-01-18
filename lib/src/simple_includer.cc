@@ -16,7 +16,7 @@ namespace hocon {
     simple_includer::simple_includer(shared_includer fallback):
         _fallback(move(fallback)) {}
 
-    full_path_operator simple_includer::_file_current_dir = string("");
+    //path_container simple_includer::_file_path_container;
 
     shared_includer simple_includer::with_fallback(shared_includer fallback) const {
         auto self = shared_from_this();
@@ -45,7 +45,7 @@ namespace hocon {
     shared_object simple_includer::include_without_fallback(shared_include_context context, std::string what) const {
         // TODO: this method deals with URLs and will require Hocon::Impl::Url
         auto source = make_shared<relative_name_source>(context);
-        return from_basename(move(source), what, context->parse_options());
+        return from_basename(move(source), what, context->parse_options(), nullptr);
     }
 
     shared_object simple_includer::include_file(shared_include_context context, string what) const {
@@ -61,7 +61,7 @@ namespace hocon {
     }
 
     shared_object simple_includer::include_file_without_fallback(shared_include_context context, std::string what) {
-        return config::parse_file_any_syntax(move(what), context->parse_options())->resolve(config_resolve_options(true, true))->root();
+        return config::parse_file_any_syntax(move(what), context->parse_options(), context->_fpath)->resolve(config_resolve_options(true, true))->root();
     }
 
     config_parse_options simple_includer::clear_for_include(config_parse_options const& options) {
@@ -76,10 +76,10 @@ namespace hocon {
      * loading app.{conf,json} from the filesystem.
      */
     shared_object simple_includer::from_basename(std::shared_ptr<name_source> source, std::string name,
-                                                 config_parse_options options) {
+                                                 config_parse_options options, shared_full_current fpath) {
         shared_object obj;
         if (boost::algorithm::ends_with(name, ".conf") || boost::algorithm::ends_with(name, ".json")) {
-            auto p = source->name_to_parseable(name, options);
+            auto p = source->name_to_parseable(name, options, fpath);
             obj = p->parse(p->options().set_allow_missing(options.get_allow_missing()));
         } else {
             auto conf_handle = source->name_to_parseable(name + ".conf", options);
@@ -143,7 +143,7 @@ namespace hocon {
             _context(move(context)) {}
 
     shared_parseable relative_name_source::name_to_parseable(string name,
-                                                             config_parse_options parse_options) const {
+                                                             config_parse_options parse_options, shared_full_current fpath) const {
         auto p = _context->relative_to(name);
         if (p == nullptr) {
             // avoid returning null
@@ -154,8 +154,8 @@ namespace hocon {
     }
 
     /** File name source */
-    shared_parseable file_name_source::name_to_parseable(std::string name, config_parse_options parse_options) const {
-        return parseable::new_file(move(name), move(parse_options));
+    shared_parseable file_name_source::name_to_parseable(std::string name, config_parse_options parse_options, shared_full_current fpath) const {
+        return parseable::new_file(move(name), move(parse_options), fpath);
     }
 
     /** Proxy */

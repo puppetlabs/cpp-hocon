@@ -1,6 +1,10 @@
 #pragma once
 
 #include <string>
+#include <stack>
+#include <mutex>
+#include <unordered_map>
+#include <memory>
 
 namespace hocon {
 
@@ -20,16 +24,24 @@ namespace hocon {
 
     class full_path_operator {
      public:
-        full_path_operator(const std::string& s):_current_dir(s) {}
+         full_path_operator():
+            _current_dir(""),
+            _str_stack() {}
 
-        void append(const std::string& dir);
+         full_path_operator(const std::string& s):
+            _current_dir(s), _str_stack() {}
 
-        int remove(const std::string& dir);
+         void stash();
 
-        std::string operator+(const std::string& str);
+         void append(const std::string& dir);
+
+         int remove(const std::string& dir);
+
+         std::string extend(const std::string& str);
 
      private:
-        std::string _current_dir;
+         std::string _current_dir;
+         std::stack<std::string> _str_stack;
     };
 
 }  // namespace hocon

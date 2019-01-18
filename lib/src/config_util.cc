@@ -106,7 +106,15 @@ namespace hocon {
         }
     }
 
+    void full_path_operator::stash() {
+        _str_stack.push(_current_dir);
+        _current_dir.assign("");
+    }
+
     void full_path_operator::append(const std::string& dir) {
+        if (! _current_dir.empty() && ! dir.empty() && dir[0] == '/') {
+            stash();
+        }
         _current_dir.append(dir);
     }
 
@@ -120,10 +128,14 @@ namespace hocon {
             return -2;
         }
         _current_dir.assign(_current_dir.substr(0, cur_dir_len - dir_len));
+        if (_current_dir.empty() && ! _str_stack.empty()) {
+            _current_dir.assign(_str_stack.top());
+            _str_stack.pop();
+        }
         return 0;
     }
     
-    std::string full_path_operator::operator+(const std::string& str) {
+    std::string full_path_operator::extend(const std::string& str) {
         return _current_dir + str;
     }
 

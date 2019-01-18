@@ -12,7 +12,7 @@ namespace hocon {
 
     class parseable : public config_parseable, public std::enable_shared_from_this<parseable> {
     public:
-        static std::shared_ptr<parseable> new_file(std::string input_file_path, config_parse_options options);
+        static std::shared_ptr<parseable> new_file(std::string input_file_path, config_parse_options options, shared_full_current fpath=nullptr);
         static std::shared_ptr<parseable> new_string(std::string s, config_parse_options options);
         static std::shared_ptr<parseable> new_not_found(std::string what_not_found, std::string message,
                                                         config_parse_options options);
@@ -20,6 +20,7 @@ namespace hocon {
         static config_syntax syntax_from_extension(std::string name);
 
         void post_construct(config_parse_options const& base_options);
+        void post_construct(config_parse_options const& base_options, shared_full_current fpath);
 
         std::shared_ptr<config_document> parse_config_document();
         shared_object parse(config_parse_options const& options) const override;
@@ -74,7 +75,7 @@ namespace hocon {
 
     class parseable_file : public parseable {
     public:
-        parseable_file(std::string input_file_path, config_parse_options options);
+        parseable_file(std::string input_file_path, config_parse_options options, shared_full_current fpath);
         std::unique_ptr<std::istream> reader() const override;
         shared_origin create_origin() const override;
         config_syntax guess_syntax() const override;

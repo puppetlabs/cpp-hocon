@@ -60,4 +60,7 @@ namespace hocon {
 
     class config_parseable;
     using shared_parseable = std::shared_ptr<const config_parseable>;
+
+    class full_path_operator;
+    using shared_full_current = std::shared_ptr<full_path_operator>;
 }  // namespace hocon
