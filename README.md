@@ -9,6 +9,31 @@ This is a port of the TypesafeConfig library to C++.
 
 The library provides C++ support for the [HOCON configuration file format](https://github.com/typesafehub/config/blob/master/HOCON.md).
 
+## I Made Some Change
+
+Error occured when I was using cpp-hocon to parse some config files in our project. That motivates me to fork the origin project of cpp-hocon, and change some code to fulfill my goal in using it. I'm not sure what I've done is right, and I don't know where anyone else is in the same situation. Next I'll tell you what my problem is, and how I fix it even in not-sure-correct way.
+
+## My Problem
+
+I'll use a simple example case to illustrate what the problem is. As is shown in the following image, in my example directory exist two sub_dirs, "bin" and "conf".
+
+![image]("https://github.com/SeaTalk/cpp-hocon/imgs/tree1.png")
+
+Under conf directory lays two config file, "a.conf" and "b.conf". The content of a.conf is *{ Peter : { include file("b.conf") } }* , and the content of b.conf is *{ passwd1 : "asdf" }*. And the following image is test code.
+
+![image]("https://github.com/SeaTalk/cpp-hocon/imgs/test_code.png")
+
+When I compile the code in directory "bin", and run the binary in "bin", I got an error. ![image]("https://github.com/SeaTalk/cpp-hocon/imgs/error.png")
+
+However when I run the binary in directory "conf", I could get the expected outputs.
+
+## My Solution
+
+I thought it was the parser that can not parse included file in a relative path based on the directory of including file. Then I change some code to make it happen. 
+
+I am not sure what I've done is the right way to solve this problem. And I also don't know what kinds of bugs this change would make. So I post my code (both my change code and test code) to you, and hoping someone have a better idea to fix it.
+
+
 ```
           MMMMMMMMMMMMMMMMMMMM
          .====================.

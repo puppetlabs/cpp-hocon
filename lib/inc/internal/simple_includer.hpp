@@ -4,6 +4,7 @@
 #include <hocon/config_includer_file.hpp>
 #include <hocon/config_parse_options.hpp>
 #include <internal/full_includer.hpp>
+#include <internal/config_util.hpp>
 
 namespace hocon {
 
@@ -31,6 +32,7 @@ namespace hocon {
 
         static std::shared_ptr<const full_includer> make_full(std::shared_ptr<const config_includer> includer);
 
+        static full_path_operator _file_current_dir;
     private:
         shared_includer _fallback;
 

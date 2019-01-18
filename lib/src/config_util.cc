@@ -92,4 +92,39 @@ namespace hocon {
         return s;
     }
 
+    void extract_filename_from_path(const std::string& path,
+                                    std::string *file_dir,
+                                    std::string *file_name) {
+        char sep = '/';
+        size_t i = path.rfind(sep, path.length());
+        if (string::npos != i) {
+            file_dir->assign(path.substr(0, i + 1));
+            file_name->assign(path.substr(i + 1, path.length() - i));
+        } else {
+            file_dir->assign("");
+            file_name->assign(path);
+        }
+    }
+
+    void full_path_operator::append(const std::string& dir) {
+        _current_dir.append(dir);
+    }
+
+    int full_path_operator::remove(const std::string& dir) {
+        size_t cur_dir_len = _current_dir.length();
+        size_t dir_len = dir.length();
+        if (cur_dir_len < dir_len) {
+            return -1;
+        } 
+        if (_current_dir.substr(cur_dir_len - dir_len, dir_len).compare(dir)) {
+            return -2;
+        }
+        _current_dir.assign(_current_dir.substr(0, cur_dir_len - dir_len));
+        return 0;
+    }
+    
+    std::string full_path_operator::operator+(const std::string& str) {
+        return _current_dir + str;
+    }
+
 }  // namespace hocon

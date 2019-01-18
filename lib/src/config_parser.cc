@@ -17,6 +17,7 @@
 #include <internal/values/simple_config_object.hpp>
 #include <internal/values/simple_config_list.hpp>
 #include <leatherman/locale/locale.hpp>
+#include <iostream>
 
 // Mark string for translation (alias for leatherman::locale::format)
 using leatherman::locale::_;

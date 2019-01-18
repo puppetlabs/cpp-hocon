@@ -13,7 +13,10 @@ using namespace std;
 
 namespace hocon {
 
-    simple_includer::simple_includer(shared_includer fallback): _fallback(move(fallback)) {}
+    simple_includer::simple_includer(shared_includer fallback):
+        _fallback(move(fallback)) {}
+
+    full_path_operator simple_includer::_file_current_dir = string("");
 
     shared_includer simple_includer::with_fallback(shared_includer fallback) const {
         auto self = shared_from_this();
