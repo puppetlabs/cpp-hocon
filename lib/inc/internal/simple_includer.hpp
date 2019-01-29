@@ -56,8 +56,31 @@ namespace hocon {
 
     class name_source {
     public:
+        name_source(shared_include_context context) : _context(move(context)) {
+            if (nullptr != _context) {
+                _init_finished = true;
+            } else {
+                _init_finished = false;
+            }
+        }
+        name_source() : name_source(nullptr) {}
         virtual shared_parseable name_to_parseable(std::string name,
                                                    config_parse_options parse_options) const = 0;
+
+        void set_context(shared_include_context context) {
+            if (!_init_finished) {
+                _init_finished = true;
+                _context = context;
+            }
+        }
+
+        bool context_initialed() {
+            return _init_finished;
+        }
+
+    protected:
+        shared_include_context _context;
+        bool _init_finished;
     };
 
     class relative_name_source : public name_source {
@@ -66,12 +89,14 @@ namespace hocon {
 
         shared_parseable name_to_parseable(std::string name,
                                            config_parse_options parse_options) const override;
-    private:
-        const shared_include_context _context;
     };
 
     class file_name_source : public name_source {
     public:
+        file_name_source();
+
+        file_name_source(shared_include_context context);
+
         shared_parseable name_to_parseable(std::string name,
                                            config_parse_options parse_options) const override;
     };

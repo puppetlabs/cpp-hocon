@@ -1,5 +1,6 @@
 #include <hocon/config.hpp>
 #include <internal/simple_includer.hpp>
+#include <internal/simple_include_context.hpp>
 #include <internal/values/simple_config_object.hpp>
 #include <internal/parseable.hpp>
 #include <hocon/config_exception.hpp>
@@ -58,7 +59,11 @@ namespace hocon {
     }
 
     shared_object simple_includer::include_file_without_fallback(shared_include_context context, std::string what) {
-        return config::parse_file_any_syntax(move(what), context->parse_options())->resolve(config_resolve_options(true, true))->root();
+        auto source = make_shared<file_name_source>(context);
+        return from_basename(move(source), what, context->parse_options())
+                ->to_config()
+                ->resolve(config_resolve_options(true, true))
+                ->root();
     }
 
     config_parse_options simple_includer::clear_for_include(config_parse_options const& options) {
@@ -76,11 +81,18 @@ namespace hocon {
                                                  config_parse_options options) {
         shared_object obj;
         if (boost::algorithm::ends_with(name, ".conf") || boost::algorithm::ends_with(name, ".json")) {
-            auto p = source->name_to_parseable(name, options);
+            shared_parseable p(nullptr);
+            if (source->context_initialed()) {
+                p = source->name_to_parseable(name, options);
+            } else {
+                p = parseable::new_file(name, options);
+                source->set_context(
+                    make_shared<simple_include_context>(*(dynamic_pointer_cast<const parseable>(p))));
+            }
             obj = p->parse(p->options().set_allow_missing(options.get_allow_missing()));
         } else {
-            auto conf_handle = source->name_to_parseable(name + ".conf", options);
-            auto json_handle = source->name_to_parseable(name + ".json", options);
+            auto conf_handle = parseable::new_file(name + ".conf", options);
+            auto json_handle = parseable::new_file(name + ".json", options);
             bool got_something = false;
             vector<config_exception> fails;
 
@@ -137,7 +149,7 @@ namespace hocon {
 
     /** Relative name source */
     relative_name_source::relative_name_source(shared_include_context context) :
-            _context(move(context)) {}
+            name_source(move(context)) {}
 
     shared_parseable relative_name_source::name_to_parseable(string name,
                                                              config_parse_options parse_options) const {
@@ -151,8 +163,19 @@ namespace hocon {
     }
 
     /** File name source */
+    file_name_source::file_name_source() : name_source() {}
+
+    file_name_source::file_name_source(shared_include_context context) :
+            name_source(move(context)) {}
+
     shared_parseable file_name_source::name_to_parseable(std::string name, config_parse_options parse_options) const {
-        return parseable::new_file(move(name), move(parse_options));
+        auto p = _context->relative_to(name);
+        if (p == nullptr) {
+            // avoid returning null
+            return parseable::new_not_found(name, _("include was not found: '{1}'", name), move(parse_options));
+        } else {
+            return p;
+        }
     }
 
     /** Proxy */

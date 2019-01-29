@@ -39,6 +39,10 @@ namespace hocon {
         virtual std::shared_ptr<config_parseable> relative_to(std::string file_name) const;
 
         std::string to_string() const;
+        std::string get_cur_dir() const;
+        void set_cur_dir(std::string dir) const;
+        void separate_filepath(const std::string& path, std::string* file_dir,
+                                std::string* file_name) const;
 
         // Disable copy constructors, as include_context assumes it can hold a reference to parseable.
         parseable() = default;

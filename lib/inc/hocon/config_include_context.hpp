@@ -20,6 +20,7 @@ namespace hocon {
      */
     class LIBCPP_HOCON_EXPORT config_include_context {
     public:
+        config_include_context() : _cur_dir(new std::string("")) {}
         /**
          * Tries to find a name relative to whatever is doing the including, for
          * example in the same directory as the file doing the including. Returns
@@ -46,6 +47,17 @@ namespace hocon {
          * @return the parse options
          */
         virtual config_parse_options parse_options() const = 0;
+
+        void set_cur_dir(std::string dir) const {
+            _cur_dir->assign(dir);
+        }
+
+        std::string get_cur_dir() const {
+            return *_cur_dir;
+        }
+
+    protected:
+        std::shared_ptr<std::string> _cur_dir;
     };
 
 }  // namespace hocon
