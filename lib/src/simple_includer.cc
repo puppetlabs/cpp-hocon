@@ -82,7 +82,7 @@ namespace hocon {
         shared_object obj;
         if (boost::algorithm::ends_with(name, ".conf") || boost::algorithm::ends_with(name, ".json")) {
             shared_parseable p(nullptr);
-            if (source->context_initialed()) {
+            if (source->context_initialized()) {
                 p = source->name_to_parseable(name, options);
             } else {
                 p = parseable::new_file(name, options);
@@ -153,7 +153,7 @@ namespace hocon {
 
     shared_parseable relative_name_source::name_to_parseable(string name,
                                                              config_parse_options parse_options) const {
-        auto p = _context->relative_to(name);
+        auto p = get_context()->relative_to(name);
         if (p == nullptr) {
             // avoid returning null
             return parseable::new_not_found(name, _("include was not found: '{1}'", name), move(parse_options));
@@ -169,7 +169,7 @@ namespace hocon {
             name_source(move(context)) {}
 
     shared_parseable file_name_source::name_to_parseable(std::string name, config_parse_options parse_options) const {
-        auto p = _context->relative_to(name);
+        auto p = get_context()->relative_to(name);
         if (p == nullptr) {
             // avoid returning null
             return parseable::new_not_found(name, _("include was not found: '{1}'", name), move(parse_options));

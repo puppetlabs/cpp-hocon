@@ -733,4 +733,5 @@ TEST_CASE("parse files") {
     REQUIRE("qwer.,m" == conf1->get_string("Peter.passwd4"));
     REQUIRE(10 == conf1->get_int("Peter.passwd5"));
     REQUIRE("nick" == conf2->get_string("other_field.nick_name"));
+    REQUIRE("qwer.,m" == conf2->get_string("other_field.new_passwd"));
 }

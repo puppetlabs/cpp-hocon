@@ -58,9 +58,9 @@ namespace hocon {
     public:
         name_source(shared_include_context context) : _context(move(context)) {
             if (nullptr != _context) {
-                _init_finished = true;
+                _context_initialized = true;
             } else {
-                _init_finished = false;
+                _context_initialized = false;
             }
         }
         name_source() : name_source(nullptr) {}
@@ -68,19 +68,23 @@ namespace hocon {
                                                    config_parse_options parse_options) const = 0;
 
         void set_context(shared_include_context context) {
-            if (!_init_finished) {
-                _init_finished = true;
+            if (!_context_initialized) {
+                _context_initialized = true;
                 _context = context;
             }
         }
 
-        bool context_initialed() {
-            return _init_finished;
+        shared_include_context get_context() const {
+            return _context;
         }
 
-    protected:
+        bool context_initialized() const {
+            return _context_initialized;
+        }
+
+    private:
         shared_include_context _context;
-        bool _init_finished;
+        bool _context_initialized;
     };
 
     class relative_name_source : public name_source {
