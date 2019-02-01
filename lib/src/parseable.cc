@@ -100,20 +100,42 @@ namespace hocon {
     }
 
     shared_ptr<config_parseable> parseable::relative_to(string file_name) const {
-        // fall back to classpath; we treat the "filename" as absolute
-        // (don't add a package name in front),
-        // if it starts with "/" then remove the "/", for consistency
-        // with parseable_resrouces.relativeTo
+        // we don't have classpath or resoucespath in c++. (it does in Java)
+        // we treat the "filename" as absolute or relative path
+        // to a specific hocon file. (URL is not supported now)
+        // if it starts with "/", we consider it as a absolute path.
+        // otherwise, it's a relative path.
         string resource = file_name;
-        if (boost::algorithm::starts_with(file_name, "/")) {
-            resource = file_name.substr(1);
+        if (!file_name.empty() && '/' == file_name[0]) {
+            resource = file_name;
+        } else {
+            resource = get_cur_dir() + file_name;
         }
-        return make_shared<parseable_resources>(resource,
-                                                options().set_origin_description(nullptr));
+        return parseable::new_file(move(resource), _include_context->parse_options());
     }
 
     string parseable::to_string() const {
         return typeid(*this).name();
+    }
+
+    void parseable::set_cur_dir(std::string dir) const {
+        _include_context->set_cur_dir(move(dir));
+    }
+
+    std::string parseable::get_cur_dir() const {
+        return _include_context->get_cur_dir();
+    }
+
+    void parseable::separate_filepath(const std::string& path, std::string* file_dir, std::string* file_name) const {
+        char sep = '/';
+        size_t i = path.rfind(sep, path.length());
+        if (std::string::npos != i) {
+            file_dir->assign(path.substr(0, i + 1));
+            file_name->assign(path.substr(i + 1, path.length() - i));
+        } else {
+            file_dir->assign("");
+            file_name->assign(path);
+        }
     }
 
     shared_ptr<config_document> parseable::parse_config_document() {
@@ -271,6 +293,9 @@ namespace hocon {
     parseable_file::parseable_file(std::string input_file_path, config_parse_options options) :
         _input(move(input_file_path)) {
         post_construct(options);
+        string dir, name;
+        separate_filepath(_input, &dir, &name);
+        set_cur_dir(dir);
     }
 
     unique_ptr<istream> parseable_file::reader() const {

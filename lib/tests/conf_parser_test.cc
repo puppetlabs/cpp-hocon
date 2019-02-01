@@ -1,5 +1,6 @@
 #include <catch.hpp>
 #include "test_utils.hpp"
+#include "fixtures.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -717,4 +718,20 @@ TEST_CASE("accept multi period numeric path") {
     REQUIRE("foobar2" == conf2->get_string("0.1.2.3.ABC"));
     auto conf3 = config::parse_string("ABC.0.1.2.3=foobar3");
     REQUIRE("foobar3" == conf3->get_string("ABC.0.1.2.3"));
+}
+
+
+TEST_CASE("parse files") {
+    string cur_file_path(TEST_FILE_DIR);
+    string file_path1 = cur_file_path + "/simple_confs/a.conf";
+    string file_path2 = cur_file_path + "/simple_confs/sub/b.conf";
+    auto conf1 = config::parse_file_any_syntax(move(file_path1))->resolve();
+    auto conf2 = config::parse_file_any_syntax(move(file_path2))->resolve();
+    REQUIRE("adsf" == conf1->get_string("Peter.passwd1"));
+    REQUIRE("lsdk" == conf1->get_string("Peter.passwd2"));
+    REQUIRE("123414" == conf1->get_string("Peter.passwd3"));
+    REQUIRE("qwer.,m" == conf1->get_string("Peter.passwd4"));
+    REQUIRE(10 == conf1->get_int("Peter.passwd5"));
+    REQUIRE("nick" == conf2->get_string("other_field.nick_name"));
+    REQUIRE("qwer.,m" == conf2->get_string("other_field.new_passwd"));
 }
