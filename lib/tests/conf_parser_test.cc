@@ -38,7 +38,7 @@ static shared_value parse(string s) {
 TEST_CASE("invalid conf throws") {
     for (auto const& invalid : whitespace_variations(invalid_conf(), false)) {
         CAPTURE(invalid.test);
-        REQUIRE_THROWS_AS(parse(invalid.test), config_exception);
+        REQUIRE_THROWS_AS(parse(invalid.test), config_exception&);
     }
 }
 
@@ -117,8 +117,8 @@ TEST_CASE("path parsing") {
     REQUIRE(path(vector<string>{"1", "2", "3", "4"}) == parse_path("1.2.3.4"));
 
     for (string invalid : {"", " ", "  \n   \n  ", "a.", ".b", "a..b", "a${b}c", "\"\".", ".\"\""}) {
-        REQUIRE_THROWS_AS(parse_without_resolving("[${"+invalid+"}]"), bad_path_exception);
-        REQUIRE_THROWS_AS(path_parser::parse_path(invalid), bad_path_exception);
+        REQUIRE_THROWS_AS(parse_without_resolving("[${"+invalid+"}]"), bad_path_exception&);
+        REQUIRE_THROWS_AS(path_parser::parse_path(invalid), bad_path_exception&);
     }
 }
 
@@ -244,9 +244,9 @@ TEST_CASE("implied comma handling") {
     auto no_newline_at_end = parse_config("a : b");
     REQUIRE("b" == no_newline_at_end->get_string("a"));
 
-    REQUIRE_THROWS_AS(parse_config("{ a : y b : z }"), config_exception);
+    REQUIRE_THROWS_AS(parse_config("{ a : y b : z }"), config_exception&);
 
-    REQUIRE_THROWS_AS(parse_config(R"({ "a" : "y" "b" : "z" })"), config_exception);
+    REQUIRE_THROWS_AS(parse_config(R"({ "a" : "y" "b" : "z" })"), config_exception&);
 
     // with no newline or comma, we do value concatenation
     auto no_newline_in_array = parse_config(" { c : [ 1 2 3 ] } ");
@@ -642,7 +642,7 @@ TEST_CASE("include file with extension") {
     auto conf = config::parse_string("include file(\"" + fixture_path("test01.conf") + "\")");
 
     REQUIRE(42u == conf->get_int("ints.fortyTwo"));
-    REQUIRE_THROWS_AS(conf->get_int("fromJson1"), config_exception);
+    REQUIRE_THROWS_AS(conf->get_int("fromJson1"), config_exception&);
 }
 
 TEST_CASE("include file whitespace inside parens") {

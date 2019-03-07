@@ -299,7 +299,7 @@ TEST_CASE("concatenation") {
     SECTION("concatenate object substitutions with quoted space") {
         REQUIRE_THROWS_AS(
             parse_config(R"(foo = { a : 1}, bar = { b : 2 }, x = ${foo}"  "${bar})")->resolve(),
-            config_exception
+            config_exception&
         );
     }
 
@@ -308,7 +308,7 @@ TEST_CASE("concatenation") {
     SECTION("concatenate list substitutions with quoted space") {
         REQUIRE_THROWS_AS(
             parse_config(R"(foo = [1], bar = [2], x = ${foo}"  "${bar})")->resolve(),
-            config_exception
+            config_exception&
         );
     }
 
