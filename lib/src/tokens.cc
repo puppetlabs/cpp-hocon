@@ -101,7 +101,7 @@ namespace hocon {
             return other_problem.what() == what() &&
                    other_problem.message() == message() &&
                    other_problem.suggest_quotes() == suggest_quotes();
-        } catch (bad_cast ex){
+        } catch (bad_cast &ex){
             return false;
         }
     }
