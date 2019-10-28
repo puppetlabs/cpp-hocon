@@ -42,7 +42,7 @@ else()
     set(BOOST_COMPONENTS regex)
 endif()
 
-list(APPEND BOOST_COMPONENTS thread date_time chrono system program_options)
+list(APPEND BOOST_COMPONENTS thread date_time chrono filesystem system program_options)
 
 # Add other dependencies
 find_package(Boost 1.54 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
