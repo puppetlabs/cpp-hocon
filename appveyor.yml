@@ -39,7 +39,7 @@ deploy:
   description: Cpp-hocon build from AppVeyor
   provider: GitHub
   auth_token:
-    secure: DMyUJSyyWU/cMaE3kZyoGuJNtt8VjHbw6g3n9HPzYk99aU8HlJay5meBgsTjVXfR
+    secure: RlVaba6k+N1/p56mjknNAwKrXQwQpKRn0SIr+AZ8TuVszFntRxl0qFPHcq4bOMui
   artifact: cpp-hocon.7z
   on:
     appveyor_repo_tag: true
