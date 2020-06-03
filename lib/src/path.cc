@@ -4,6 +4,7 @@
 #include <internal/config_util.hpp>
 #include <internal/path_parser.hpp>
 #include <leatherman/locale/locale.hpp>
+#include <algorithm>
 
 // Mark string for translation (alias for leatherman::locale::format)
 using leatherman::locale::_;
