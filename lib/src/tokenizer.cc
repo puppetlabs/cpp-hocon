@@ -7,6 +7,7 @@
 #include <internal/values/config_string.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/nowide/convert.hpp>
 #include <leatherman/locale/locale.hpp>
 
 // Mark string for translation (alias for leatherman::locale::format)
