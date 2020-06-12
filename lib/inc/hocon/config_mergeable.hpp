@@ -35,7 +35,7 @@ namespace hocon {
          * </pre>
          *
          * <p>
-         * Only {@link ConfigObject} and {@link Config} instances do anything in
+         * Only {@link config_object} and {@link config} instances do anything in
          * this method (they need to merge the fallback keys into themselves). All
          * other values just return the original value, since they automatically
          * override any fallback. This means that objects do not merge "across"

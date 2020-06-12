@@ -12,7 +12,7 @@ namespace hocon {
      * there's no need for "defensive copies."
      *
      * <p>
-     * <em>Do not implement interface {@code ConfigNode}</em>; it should only be
+     * <em>Do not implement interface {@code config_node}</em>; it should only be
      * implemented by the config library. Arbitrary implementations will not work
      * because the library internals assume a specific concrete implementation.
      * Also, this interface is likely to grow new methods over time, so third-party

@@ -62,8 +62,8 @@ namespace hocon {
     }
 
     shared_value config_delayed_merge_object::attempt_peek_with_partial_resolve(string const& key) const {
-        /* a partial resolve of a ConfigDelayedMergeObject always results in a
-         * SimpleConfigObject because all the substitutions in the stack get
+        /* a partial resolve of a config_delayed_merge_object always results in a
+         * simple_config_object because all the substitutions in the stack get
          * resolved in order to look up the partial.
          * So we know here that we have not been resolved at all even
          * partially.
@@ -131,7 +131,7 @@ namespace hocon {
             }
         }
         /* If we get here, then we never found anything unresolved which means
-         * the ConfigDelayedMergeObject should not have existed. some
+         * the config_delayed_merge_object should not have existed. some
          * invariant was violated.
          */
         throw bug_or_broken_exception(_("Delayed merge stack does not contain any unmergeable values"));

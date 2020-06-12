@@ -326,7 +326,7 @@ TEST_CASE("avoid delayed merge object problem 1") {
             a = 1
             b = 2
     }
-    // make item1 into a ConfigDelayedMergeObject
+    // make item1 into a config_delayed_merge_object
     item1 = ${defaults}
     // note that we'll resolve to a non-object value
     // so item1.b will ignoreFallbacks and not depend on
@@ -350,7 +350,7 @@ TEST_CASE("avoid delayed merge object resolve problem 2") {
     a = 1
     b = 2
   }
-  // make item1 into a ConfigDelayedMergeObject
+  // make item1 into a config_delayed_merge_object
   item1 = ${defaults}
   // note that we'll resolve to an object value
   // so item1.b will depend on also looking up ${defaults}
@@ -377,7 +377,7 @@ TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 3", "[!sho
     a = ${item1.b.c}
     b = 2
   }
-  // make item1 into a ConfigDelayedMergeObject
+  // make item1 into a config_delayed_merge_object
   item1 = ${defaults}
   // the ${item1.b.c} above in ${defaults} should ignore
   // this because it only looks back
@@ -404,7 +404,7 @@ TEST_CASE("avoid delayed merge object resolve problem 4") {
   }
 
   item1.b = 7
-  // make item1 into a ConfigDelayedMerge
+  // make item1 into a config_delayed_merge
   item1 = ${defaults}
   // be sure we can resolve a substitution to a value in
   // a delayed-merge object.
@@ -427,7 +427,7 @@ TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 5", "[!sho
   }
 
   item1.b = 7
-  // make item1 into a ConfigDelayedMerge
+  // make item1 into a config_delayed_merge
   item1 = ${defaults}
   // be sure we can resolve a substitution to a value in
   // a delayed-merge object.
@@ -459,7 +459,7 @@ TEST_CASE("(pending HC-78) avoid delayed merge object resolve problem 6", "[!sho
     b = 2
   }
   defaults-alias = ${defaults}
-  // make item1 into a ConfigDelayedMergeObject several layers deep
+  // make item1 into a config_delayed_merge_object several layers deep
   // that will NOT become resolved just because we resolve one path
   // through it.
   item1 = 345
@@ -495,7 +495,7 @@ TEST_CASE("Fetch known value from delayed merge object") {
     a = 1
     b = 2
   }
-  // make item1 into a ConfigDelayedMergeObject
+  // make item1 into a config_delayed_merge_object
   item1 = ${defaults}
   // note that we'll resolve to a non-object value
   // so item1.b will ignoreFallbacks and not depend on

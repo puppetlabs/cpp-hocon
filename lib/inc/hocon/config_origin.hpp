@@ -39,11 +39,11 @@ namespace hocon {
         LIBCPP_HOCON_EXPORT virtual std::string const& description() const = 0;
 
         /**
-         * Returns a {@code ConfigOrigin} based on this one, but with the given
+         * Returns a {@code config_origin} based on this one, but with the given
          * line number. This origin must be a FILE, URL or RESOURCE. Does not modify
-         * this instance or any {@code ConfigValue}s with this origin (since they are
-         * immutable).  To set the returned origin to a  {@code ConfigValue}, use
-         * {@link ConfigValue#withOrigin}.
+         * this instance or any {@code config_value}s with this origin (since they are
+         * immutable).  To set the returned origin to a  {@code config_value}, use
+         * {@link config_value#withOrigin}.
          *
          * <p>
          * Note that when the given lineNumber are equal to the lineNumber on this
@@ -53,7 +53,7 @@ namespace hocon {
          * @since 1.3.0
          *
          * @param lineNumber the new line number
-         * @return the created ConfigOrigin
+         * @return the created config_origin
          */
         LIBCPP_HOCON_EXPORT virtual shared_origin with_line_number(int line_number) const = 0;
 

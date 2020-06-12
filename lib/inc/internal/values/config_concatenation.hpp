@@ -11,14 +11,14 @@ namespace hocon {
     struct config_exception;
 
     /**
-     * A ConfigConcatenation represents a list of values to be concatenated (see the
+     * A config_concatenation represents a list of values to be concatenated (see the
      * spec). It only has to exist if at least one value is an unresolved
      * substitution, otherwise we could go ahead and collapse the list into a single
      * value.
      *
      * Right now this is always a list of strings and ${} references, but in the
-     * future should support a list of ConfigList. We may also support
-     * concatenations of objects, but ConfigDelayedMerge should be used for that
+     * future should support a list of config_list. We may also support
+     * concatenations of objects, but config_delayed_merge should be used for that
      * since a concat of objects really will merge, not concatenate.
      */
     class config_concatenation : public config_value, public unmergeable, public container {

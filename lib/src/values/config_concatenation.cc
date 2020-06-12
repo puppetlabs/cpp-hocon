@@ -71,7 +71,7 @@ namespace hocon {
                                                 resolve_source const& source) const
     {
         // Right now there's no reason to pushParent here because the
-        // content of ConfigConcatenation should not need to replaceChild,
+        // content of config_concatenation should not need to replaceChild,
         // but if it did we'd have to do this.
         resolve_context new_context { context };
 
@@ -96,7 +96,7 @@ namespace hocon {
         // now need to concat everything
         vector<shared_value> joined { consolidate(resolved) };
         // if unresolved is allowed we can just become another
-        // ConfigConcatenation
+        // config_concatenation
         if (joined.size() > 1 && context.options().get_allow_unresolved()) {
             return make_resolve_result(move(new_context), make_shared<config_concatenation>(origin(), move(joined)));
         } else if (joined.empty()) {
@@ -186,7 +186,7 @@ namespace hocon {
     }
 
     bool config_concatenation::ignores_fallbacks() const {
-        // we can never ignore fallbacks because if a child ConfigReference
+        // we can never ignore fallbacks because if a child config_reference
         // is self-referential we have to look lower in the merge stack
         // for its value.
         return false;

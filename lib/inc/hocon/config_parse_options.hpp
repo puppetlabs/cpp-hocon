@@ -33,7 +33,7 @@ namespace hocon {
         config_parse_options();
 
         /**
-         * Gets an instance of <code>ConfigParseOptions</code> with all fields
+         * Gets an instance of <code>config_parse_options</code> with all fields
          * set to the default values. Start with this instance and make any
          * changes you need.
          * @return the default parse options

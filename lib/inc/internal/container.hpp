@@ -4,10 +4,10 @@
 namespace hocon {
 
     /**
-     * An AbstractConfigValue which contains other values. Java has no way to
-     * express "this has to be an AbstractConfigValue also" other than making
-     * AbstractConfigValue an interface which would be aggravating. But we can say
-     * we are a ConfigValue.
+     * An Abstractconfig_value which contains other values. Java has no way to
+     * express "this has to be an Abstractconfig_value also" other than making
+     * Abstractconfig_value an interface which would be aggravating. But we can say
+     * we are a config_value.
      */
     class container {
     public:

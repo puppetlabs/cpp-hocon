@@ -7,26 +7,26 @@
 namespace hocon {
 
     /**
-     * Subtype of {@link ConfigValue} representing a list value, as in JSON's
+     * Subtype of {@link config_value} representing a list value, as in JSON's
      * {@code [1,2,3]} syntax.
      *
      * <p>
-     * {@code ConfigList} implements {@code java.util.List<ConfigValue>} so you can
+     * {@code config_list} implements {@code java.util.List<config_value>} so you can
      * use it like a regular Java list. Or call {@link #unwrapped()} to unwrap the
      * list elements into plain Java values.
      *
      * <p>
-     * Like all {@link ConfigValue} subtypes, {@code ConfigList} is immutable. This
+     * Like all {@link config_value} subtypes, {@code config_list} is immutable. This
      * makes it threadsafe and you never have to create "defensive copies." The
      * mutator methods from {@link java.util.List} all throw
      * {@link java.lang.UnsupportedOperationException}.
      *
      * <p>
-     * The {@link ConfigValue#valueType} method on a list returns
-     * {@link ConfigValueType#LIST}.
+     * The {@link config_value#valueType} method on a list returns
+     * {@link config_valueType#LIST}.
      *
      * <p>
-     * <em>Do not implement {@code ConfigList}</em>; it should only be implemented
+     * <em>Do not implement {@code config_list}</em>; it should only be implemented
      * by the config library. Arbitrary implementations will not work because the
      * library internals assume a specific concrete implementation. Also, this
      * interface is likely to grow new methods over time, so third-party
