@@ -37,7 +37,7 @@ endif()
 include(leatherman)
 
 if(LEATHERMAN_USE_LOCALES)
-    set(BOOST_COMPONENTS locale)
+    set(BOOST_COMPONENTS locale regex)
 else()
     set(BOOST_COMPONENTS regex)
 endif()
