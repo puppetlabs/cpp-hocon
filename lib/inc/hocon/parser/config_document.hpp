@@ -52,8 +52,8 @@ namespace hocon {
          * but takes a config_value instead of a string.
          *
          * @param path the path at which to set the desired value
-         * @param new_value the value to set at the desired path, represented as a ConfigValue.
-         *                 The rendered text of the ConfigValue will be inserted into the
+         * @param new_value the value to set at the desired path, represented as a config_value.
+         *                 The rendered text of the config_value will be inserted into the
          *                 config_document.
          * @return a copy of the config_document with the desired value at the desired path
          */

@@ -108,7 +108,7 @@ namespace hocon {
                     text = value->render();
                 } else if (t->get_token_type() == token_type::UNQUOTED_TEXT) {
                     // We need to split the tokens on a . so that we can get sub-paths but still preserve
-                    // the original path text when doing an insertion on ConfigNodeObjects
+                    // the original path text when doing an insertion on config_nodeObjects
                     if (path_tokens != nullptr) {
                         path_tokens->pop_back();
                         token_list split_tokens = split_token_on_period(t, flavor);

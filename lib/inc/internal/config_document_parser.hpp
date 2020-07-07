@@ -26,7 +26,7 @@ namespace hocon { namespace config_document_parser {
         std::shared_ptr<config_node_root> parse();
 
         /**
-         * Parse a given input stream into a single value node. Used when doing a replace inside a ConfigDocument.
+         * Parse a given input stream into a single value node. Used when doing a replace inside a config_document.
          */
         shared_node_value parse_single_value();
 

@@ -185,7 +185,7 @@ namespace hocon {
          *
          * <p>
          * In the current implementation, the extension ".conf" forces
-         * {@link ConfigSyntax#CONF}, ".json" forces {@link ConfigSyntax#JSON}.
+         * {@link config_syntax#CONF}, ".json" forces {@link config_syntax#JSON}.
          * When merging files, ".conf" falls back to ".json".
          *
          * <p>
@@ -198,7 +198,7 @@ namespace hocon {
          * files with an extension matching that syntax.
          *
          * <p>
-         * If {@link ConfigParseOptions#getAllowMissing options.getAllowMissing()}
+         * If {@link config_parse_options#getAllowMissing options.getAllowMissing()}
          * is true, then no files have to exist; if false, then at least one file
          * has to exist.
          *
@@ -211,7 +211,7 @@ namespace hocon {
         static shared_config parse_file_any_syntax(std::string file_basename, config_parse_options options);
 
         /**
-         * Like {@link #parseFileAnySyntax(File,ConfigParseOptions)} but always uses
+         * Like {@link #parseFileAnySyntax(File,config_parse_options)} but always uses
          * default parse options.
          *
          * @param fileBasename
@@ -239,19 +239,19 @@ namespace hocon {
         static shared_config parse_string(std::string s);
 
         /**
-         * Gets the {@code Config} as a tree of {@link ConfigObject}. This is a
+         * Gets the {@code config} as a tree of {@link config_object}. This is a
          * constant-time operation (it is not proportional to the number of values
-         * in the {@code Config}).
+         * in the {@code config}).
          *
          * @return the root object in the configuration
          */
         virtual shared_object root() const;
 
         /**
-         * Gets the origin of the {@code Config}, which may be a file, or a file
+         * Gets the origin of the {@code config}, which may be a file, or a file
          * with a line number, or just a descriptive phrase.
          *
-         * @return the origin of the {@code Config} for use in error messages
+         * @return the origin of the {@code config} for use in error messages
          */
         virtual shared_origin origin() const;
 
@@ -510,7 +510,7 @@ namespace hocon {
         virtual bool has_path_or_null(std::string const& path) const;
 
         /**
-         * Returns true if the {@code Config}'s root object contains no key-value
+         * Returns true if the {@code config}'s root object contains no key-value
          * pairs.
          *
          * @return true if the configuration is empty

@@ -16,7 +16,7 @@ namespace hocon {
 
         shared_value make_replacement(resolve_context const& context, int skipping) const override;
 
-        // static method also used by ConfigDelayedMergeObject; end may be null
+        // static method also used by config_delayed_merge_object; end may be null
         static shared_value make_replacement(resolve_context const& context,
                                              std::vector<shared_value> stack,
                                              int skipping);

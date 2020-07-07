@@ -16,11 +16,11 @@ namespace hocon {
         friend class config_delayed_merge_object;
     public:
         /**
-         * Converts this object to a {@link Config} instance, enabling you to use
+         * Converts this object to a {@link config} instance, enabling you to use
          * path expressions to find values in the object. This is a constant-time
          * operation (it is not proportional to the size of the object).
          *
-         * @return a {@link Config} with this object as its root
+         * @return a {@link config} with this object as its root
          */
         virtual std::shared_ptr<const config> to_config() const;
 
