@@ -249,6 +249,14 @@ TEST_CASE("duplicates of a key are removed from a map", "[config-node]") {
     remove_duplicates_test(int_node(10), empty_map_node, empty_array);
 }
 
+void empty_initial_path_test(shared_node_value value) {
+    auto node = make_shared<config_node_object>(shared_node_list {});
+    REQUIRE("" == node->render());
+    auto new_node = node->set_value_on_path("foo", value);
+    string final_text = "foo : " + value->render();
+    REQUIRE(final_text == new_node->render());
+}
+
 void nonexistent_path_test(shared_node_value value) {
     auto node = make_shared<config_node_object>(
             shared_node_list { node_key_value_pair(node_key("bar"), int_node(15)) });
@@ -259,7 +267,7 @@ void nonexistent_path_test(shared_node_value value) {
 }
 
 TEST_CASE("creates non-existent paths", "[config-node]") {
-    nonexistent_path_test(int_node(10));
+    empty_initial_path_test(int_node(10));
     nonexistent_path_test(make_shared<config_node_object>(
             shared_node_list { open_brace_node(),
                                node_key_value_pair(node_key("foo"), double_node(3.14)),

@@ -220,11 +220,11 @@ namespace hocon {
         }
 
         // Otherwise, construct the new setting
-        bool starts_with_brace = !children().empty();
-        if (auto single_token = dynamic_pointer_cast<const config_node_single_token>(children().front())) {
-            starts_with_brace = starts_with_brace && single_token->get_token() == tokens::open_curly_token();
-        } else {
-            starts_with_brace = false;
+        bool starts_with_brace = false;
+        if (!children().empty()) {
+            if (auto single_token = dynamic_pointer_cast<const config_node_single_token>(children().front())) {
+                starts_with_brace = single_token->get_token() == tokens::open_curly_token();
+            }
         }
 
         shared_node_list new_nodes;
