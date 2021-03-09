@@ -38,17 +38,23 @@ M=MMMMMMMM++  FOR HUMANS   ++M8MMMMMM7M
 To get started, [install it](#install), then to parse a file:
 ```
 #include <hocon/parser/config_document_factory.hpp>
-#include <leatherman/file_util/file.hpp>
+#include <fstream>
 
 using hocon::config_document_factory::parse_file;
-using leatherman::file_util::write_to_file;
 
 int main(int argc, char** argv) {
-    auto doc = parse_file("/path/to/file.conf");
-    doc.with_value_text("a.b", "42");
-    write_to_file(doc.render(), "/path/to/file.conf");
+    auto doc = parse_file("file.conf");
+    doc = doc->with_value_text("a", "42");
+
+    std::ofstream out("file.conf");
+    out << doc->render();
     return 0;
 }
+```
+
+If you build cpp-hocon with `-DBUILD_SHARED_LIBS=ON`, then the example can be built with
+```
+c++ example.cc -o example -std=c++11 -lcpp-hocon
 ```
 
 You can use `hocon::config_document_factory::parse_string` to parse a string. [config_document](lib/inc/hocon/parser/config_document.hpp) is used to modify a file while preserving all formatting. Use [config](lib/inc/hocon/config.hpp) to read from the config or if you don't care about preserving formatting.
