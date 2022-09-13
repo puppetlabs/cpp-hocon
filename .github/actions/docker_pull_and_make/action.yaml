@@ -1,0 +1,33 @@
+name: docker_pull_and_make
+
+inputs:
+  leatherman_pkg_suffix:
+    description: leatherman suffix
+    type: string
+  cmake_extra_vars:
+    description: extra vars for cmake
+    type: string
+  make_command:
+    description: make command
+    type: string
+  coveralls:
+    description: on or off
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: pull_docker_image
+      shell: bash
+      run: docker pull gcr.io/cpp-projects/cpp-ci:1
+    - name: run_make
+      shell: bash
+      run: |
+        docker run -v `pwd`:/cpp-hocon gcr.io/cpp-projects/cpp-ci:1 /bin/bash -c "
+        wget https://github.com/puppetlabs/leatherman/releases/download/1.5.2/leatherman${{ inputs.leatherman_pkg_suffix }}.tar.gz &&
+        tar xzvf leatherman${{ inputs.leatherman_pkg_suffix }}.tar.gz --strip 1 -C / &&
+        cd /cpp-hocon &&
+        cmake ${{ inputs.cmake_extra_vars }} . &&
+        mkdir dest &&
+        make ${{ inputs.make_command }} DESTDIR=/cpp-hocon/dest VERBOSE=1 -j2 &&
+        { [[ '${{ inputs.coveralls }}' != 'ON' ]] || coveralls --gcov-options '\-lp' -r . -b . -e src -e vendor >/dev/null || true; } "
