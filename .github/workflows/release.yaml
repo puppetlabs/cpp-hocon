@@ -1,0 +1,37 @@
+name: release jobs
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        options:
+          - make_command: all test install ARGS=-V
+            cmake_extra_vars: -DBOOST_STATIC=ON
+          - make_command: all test install ARGS=-V
+            leatherman_pkg_suffix: "-dynamic"
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: docker_pull_and_make
+        uses: ./.github/actions/docker_pull_and_make
+        with:
+          cmake_extra_vars: ${{ matrix.options.cmake_extra_vars }}
+          make_command: ${{ matrix.options.make_command }}
+          leatherman_pkg_suffix: ${{ matrix.options.leatherman_pkg_suffix }}
+      - name: build_release_artifact_for_tags
+        if: startsWith(github.ref, 'refs/tags/')
+        run: tar czvf cpp-hocon${{ matrix.options.leatherman_pkg_suffix }}.tar.gz `find dest -type f -print`
+      - name: upload_release_artifacts_for_tag
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: cpp-hocon${{ matrix.options.leatherman_pkg_suffix }}.tar.gz
+ 

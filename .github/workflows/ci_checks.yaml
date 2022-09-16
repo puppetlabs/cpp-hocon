@@ -1,0 +1,28 @@
+name: CI checks
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  ci_checks:
+    strategy:
+      matrix:
+        options:
+          - make_command: cpplint
+          - make_command: cppcheck
+          - make_command: all test install ARGS=-V
+            cmake_extra_vars: -DBOOST_STATIC=ON -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON
+            coveralls: ON
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: docker_pull_and_make
+        uses: ./.github/actions/docker_pull_and_make
+        with:
+          cmake_extra_vars: ${{ matrix.options.cmake_extra_vars }}
+          make_command: ${{ matrix.options.make_command }}
+          coveralls: ${{ matrix.options.coveralls }}
