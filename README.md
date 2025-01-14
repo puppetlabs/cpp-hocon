@@ -1,5 +1,7 @@
 # C++ HOCON Parser
 
+This repository is archived and Perforce will no longer be updating this repository. For more information, see [this Puppet blog post](https://www.puppet.com/blog/open-source-puppet-updates-2025).
+
 ![Travis CI](https://travis-ci.org/puppetlabs/cpp-hocon.svg)
 ![Appveyor](https://ci.appveyor.com/api/projects/status/github/puppetlabs/cpp-hocon?svg=true)
 
